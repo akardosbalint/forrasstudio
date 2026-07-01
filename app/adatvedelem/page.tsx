@@ -17,14 +17,14 @@ export default function AdatvedelemPage() {
       <LegalSection title="1. Az adatkezelő">
         <p>
           A jelen tájékoztató szerinti adatkezelő a Forrás Stúdió{" "}
-          <span className="font-mono text-sm">[TODO: teljes cégnév / egyéni vállalkozó neve]</span>.
+          <span className="font-mono text-sm">(Kardos Bálint e.v.)</span>.
         </p>
         <ul>
-          <li>Székhely: [TODO: székhely címe]</li>
-          <li>Cégjegyzékszám / nyilvántartási szám: [TODO]</li>
-          <li>Adószám: [TODO]</li>
+          <li>Székhely: 1027 Budapest, Bem József utca 6. fsz. 3.</li>
+          <li>Nyilvántartási szám: 61623820</li>
+          <li>Adószám: 91637778-1-41</li>
           <li>
-            Email: <a href="mailto:[TODO: email]">[TODO: email]</a>
+            Email: <a href="mailto:akardosbalint@gmail.com">akardosbalint@gmail.com</a>
           </li>
           <li>
             Telefon: <a href="tel:[TODO: telefonszám]">[TODO: telefonszám]</a>
@@ -117,7 +117,7 @@ export default function AdatvedelemPage() {
         </ul>
         <p>
           Ezen jogok gyakorlásához írj nekünk a{" "}
-          <a href="mailto:[TODO: email]">[TODO: email]</a> címre.
+          <a href="mailto:akardosbalint@gmail.com">akardosbalint@gmail.com</a> címre.
         </p>
       </LegalSection>
 

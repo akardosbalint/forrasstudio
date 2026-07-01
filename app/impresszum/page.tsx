@@ -12,12 +12,13 @@ export default function ImpresszumPage() {
     <LegalPageShell eyebrow="Jogi dokumentum" title="Impresszum" updated="2026. július 1.">
       <LegalSection title="Szolgáltató adatai">
         <ul>
-          <li>Név: Forrás Stúdió [TODO: teljes cégnév / egyéni vállalkozó neve]</li>
-          <li>Székhely: [TODO: székhely címe]</li>
-          <li>Cégjegyzékszám / nyilvántartási szám: [TODO]</li>
-          <li>Adószám: [TODO]</li>
+          <li>Márkanév: Forrás Stúdió</li>
+          <li>Szolgáltató (egyéni vállalkozó) neve: Kardos Bálint e.v.</li>
+          <li>Székhely: 1027 Budapest, Bem József utca 6. fsz. 3.</li>
+          <li>Nyilvántartási szám: 61623820</li>
+          <li>Adószám: 91637778-1-41</li>
           <li>
-            Email: <a href="mailto:[TODO: email]">[TODO: email]</a>
+            Email: <a href="mailto:akardosbalint@gmail.com">akardosbalint@gmail.com</a>
           </li>
           <li>
             Telefon: <a href="tel:[TODO: telefonszám]">[TODO: telefonszám]</a>

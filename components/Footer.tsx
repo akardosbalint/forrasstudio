@@ -32,8 +32,8 @@ export function Footer() {
           <p className="font-display text-lg font-semibold text-paper">Forrás Stúdió</p>
           <p className="mt-2 text-sm">
             Email:{" "}
-            <a href="mailto:[TODO: email]" className="underline decoration-white/20 hover:text-paper">
-              [TODO: email]
+            <a href="mailto:akardosbalint@gmail.com" className="underline decoration-white/20 hover:text-paper">
+              akardosbalint@gmail.com
             </a>
           </p>
           <p className="mt-1 text-sm">
