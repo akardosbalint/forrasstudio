@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+:root {
+  --color-ink: #14171f;
+  --color-ink-2: #1c202b;
+  --color-ink-3: #262b38;
+  --color-paper: #f5f1e8;
+  --color-paper-2: #ece5d5;
+  --color-paper-3: #e2d8c2;
+  --color-amber: #e2963b;
+  --color-amber-dark: #c77c28;
+  --color-spring: #5fb3a3;
+  --color-brook: #6fb8d9;
+}
+
+@theme inline {
+  --color-ink: var(--color-ink);
+  --color-ink-2: var(--color-ink-2);
+  --color-ink-3: var(--color-ink-3);
+  --color-paper: var(--color-paper);
+  --color-paper-2: var(--color-paper-2);
+  --color-paper-3: var(--color-paper-3);
+  --color-amber: var(--color-amber);
+  --color-amber-dark: var(--color-amber-dark);
+  --color-spring: var(--color-spring);
+  --color-brook: var(--color-brook);
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::selection {
+  background: var(--color-amber);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@keyframes draw-stream {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.stream-path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-stream 1.8s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stream-path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
