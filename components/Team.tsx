@@ -45,7 +45,7 @@ export function Team() {
                 width={480}
                 height={480}
                 unoptimized
-                className="mx-auto h-28 w-28 rounded-full border border-paper-2 object-cover"
+                className="mx-auto h-44 w-44 rounded-full border-2 border-paper-2 object-cover sm:h-48 sm:w-48"
               />
               <h3 className="mt-4 font-display text-lg font-semibold text-ink">
                 {member.name}
