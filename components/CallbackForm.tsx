@@ -66,14 +66,14 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
   }
 
   const inputClasses =
-    "w-full rounded-md border border-white/15 bg-white/5 px-4 py-3 text-paper placeholder:text-paper/40 outline-none transition-colors focus:border-spring focus:bg-white/10";
+    "w-full rounded-md border border-white/15 bg-white/5 px-4 py-3 text-paper placeholder:text-paper/40 outline-none transition-all duration-200 focus:border-spring focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(95,179,163,0.15)]";
   const labelClasses = "text-xs font-mono uppercase tracking-wider text-paper/60";
 
   if (state === "success") {
     return (
       <div
         role="status"
-        className={`rounded-lg border border-spring/40 bg-spring/10 p-6 text-paper ${className ?? ""}`}
+        className={`pop-in rounded-lg border border-spring/40 bg-spring/10 p-6 text-paper ${className ?? ""}`}
       >
         <p className="font-display text-xl">Köszönjük, hamarosan hívunk!</p>
         <p className="mt-2 text-sm text-paper/70">
@@ -190,13 +190,13 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
       <button
         type="submit"
         disabled={state === "submitting"}
-        className="mt-4 w-full whitespace-nowrap rounded-md bg-amber px-6 py-3 font-sans font-semibold text-ink transition-colors hover:bg-amber-dark disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        className="btn-shine mt-4 w-full whitespace-nowrap rounded-md bg-amber px-6 py-3 font-sans font-semibold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 active:translate-y-0 active:scale-95 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60 disabled:shadow-none sm:w-auto"
       >
         {state === "submitting" ? "Küldés…" : "Hívjatok vissza"}
       </button>
 
       {state === "error" && (
-        <p role="alert" className="mt-3 text-sm text-amber">
+        <p role="alert" className="pop-in mt-3 text-sm text-amber">
           {errorMessage}
         </p>
       )}

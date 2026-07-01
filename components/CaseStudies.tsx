@@ -1,3 +1,5 @@
+import { Reveal } from "@/components/Reveal";
+
 type Pillar = "sales" | "community" | "both" | "none";
 
 const pillarLabels: Record<Pillar, string> = {
@@ -51,58 +53,63 @@ const caseStudies = [
 
 export function CaseStudies() {
   return (
-    <section id="referenciak" className="bg-paper">
+    <section id="referenciak" className="scroll-mt-20 bg-paper">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
-        <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
-          Referenciák
-        </p>
-        <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          Rendszerek, amiket megépítettünk és üzemeltetünk
-        </h2>
+        <Reveal>
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
+            Referenciák
+          </p>
+        </Reveal>
+        <Reveal delay={80}>
+          <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Rendszerek, amiket megépítettünk és üzemeltetünk
+          </h2>
+        </Reveal>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
-          {caseStudies.map((project) => (
-            <a
-              key={project.domain}
-              href={project.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col rounded-xl border border-paper-3 bg-white/50 p-6 transition-colors hover:border-spring/50 sm:p-7"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="font-display text-xl font-semibold text-ink">
-                  {project.name}
-                </h3>
-                <span
-                  aria-hidden="true"
-                  className="mt-1 text-ink/30 transition-colors group-hover:text-spring"
-                >
-                  ↗
-                </span>
-              </div>
-              <span className="mt-1 font-mono text-xs text-ink/50">
-                {project.domain}
-              </span>
-
-              <p className="mt-3 leading-relaxed text-ink/70">{project.description}</p>
-
-              <span
-                className={`mt-4 inline-block w-fit rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-wide ${pillarColors[project.pillar]}`}
+          {caseStudies.map((project, index) => (
+            <Reveal key={project.domain} delay={index * 90} className="h-full">
+              <a
+                href={project.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex h-full flex-col rounded-xl border border-paper-3 bg-white/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-spring/50 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15 sm:p-7"
               >
-                {pillarLabels[project.pillar]}
-              </span>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {project.modules.map((module) => (
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-display text-xl font-semibold text-ink">
+                    {project.name}
+                  </h3>
                   <span
-                    key={module}
-                    className="rounded-full bg-paper-2 px-3 py-1 font-mono text-[11px] text-ink/60"
+                    aria-hidden="true"
+                    className="mt-1 text-ink/30 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-spring"
                   >
-                    {module}
+                    ↗
                   </span>
-                ))}
-              </div>
-            </a>
+                </div>
+                <span className="mt-1 font-mono text-xs text-ink/50">
+                  {project.domain}
+                </span>
+
+                <p className="mt-3 leading-relaxed text-ink/70">{project.description}</p>
+
+                <span
+                  className={`mt-4 inline-block w-fit rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-wide ${pillarColors[project.pillar]}`}
+                >
+                  {pillarLabels[project.pillar]}
+                </span>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {project.modules.map((module) => (
+                    <span
+                      key={module}
+                      className="rounded-full bg-paper-2 px-3 py-1 font-mono text-[11px] text-ink/60"
+                    >
+                      {module}
+                    </span>
+                  ))}
+                </div>
+              </a>
+            </Reveal>
           ))}
         </div>
       </div>

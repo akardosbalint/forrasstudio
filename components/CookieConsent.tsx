@@ -37,7 +37,7 @@ export function CookieConsent() {
     <div
       role="dialog"
       aria-label="Süti beállítások"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-ink/98 px-5 py-5 backdrop-blur sm:px-8"
+      className="slide-up-in fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-ink/98 px-5 py-5 backdrop-blur sm:px-8"
     >
       <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-paper/80">
@@ -55,14 +55,14 @@ export function CookieConsent() {
           <button
             type="button"
             onClick={() => choose("rejected")}
-            className="rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-paper/80 transition-colors hover:border-paper/40 hover:text-paper"
+            className="rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-paper/80 transition-all duration-200 hover:border-paper/40 hover:text-paper active:scale-95"
           >
             Csak a szükséges
           </button>
           <button
             type="button"
             onClick={() => choose("accepted")}
-            className="rounded-md bg-amber px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-amber-dark"
+            className="btn-shine rounded-md bg-amber px-4 py-2 text-sm font-semibold text-ink transition-all duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 active:scale-95"
           >
             Mind elfogadom
           </button>

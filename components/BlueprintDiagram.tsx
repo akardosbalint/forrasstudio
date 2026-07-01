@@ -18,7 +18,7 @@ export function BlueprintDiagram() {
       className="h-auto w-full max-w-xl"
     >
       {modules.map((module, index) => (
-        <g key={module.label}>
+        <g key={module.label} className="diagram-node">
           <path
             d={`M246,${module.y} C400,${module.y} 460,${CENTER_Y} ${CENTER_X - 56},${CENTER_Y}`}
             fill="none"
@@ -42,30 +42,32 @@ export function BlueprintDiagram() {
         </g>
       ))}
 
-      <circle
-        cx={CENTER_X}
-        cy={CENTER_Y}
-        r={56}
-        fill="var(--color-amber)"
-        stroke="var(--color-amber-dark)"
-        strokeWidth={1.5}
-      />
-      <text
-        x={CENTER_X}
-        y={CENTER_Y - 8}
-        textAnchor="middle"
-        className="font-mono text-[11px] font-medium uppercase tracking-wide fill-ink"
-      >
-        A te
-      </text>
-      <text
-        x={CENTER_X}
-        y={CENTER_Y + 12}
-        textAnchor="middle"
-        className="font-mono text-[13px] font-semibold uppercase tracking-wide fill-ink"
-      >
-        forrásod
-      </text>
+      <g className="source-node">
+        <circle
+          cx={CENTER_X}
+          cy={CENTER_Y}
+          r={56}
+          fill="var(--color-amber)"
+          stroke="var(--color-amber-dark)"
+          strokeWidth={1.5}
+        />
+        <text
+          x={CENTER_X}
+          y={CENTER_Y - 8}
+          textAnchor="middle"
+          className="font-mono text-[11px] font-medium uppercase tracking-wide fill-ink"
+        >
+          A te
+        </text>
+        <text
+          x={CENTER_X}
+          y={CENTER_Y + 12}
+          textAnchor="middle"
+          className="font-mono text-[13px] font-semibold uppercase tracking-wide fill-ink"
+        >
+          forrásod
+        </text>
+      </g>
     </svg>
   );
 }

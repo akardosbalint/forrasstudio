@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@view-transition {
+  navigation: auto;
+}
+
 :root {
   --color-ink: #14171f;
   --color-ink-2: #1c202b;
@@ -85,4 +89,117 @@ body {
     animation: none;
     stroke-dashoffset: 0;
   }
+}
+
+@keyframes source-node-in {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.source-node {
+  transform-origin: center;
+  transform-box: fill-box;
+  opacity: 0;
+  animation: source-node-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 2.3s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .source-node {
+    animation: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Diagonal light sweep on hover, used on the primary amber CTA buttons. */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35) 40%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+}
+
+.btn-shine:hover::after {
+  transform: translateX(120%);
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.pop-in {
+  animation: pop-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slide-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up-in {
+  animation: slide-up-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Blueprint diagram module nodes — pure-CSS hover highlight, no JS needed. */
+.diagram-node {
+  cursor: default;
+}
+
+.diagram-node path {
+  transition: stroke-width 0.3s ease;
+}
+
+.diagram-node:hover path {
+  stroke-width: 3px;
+}
+
+.diagram-node circle {
+  transition: transform 0.3s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.diagram-node:hover circle {
+  transform: scale(1.4);
+}
+
+.diagram-node text {
+  transition: opacity 0.3s ease;
+  opacity: 0.8;
+}
+
+.diagram-node:hover text {
+  opacity: 1;
 }

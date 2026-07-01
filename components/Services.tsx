@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Reveal } from "@/components/Reveal";
 
 type IconName = "sales" | "community" | "ai" | "system" | "ops";
 
@@ -55,7 +56,7 @@ function ServiceIcon({ name }: { name: IconName }) {
     <svg
       viewBox="0 0 32 32"
       aria-hidden="true"
-      className="h-8 w-8 text-spring"
+      className="h-8 w-8 text-spring transition-transform duration-300 group-hover:scale-110"
       fill="none"
       stroke="currentColor"
       strokeWidth={1.6}
@@ -66,6 +67,9 @@ function ServiceIcon({ name }: { name: IconName }) {
     </svg>
   );
 }
+
+const cardClasses =
+  "group h-full rounded-xl border border-paper-3 bg-white/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-spring/40 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15 sm:p-7";
 
 const pillars = [
   {
@@ -108,45 +112,47 @@ const capabilities = [
 
 export function Services() {
   return (
-    <section id="szolgaltatasok" className="bg-paper">
+    <section id="szolgaltatasok" className="scroll-mt-20 bg-paper">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
-        <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
-          Szolgáltatások
-        </p>
-        <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          Három pillér, egy rendszer
-        </h2>
+        <Reveal>
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
+            Szolgáltatások
+          </p>
+        </Reveal>
+        <Reveal delay={80}>
+          <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Három pillér, egy rendszer
+          </h2>
+        </Reveal>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {pillars.map((pillar) => (
-            <div
-              key={pillar.title}
-              className="rounded-xl border border-paper-3 bg-white/50 p-6 sm:p-7"
-            >
-              <ServiceIcon name={pillar.icon} />
-              <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-ink/40">
-                {pillar.eyebrow}
-              </p>
-              <h3 className="mt-2 font-display text-xl font-semibold text-ink">
-                {pillar.title}
-              </h3>
-              <p className="mt-3 leading-relaxed text-ink/70">{pillar.description}</p>
-            </div>
+          {pillars.map((pillar, index) => (
+            <Reveal key={pillar.title} delay={index * 100} className="h-full">
+              <div className={cardClasses}>
+                <ServiceIcon name={pillar.icon} />
+                <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-ink/40">
+                  {pillar.eyebrow}
+                </p>
+                <h3 className="mt-2 font-display text-xl font-semibold text-ink">
+                  {pillar.title}
+                </h3>
+                <p className="mt-3 leading-relaxed text-ink/70">{pillar.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          {capabilities.map((capability) => (
-            <div
-              key={capability.title}
-              className="rounded-xl border border-paper-3 bg-white/50 p-6 sm:p-7"
-            >
-              <ServiceIcon name={capability.icon} />
-              <h3 className="mt-2 font-display text-xl font-semibold text-ink">
-                {capability.title}
-              </h3>
-              <p className="mt-3 leading-relaxed text-ink/70">{capability.description}</p>
-            </div>
+          {capabilities.map((capability, index) => (
+            <Reveal key={capability.title} delay={index * 100} className="h-full">
+              <div className={cardClasses}>
+                <ServiceIcon name={capability.icon} />
+                <h3 className="mt-2 font-display text-xl font-semibold text-ink">
+                  {capability.title}
+                </h3>
+                <p className="mt-3 leading-relaxed text-ink/70">{capability.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>
