@@ -32,9 +32,9 @@ const caseStudies = [
     modules: ["Frontend / megjelenés"],
   },
   {
-    name: "Osveny App",
-    domain: "osveny.app",
-    href: "https://osveny.app",
+    name: "Ösvény App by eptestben.hu",
+    domain: "eptestben.hu",
+    href: "https://eptestben.hu",
     description: "Egészség-coaching alkalmazás.",
     pillar: "sales" as Pillar,
     modules: ["Fizetési kapu integráció", "Felhasználókezelés"],

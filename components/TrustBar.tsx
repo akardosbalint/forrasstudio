@@ -1,7 +1,7 @@
 const references = [
   { name: "ECO Portal", domain: "portal.ecokozosseg.hu", href: "https://portal.ecokozosseg.hu" },
   { name: "ECO Weboldal", domain: "ecokozosseg.hu", href: "https://ecokozosseg.hu" },
-  { name: "Osveny App", domain: "osveny.app", href: "https://osveny.app" },
+  { name: "Ösvény App by eptestben.hu", domain: "eptestben.hu", href: "https://eptestben.hu" },
   { name: "Purnima Vision", domain: "purnima.vision", href: "https://purnima.vision" },
 ];
 
