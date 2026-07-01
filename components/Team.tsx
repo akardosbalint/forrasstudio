@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
+import { MagneticCard } from "@/components/MagneticCard";
 
 const team = [
   {
@@ -43,20 +44,22 @@ export function Team() {
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {team.map((member, index) => (
             <Reveal key={member.name} delay={index * 100} className="h-full">
-              <div className="group h-full rounded-xl border border-paper-2 bg-white/50 p-6 text-center transition-all duration-300 hover:-translate-y-1.5 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15">
-                <Image
-                  src={member.photo}
-                  alt={`${member.name} portréja`}
-                  width={480}
-                  height={480}
-                  unoptimized
-                  className="mx-auto h-44 w-44 rounded-full border-2 border-paper-2 object-cover transition-all duration-300 group-hover:scale-105 group-hover:border-spring/50 sm:h-48 sm:w-48"
-                />
-                <h3 className="mt-4 font-display text-lg font-semibold text-ink">
-                  {member.name}
-                </h3>
-                <p className="mt-1 text-sm text-ink/60">{member.role}</p>
-              </div>
+              <MagneticCard className="h-full">
+                <div className="group h-full rounded-xl border border-paper-2 bg-white/50 p-6 text-center transition-all duration-300 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15">
+                  <Image
+                    src={member.photo}
+                    alt={`${member.name} portréja`}
+                    width={480}
+                    height={480}
+                    unoptimized
+                    className="mx-auto h-44 w-44 rounded-full border-2 border-paper-2 object-cover transition-all duration-300 group-hover:scale-105 group-hover:border-spring/50 sm:h-48 sm:w-48"
+                  />
+                  <h3 className="mt-4 font-display text-lg font-semibold text-ink">
+                    {member.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-ink/60">{member.role}</p>
+                </div>
+              </MagneticCard>
             </Reveal>
           ))}
         </div>

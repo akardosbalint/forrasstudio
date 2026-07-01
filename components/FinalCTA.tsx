@@ -1,10 +1,12 @@
 import { CallbackForm } from "@/components/CallbackForm";
 import { Spotlight } from "@/components/Spotlight";
 import { Reveal } from "@/components/Reveal";
+import { AmbientFlow } from "@/components/AmbientFlow";
 
 export function FinalCTA() {
   return (
-    <section id="cta" className="scroll-mt-20 bg-ink text-paper">
+    <section id="cta" className="relative scroll-mt-20 overflow-hidden bg-ink text-paper">
+      <AmbientFlow />
       <Spotlight className="mx-auto max-w-3xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">

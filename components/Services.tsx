@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
+import { TiltCard } from "@/components/TiltCard";
 
 type IconName = "sales" | "community" | "ai" | "system" | "ops";
 
@@ -69,7 +70,7 @@ function ServiceIcon({ name }: { name: IconName }) {
 }
 
 const cardClasses =
-  "group h-full rounded-xl border border-paper-3 bg-white/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-spring/40 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15 sm:p-7";
+  "group h-full rounded-xl border border-paper-3 bg-white/50 p-6 transition-[border-color,background-color,box-shadow] duration-300 hover:border-spring/40 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15 sm:p-7";
 
 const pillars = [
   {
@@ -128,7 +129,7 @@ export function Services() {
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {pillars.map((pillar, index) => (
             <Reveal key={pillar.title} delay={index * 100} className="h-full">
-              <div className={cardClasses}>
+              <TiltCard className={cardClasses}>
                 <ServiceIcon name={pillar.icon} />
                 <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-ink/40">
                   {pillar.eyebrow}
@@ -137,7 +138,7 @@ export function Services() {
                   {pillar.title}
                 </h3>
                 <p className="mt-3 leading-relaxed text-ink/70">{pillar.description}</p>
-              </div>
+              </TiltCard>
             </Reveal>
           ))}
         </div>
@@ -145,13 +146,13 @@ export function Services() {
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           {capabilities.map((capability, index) => (
             <Reveal key={capability.title} delay={index * 100} className="h-full">
-              <div className={cardClasses}>
+              <TiltCard className={cardClasses}>
                 <ServiceIcon name={capability.icon} />
                 <h3 className="mt-2 font-display text-xl font-semibold text-ink">
                   {capability.title}
                 </h3>
                 <p className="mt-3 leading-relaxed text-ink/70">{capability.description}</p>
-              </div>
+              </TiltCard>
             </Reveal>
           ))}
         </div>

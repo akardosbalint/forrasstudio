@@ -203,3 +203,17 @@ body {
 .diagram-node:hover text {
   opacity: 1;
 }
+
+/* Ambient, looping "flowing water" background lines — final CTA only.
+   Low amplitude, decorative, and neutralized by the reduced-motion
+   override above like every other CSS-driven animation on the page. */
+@keyframes ambient-flow {
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+
+.ambient-flow-path {
+  stroke-dasharray: 10 14;
+  animation: ambient-flow 14s linear infinite;
+}

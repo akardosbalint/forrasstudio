@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getLenisInstance } from "@/lib/lenis";
 
 const links = [
   { href: "#szolgaltatasok", label: "Szolgáltatások" },
@@ -42,6 +43,13 @@ export function Nav() {
     return () => observer.disconnect();
   }, []);
 
+  function handleAnchorClick(event: React.MouseEvent<HTMLAnchorElement>, hash: string) {
+    const lenis = getLenisInstance();
+    if (!lenis) return;
+    event.preventDefault();
+    lenis.scrollTo(hash, { offset: -88, duration: 1.2 });
+  }
+
   return (
     <header
       className={`sticky top-0 z-50 border-b bg-ink/95 backdrop-blur transition-all duration-300 supports-[backdrop-filter]:bg-ink/80 ${
@@ -56,6 +64,7 @@ export function Nav() {
       >
         <a
           href="#top"
+          onClick={(event) => handleAnchorClick(event, "#top")}
           className="font-display text-lg font-semibold tracking-tight text-paper transition-transform duration-300 hover:scale-[1.02]"
         >
           Forrás Stúdió
@@ -66,6 +75,7 @@ export function Nav() {
             <li key={link.href}>
               <a
                 href={link.href}
+                onClick={(event) => handleAnchorClick(event, link.href)}
                 className={`relative font-sans text-sm transition-colors duration-200 ${
                   activeHash === link.href ? "text-paper" : "text-paper/70 hover:text-paper"
                 }`}
@@ -84,6 +94,7 @@ export function Nav() {
 
         <a
           href="#cta"
+          onClick={(event) => handleAnchorClick(event, "#cta")}
           className="btn-shine whitespace-nowrap rounded-md bg-amber px-4 py-2 font-sans text-sm font-semibold text-ink transition-all duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/20 active:scale-95"
         >
           Visszahívást kérek

@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { MagneticButton } from "@/components/MagneticButton";
 
 type CallbackFormProps = {
   variant: "mini" | "full";
@@ -187,13 +188,13 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
         </label>
       </div>
 
-      <button
+      <MagneticButton
         type="submit"
         disabled={state === "submitting"}
-        className="btn-shine mt-4 w-full whitespace-nowrap rounded-md bg-amber px-6 py-3 font-sans font-semibold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 active:translate-y-0 active:scale-95 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60 disabled:shadow-none sm:w-auto"
+        className="btn-shine mt-4 w-full whitespace-nowrap rounded-md bg-amber px-6 py-3 font-sans font-semibold text-ink transition-colors duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
       >
         {state === "submitting" ? "Küldés…" : "Hívjatok vissza"}
-      </button>
+      </MagneticButton>
 
       {state === "error" && (
         <p role="alert" className="pop-in mt-3 text-sm text-amber">

@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { CaseStudyCard } from "@/components/CaseStudyCard";
 
 type Pillar = "sales" | "community" | "both" | "none";
 
@@ -68,48 +69,39 @@ export function CaseStudies() {
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {caseStudies.map((project, index) => (
-            <Reveal key={project.domain} delay={index * 90} className="h-full">
-              <a
-                href={project.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex h-full flex-col rounded-xl border border-paper-3 bg-white/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-spring/50 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15 sm:p-7"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="font-display text-xl font-semibold text-ink">
-                    {project.name}
-                  </h3>
-                  <span
-                    aria-hidden="true"
-                    className="mt-1 text-ink/30 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-spring"
-                  >
-                    ↗
-                  </span>
-                </div>
-                <span className="mt-1 font-mono text-xs text-ink/50">
-                  {project.domain}
-                </span>
-
-                <p className="mt-3 leading-relaxed text-ink/70">{project.description}</p>
-
+            <CaseStudyCard key={project.domain} href={project.href} index={index}>
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-display text-xl font-semibold text-ink">
+                  {project.name}
+                </h3>
                 <span
-                  className={`mt-4 inline-block w-fit rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-wide ${pillarColors[project.pillar]}`}
+                  aria-hidden="true"
+                  className="mt-1 text-ink/30 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-spring"
                 >
-                  {pillarLabels[project.pillar]}
+                  ↗
                 </span>
+              </div>
+              <span className="mt-1 font-mono text-xs text-ink/50">{project.domain}</span>
 
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {project.modules.map((module) => (
-                    <span
-                      key={module}
-                      className="rounded-full bg-paper-2 px-3 py-1 font-mono text-[11px] text-ink/60"
-                    >
-                      {module}
-                    </span>
-                  ))}
-                </div>
-              </a>
-            </Reveal>
+              <p className="mt-3 leading-relaxed text-ink/70">{project.description}</p>
+
+              <span
+                className={`mt-4 inline-block w-fit rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-wide ${pillarColors[project.pillar]}`}
+              >
+                {pillarLabels[project.pillar]}
+              </span>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {project.modules.map((module) => (
+                  <span
+                    key={module}
+                    className="rounded-full bg-paper-2 px-3 py-1 font-mono text-[11px] text-ink/60"
+                  >
+                    {module}
+                  </span>
+                ))}
+              </div>
+            </CaseStudyCard>
           ))}
         </div>
       </div>

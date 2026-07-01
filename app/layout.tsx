@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { MotionConfig } from "framer-motion";
 import { CookieConsent } from "@/components/CookieConsent";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -43,8 +45,11 @@ export default function RootLayout({
         <noscript>
           <style>{`.reveal { opacity: 1 !important; transform: none !important; }`}</style>
         </noscript>
-        {children}
-        <CookieConsent />
+        <MotionConfig reducedMotion="user">
+          {children}
+          <CookieConsent />
+          <SmoothScroll />
+        </MotionConfig>
       </body>
     </html>
   );
