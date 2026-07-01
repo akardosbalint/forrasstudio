@@ -15,10 +15,11 @@ create table if not exists public.callback_requests (
 
 alter table public.callback_requests enable row level security;
 
--- Csak a szerver oldali (service role) kulccsal lehet beszúrni,
--- a landing page API route-ja ezen keresztül ír a táblába.
-create policy "service role can insert callback requests"
+-- A landing page API route-ja a publishable (anon) kulccsal ír a táblába —
+-- ez a policy csak insertet enged, select/update/delete-et nem (nincs rá
+-- policy, az RLS alapból tiltja).
+create policy "anon can insert callback requests"
   on public.callback_requests
   for insert
-  to service_role
+  to anon
   with check (true);
