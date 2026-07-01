@@ -12,7 +12,7 @@ const reasons = [
   {
     title: "Felelősségvállalás az élesítés után is",
     description:
-      "A rendszert nem szállítjuk le és felejtjük el. Folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább, hosszú távon.",
+      "A rendszert nem felejtjük el a leszállítás után sem. Folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább, hosszú távon.",
   },
   {
     title: "Teljes rendszer, egy kézből",
