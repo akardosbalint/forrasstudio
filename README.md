@@ -30,6 +30,11 @@ Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
 
 1. Hozz létre egy Supabase projektet, futtasd le a `supabase/schema.sql`
    fájlt az SQL editorban.
+   - **Ha már korábban létrehoztad a `callback_requests` táblát** (a
+     `consent` oszlop bevezetése előtt), futtasd le a
+     `supabase/migrations/2026-07-01-add-consent.sql` fájlt is — ez adja
+     hozzá utólag a GDPR-hozzájárulást rögzítő oszlopot és frissíti az
+     insert policy-t.
 2. Töltsd ki a `.env.example` alapján a `.env.local` fájlt
    (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`).
 3. Amíg ezek nincsenek beállítva, az API route 503-at ad vissza, a form
@@ -44,6 +49,21 @@ Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
 3. Amíg ezek nincsenek beállítva, a lead továbbra is elmentődik
    Supabase-be, csak az SMS-értesítés marad el (a hiba a szerver
    logban jelenik meg, a form beküldőjének nem).
+
+## GDPR és adatkezelés
+
+- `app/adatvedelem`, `app/cookie-tajekoztato`, `app/impresszum` — a jogi
+  oldalak; több helyen `[TODO]` jelöléssel várnak a cégadatokra
+  (székhely, cégjegyzékszám, adószám, elérhetőség) és a pontos adatmegőrzési
+  időtartam meghatározására. **Ajánlott ügyvéddel átnézetni éles indítás
+  előtt.**
+- A visszahívás-formok (`components/CallbackForm.tsx`) kötelező
+  hozzájárulási checkboxot tartalmaznak, ami az `adatvedelem` oldalra
+  linkel; a szerver (`app/api/callback-request/route.ts`) és az adatbázis
+  RLS policy-ja is elutasítja a mentést hozzájárulás nélkül.
+- `components/CookieConsent.tsx` — süti-tájékoztató sáv, ami elmenti a
+  választásod a böngésző helyi tárolójában; a lábléc
+  &bdquo;Süti beállítások&rdquo; linkje bármikor újra megnyitja.
 
 ## Build
 

@@ -10,16 +10,19 @@ create table if not exists public.callback_requests (
   organization text,
   email text,
   message text,
-  source text not null default 'unknown' -- pl. 'hero-mini' vagy 'final-cta'
+  source text not null default 'unknown', -- pl. 'hero-mini' vagy 'final-cta'
+  consent boolean not null default false -- GDPR: az adatkezelési tájékoztató elfogadása
 );
 
 alter table public.callback_requests enable row level security;
 
 -- A landing page API route-ja a publishable (anon) kulccsal ír a táblába —
 -- ez a policy csak insertet enged, select/update/delete-et nem (nincs rá
--- policy, az RLS alapból tiltja).
+-- policy, az RLS alapból tiltja). A "consent = true" feltétel az
+-- adatvédelmi hozzájárulást adatbázis-szinten is kikényszeríti, az API
+-- route-beli szerveroldali validáció mellett (lásd app/api/callback-request).
 create policy "anon can insert callback requests"
   on public.callback_requests
   for insert
   to anon
-  with check (true);
+  with check (consent = true);

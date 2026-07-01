@@ -9,6 +9,7 @@ type CallbackRequestPayload = {
   email?: unknown;
   message?: unknown;
   source?: unknown;
+  consent?: unknown;
 };
 
 function asTrimmedString(value: unknown): string {
@@ -32,10 +33,18 @@ export async function POST(request: Request) {
   const email = asTrimmedString(body.email);
   const message = asTrimmedString(body.message);
   const source = asTrimmedString(body.source) || "unknown";
+  const consent = body.consent === true;
 
   if (!name || !phone) {
     return NextResponse.json(
       { error: "A név és a telefonszám megadása kötelező." },
+      { status: 400 },
+    );
+  }
+
+  if (!consent) {
+    return NextResponse.json(
+      { error: "Az adatkezelési tájékoztató elfogadása kötelező." },
       { status: 400 },
     );
   }
@@ -61,6 +70,7 @@ export async function POST(request: Request) {
     email: email || null,
     message: message || null,
     source,
+    consent,
   });
 
   if (error) {

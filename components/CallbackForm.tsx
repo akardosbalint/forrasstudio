@@ -22,6 +22,13 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
 
     const form = event.currentTarget;
     const data = new FormData(form);
+
+    if (!data.get("consent")) {
+      setErrorMessage("Az adatkezelési tájékoztató elfogadása kötelező.");
+      setState("error");
+      return;
+    }
+
     const payload = {
       name: data.get("name"),
       phone: data.get("phone"),
@@ -29,6 +36,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
       email: data.get("email"),
       message: data.get("message"),
       source,
+      consent: true,
     };
 
     try {
@@ -154,6 +162,29 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
             </div>
           </>
         )}
+      </div>
+
+      <div className="mt-4 flex items-start gap-2.5">
+        <input
+          id={`${formId}-consent`}
+          name="consent"
+          type="checkbox"
+          required
+          className="mt-0.5 h-4 w-4 flex-shrink-0 accent-amber"
+        />
+        <label htmlFor={`${formId}-consent`} className="text-sm text-paper/70">
+          Elfogadom az{" "}
+          <a
+            href="/adatvedelem"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-paper/30 hover:text-paper hover:decoration-spring"
+          >
+            adatkezelési tájékoztatót
+          </a>
+          , és hozzájárulok, hogy a Forrás Stúdió a megadott adataimat a
+          kapcsolatfelvétel céljából kezelje.
+        </label>
       </div>
 
       <button

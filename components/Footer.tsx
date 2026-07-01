@@ -1,3 +1,11 @@
+import { CookieSettingsButton } from "@/components/CookieSettingsButton";
+
+const legalLinks = [
+  { label: "Adatkezelési tájékoztató", href: "/adatvedelem" },
+  { label: "Sütikezelési tájékoztató", href: "/cookie-tajekoztato" },
+  { label: "Impresszum", href: "/impresszum" },
+];
+
 const socials = [
   {
     label: "Facebook [TODO: link]",
@@ -52,8 +60,18 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/5 px-5 py-5 text-center text-xs text-paper/40 sm:px-8">
-        © {new Date().getFullYear()} Forrás Stúdió. Minden jog fenntartva.
+      <div className="border-t border-white/5 px-5 py-5 sm:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-xs text-paper/40 sm:flex-row sm:justify-between">
+          <p>© {new Date().getFullYear()} Forrás Stúdió. Minden jog fenntartva.</p>
+          <nav aria-label="Jogi dokumentumok" className="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
+            {legalLinks.map((link) => (
+              <a key={link.href} href={link.href} className="underline decoration-white/20 hover:text-paper">
+                {link.label}
+              </a>
+            ))}
+            <CookieSettingsButton />
+          </nav>
+        </div>
       </div>
     </footer>
   );
