@@ -1,18 +1,20 @@
+import Image from "next/image";
+
 const team = [
   {
     name: "Kardos Bálint",
     role: "Alapító, ügyvezető (CEO)",
-    initials: "KB",
+    photo: "/team/kardos-balint.jpg",
   },
   {
     name: "Kányási Soma",
     role: "Technológiai vezető (Tech Lead)",
-    initials: "KS",
+    photo: "/team/kanyasi-soma.jpg",
   },
   {
     name: "Csábi Eszter",
     role: "Minőségbiztosítási vezető (QA Lead)",
-    initials: "CE",
+    photo: "/team/csabi-eszter.jpg",
   },
 ];
 
@@ -37,17 +39,15 @@ export function Team() {
               key={member.name}
               className="rounded-xl border border-paper-2 bg-white/50 p-6 text-center"
             >
-              <div
-                role="img"
-                aria-label={`${member.name} portréja — [TODO: csapattag fotó]`}
-                className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-spring to-brook font-display text-xl font-semibold text-ink"
-              >
-                {member.initials}
-              </div>
-              <p className="mt-2 font-mono text-[10px] uppercase tracking-wide text-ink/35">
-                [TODO: csapattag fotó]
-              </p>
-              <h3 className="mt-3 font-display text-lg font-semibold text-ink">
+              <Image
+                src={member.photo}
+                alt={`${member.name} portréja`}
+                width={480}
+                height={480}
+                unoptimized
+                className="mx-auto h-28 w-28 rounded-full border border-paper-2 object-cover"
+              />
+              <h3 className="mt-4 font-display text-lg font-semibold text-ink">
                 {member.name}
               </h3>
               <p className="mt-1 text-sm text-ink/60">{member.role}</p>
