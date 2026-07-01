@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-type IconName = "sales" | "community" | "system" | "ops";
+type IconName = "sales" | "community" | "ai" | "system" | "ops";
 
 function ServiceIcon({ name }: { name: IconName }) {
   const paths: Record<IconName, ReactNode> = {
@@ -17,6 +17,14 @@ function ServiceIcon({ name }: { name: IconName }) {
         <circle cx="21" cy="15" r="3.5" />
         <path d="M6 25c0-4 2.7-6.5 6-6.5s6 2.5 6 6.5" />
         <path d="M17.5 25c0-3-1.6-5-4-5.8" />
+      </>
+    ),
+    ai: (
+      <>
+        <path d="M7 16a9 9 0 0 1 15-6.5" />
+        <path d="M22 6v4.5h-4.5" />
+        <path d="M25 16a9 9 0 0 1-15 6.5" />
+        <path d="M10 26v-4.5h4.5" />
       </>
     ),
     system: (
@@ -59,13 +67,13 @@ function ServiceIcon({ name }: { name: IconName }) {
   );
 }
 
-const services = [
+const pillars = [
   {
     icon: "sales" as const,
     eyebrow: "1. pillér",
     title: "Sales System Engineering",
     description:
-      "Időpontfoglalás, fizetési integráció és ügyfél-CRM — a rétegek, amik meghatározzák, hogyan jut el hozzád a kliens, és hogyan fizet. Automatizált emlékeztetőkkel, hogy ne vesszen el egyetlen foglalás sem.",
+      "Időpontfoglalás, fizetési integráció és ügyfél-CRM — a rétegek, amik meghatározzák, hogyan jut el hozzád a kliens, és hogyan fizet.",
   },
   {
     icon: "community" as const,
@@ -75,10 +83,20 @@ const services = [
       "Zárt, jogosultságkezelt tagi felületek azoknak, akik nem csak egyéni ügyfeleket szolgálnak ki, hanem saját közösséget építenek — biztonságos beléptetéssel és tagsági szintekkel.",
   },
   {
+    icon: "ai" as const,
+    eyebrow: "3. pillér",
+    title: "AI Automation Design",
+    description:
+      "Lead-scoring, intelligens emlékeztetők és automatizált riportok veszik le rólad az ismétlődő adminisztrációt — és jelzik, mikor van szükség rád személyesen.",
+  },
+];
+
+const capabilities = [
+  {
     icon: "system" as const,
     title: "Teljes rendszer egy kézből",
     description:
-      "A foglalás, a fizetés, a CRM és a beléptetés nem külön projektek, hanem egymással összehangolt modulok — egy csapat tervezi és köti össze mindet, nem több különálló szállító.",
+      "A foglalás, a fizetés, a CRM, a beléptetés és az AI-alapú automatizáció nem külön projektek, hanem egymással összehangolt modulok — egy csapat tervezi és köti össze mindet, nem több különálló szállító.",
   },
   {
     icon: "ops" as const,
@@ -96,25 +114,38 @@ export function Services() {
           Szolgáltatások
         </p>
         <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          Két pillér, egy rendszer
+          Három pillér, egy rendszer
         </h2>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2">
-          {services.map((service) => (
+        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          {pillars.map((pillar) => (
             <div
-              key={service.title}
+              key={pillar.title}
               className="rounded-xl border border-paper-3 bg-white/50 p-6 sm:p-7"
             >
-              <ServiceIcon name={service.icon} />
-              {service.eyebrow && (
-                <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-ink/40">
-                  {service.eyebrow}
-                </p>
-              )}
+              <ServiceIcon name={pillar.icon} />
+              <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-ink/40">
+                {pillar.eyebrow}
+              </p>
               <h3 className="mt-2 font-display text-xl font-semibold text-ink">
-                {service.title}
+                {pillar.title}
               </h3>
-              <p className="mt-3 leading-relaxed text-ink/70">{service.description}</p>
+              <p className="mt-3 leading-relaxed text-ink/70">{pillar.description}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 grid gap-6 sm:grid-cols-2">
+          {capabilities.map((capability) => (
+            <div
+              key={capability.title}
+              className="rounded-xl border border-paper-3 bg-white/50 p-6 sm:p-7"
+            >
+              <ServiceIcon name={capability.icon} />
+              <h3 className="mt-2 font-display text-xl font-semibold text-ink">
+                {capability.title}
+              </h3>
+              <p className="mt-3 leading-relaxed text-ink/70">{capability.description}</p>
             </div>
           ))}
         </div>

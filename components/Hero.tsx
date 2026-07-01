@@ -10,7 +10,7 @@ export function Hero() {
       <div className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-spring">
-            Sales System Engineering and Community Platform Building
+            Sales System Engineering, Community Platform Building, and AI Automation Design
           </p>
 
           <h1 className="mt-5 font-display text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.2rem]">
@@ -22,8 +22,9 @@ export function Hero() {
             A Forrás Stúdió egyetlen niche-re szakosodott: coachok, pszichológusok,
             terapeuták, tanácsadók és wellness-vállalkozások számára építjük meg és
             üzemeltetjük a teljes online működést — az időpontfoglalástól a fizetésen
-            és az ügyfél-CRM-en át a zárt, tagi közösségi felületekig. Egy kézből,
-            egymással összehangolva.
+            és az ügyfél-CRM-en át a zárt, tagi közösségi felületekig, kiegészítve
+            AI-alapú automatizációval (pl. lead-scoring, intelligens emlékeztetők).
+            Egy kézből, egymással összehangolva.
           </p>
 
           <div className="mt-10 rounded-xl border border-white/10 bg-white/5 p-5 sm:p-6">

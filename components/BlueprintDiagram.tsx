@@ -3,7 +3,7 @@ const modules = [
   { label: "Fizetés", y: 145, color: "var(--color-brook)" },
   { label: "Ügyfél-CRM", y: 240, color: "var(--color-spring)" },
   { label: "Biztonságos beléptetés", y: 335, color: "var(--color-brook)" },
-  { label: "Automatizált emlékeztetők", y: 430, color: "var(--color-spring)" },
+  { label: "AI-alapú automatizáció", y: 430, color: "var(--color-spring)" },
 ];
 
 const CENTER_X = 600;
@@ -14,7 +14,7 @@ export function BlueprintDiagram() {
     <svg
       viewBox="0 0 680 520"
       role="img"
-      aria-label="Rendszerdiagram: időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés és automatizált emlékeztetők egy közös rendszerbe, 'A te forrásod'-ba folynak össze."
+      aria-label="Rendszerdiagram: időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés és AI-alapú automatizáció egy közös rendszerbe, 'A te forrásod'-ba folynak össze."
       className="h-auto w-full max-w-xl"
     >
       {modules.map((module, index) => (

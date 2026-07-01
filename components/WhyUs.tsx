@@ -2,7 +2,7 @@ const reasons = [
   {
     title: "Egyetlen niche, nem generalista fejlesztés",
     description:
-      "A segítő szakmára szakosodtunk — foglalás, ügyfél-bizalmasság, fizetés és közösségi tér együtt, adatvédelmi érzékenységgel. Nem minden projektnél tanuljuk újra ezt a domaint.",
+      "A segítő szakmára szakosodtunk — foglalás, ügyfél-bizalmasság, fizetés, közösségi tér és AI-alapú automatizáció együtt, adatvédelmi érzékenységgel. Nem minden projektnél tanuljuk újra ezt a domaint.",
   },
   {
     title: "Közvetlen kapcsolat a fejlesztőkkel",
@@ -17,7 +17,7 @@ const reasons = [
   {
     title: "Teljes rendszer, egy kézből",
     description:
-      "A foglalás, a fizetés, a CRM és a beléptetés egymással összehangolva készül — nem több különálló szállítótól összerakva.",
+      "A foglalás, a fizetés, a CRM, a beléptetés és az AI-alapú automatizáció egymással összehangolva készül — nem több különálló szállítótól összerakva.",
   },
 ];
 
