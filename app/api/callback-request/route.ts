@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { sendCallbackNotificationSms } from "@/lib/notifications";
 
 type CallbackRequestPayload = {
   name?: unknown;
@@ -69,6 +70,22 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+
+  // A lead már elmentve — az SMS-értesítés esetleges hibája nem hiúsíthatja
+  // meg a sikeres választ.
+  await sendCallbackNotificationSms({
+    name,
+    phone,
+    organization,
+    email,
+    message,
+    source,
+  }).catch((notificationError) => {
+    console.error(
+      "[callback-request] Notification error:",
+      notificationError,
+    );
+  });
 
   return NextResponse.json({ ok: true });
 }
