@@ -11,7 +11,7 @@ szükségük, visszahívást kérjenek.
   API route: `app/api/callback-request/route.ts`.
 - **Supabase (Postgres)** — a visszahívás-kérések tárolása a
   `callback_requests` táblában, séma: `supabase/schema.sql`.
-- **Twilio** — azonnali SMS-értesítés minden új visszahívás-kérésnél,
+- **Resend** — azonnali email-értesítés minden új visszahívás-kérésnél,
   `lib/notifications.ts`.
 - **Tailwind CSS v4** — design tokenek a `app/globals.css`-ben (`@theme`).
 - **Python automatizálás (jövőbeli)** — `automation/` mappa, lásd az ottani
@@ -40,14 +40,19 @@ Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
 3. Amíg ezek nincsenek beállítva, az API route 503-at ad vissza, a form
    erre felhasználóbarát hibaüzenetet jelenít meg.
 
-## SMS-értesítés beüzemelése (Twilio)
+## Email-értesítés beüzemelése (Resend)
 
-1. Hozz létre egy Twilio fiókot, és szerezz be egy SMS-küldésre képes
-   telefonszámot a [console.twilio.com](https://console.twilio.com) oldalon.
-2. Töltsd ki a `.env.example` alapján: `TWILIO_ACCOUNT_SID`,
-   `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`, `NOTIFICATION_SMS_TO`.
-3. Amíg ezek nincsenek beállítva, a lead továbbra is elmentődik
-   Supabase-be, csak az SMS-értesítés marad el (a hiba a szerver
+1. Hozz létre egy fiókot a [resend.com](https://resend.com) oldalon, és
+   szerezz be egy API kulcsot az API Keys menüpont alatt.
+2. Igazold a saját küldő domainedet a Resend "Domains" menüpontja alatt
+   (DNS rekordok hozzáadásával) — igazolt domain nélkül csak a
+   `onboarding@resend.dev` teszt-cím használható, éles forgalomra nem
+   alkalmas.
+3. Töltsd ki a `.env.example` alapján: `RESEND_API_KEY`,
+   `NOTIFICATION_EMAIL_FROM` (saját, igazolt domainen lévő cím),
+   `NOTIFICATION_EMAIL_TO` (ide fusson be az értesítés).
+4. Amíg ezek nincsenek beállítva, a lead továbbra is elmentődik
+   Supabase-be, csak az email-értesítés marad el (a hiba a szerver
    logban jelenik meg, a form beküldőjének nem).
 
 ## GDPR és adatkezelés

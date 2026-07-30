@@ -1,5 +1,3 @@
-import twilio from "twilio";
-
 export type CallbackNotificationData = {
   name: string;
   phone: string;
@@ -9,20 +7,19 @@ export type CallbackNotificationData = {
   source: string;
 };
 
-// [TODO: Twilio env változók] — állítsd be a Vercel / .env.local fájlban:
-// TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER,
-// NOTIFICATION_SMS_TO. Lásd .env.example.
-export async function sendCallbackNotificationSms(
+// [TODO: Resend env változók] — állítsd be a Vercel / .env.local fájlban:
+// RESEND_API_KEY, NOTIFICATION_EMAIL_FROM, NOTIFICATION_EMAIL_TO.
+// Lásd .env.example.
+export async function sendCallbackNotificationEmail(
   data: CallbackNotificationData,
 ): Promise<void> {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const fromNumber = process.env.TWILIO_FROM_NUMBER;
-  const toNumber = process.env.NOTIFICATION_SMS_TO;
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.NOTIFICATION_EMAIL_FROM;
+  const to = process.env.NOTIFICATION_EMAIL_TO;
 
-  if (!accountSid || !authToken || !fromNumber || !toNumber) {
+  if (!apiKey || !from || !to) {
     console.error(
-      "[callback-notification] Twilio nincs konfigurálva — lásd .env.example ([TODO: Twilio env változók]).",
+      "[callback-notification] Resend nincs konfigurálva — lásd .env.example ([TODO: Resend env változók]).",
     );
     return;
   }
@@ -34,22 +31,31 @@ export async function sendCallbackNotificationSms(
         ? "záró CTA"
         : data.source;
 
-  const bodyParts = [
-    `Új visszahívás-kérés (${sourceLabel}):`,
-    `${data.name}, ${data.phone}`,
-  ];
-  if (data.organization) {
-    bodyParts.push(data.organization);
-  }
+  const lines = [`Forrás: ${sourceLabel}`, `Név: ${data.name}`, `Telefon: ${data.phone}`];
+  if (data.organization) lines.push(`Cég / szervezet: ${data.organization}`);
+  if (data.email) lines.push(`Email: ${data.email}`);
+  if (data.message) lines.push(`Üzenet: ${data.message}`);
 
   try {
-    const client = twilio(accountSid, authToken);
-    await client.messages.create({
-      body: bodyParts.join(" – "),
-      from: fromNumber,
-      to: toNumber,
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        subject: `Új visszahívás-kérés — ${data.name}`,
+        text: lines.join("\n"),
+      }),
     });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      console.error(`[callback-notification] Resend API error (${response.status}):`, body);
+    }
   } catch (error) {
-    console.error("[callback-notification] Twilio send error:", error);
+    console.error("[callback-notification] Resend send error:", error);
   }
 }

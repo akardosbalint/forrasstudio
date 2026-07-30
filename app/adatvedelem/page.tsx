@@ -89,12 +89,12 @@ export default function AdatvedelemPage() {
             .
           </li>
           <li>
-            <strong>Twilio Inc.</strong> — a form beküldéséről szóló azonnali
-            SMS-értesítés kézbesítése a stúdió felé; ehhez a neved és
-            telefonszámod továbbításra kerül a Twilio rendszerébe.{" "}
+            <strong>Resend, Inc.</strong> — a form beküldéséről szóló azonnali
+            email-értesítés kézbesítése a stúdió felé; ehhez a neved és
+            telefonszámod továbbításra kerül a Resend rendszerébe.{" "}
             <span className="font-mono text-sm">
-              [TODO: Twilio DPA / megfelelő adattovábbítási garanciák
-              ellenőrzése, mivel a Twilio Egyesült Államok-beli szolgáltató]
+              [TODO: Resend DPA / megfelelő adattovábbítási garanciák
+              ellenőrzése, mivel a Resend Egyesült Államok-beli szolgáltató]
             </span>
             .
           </li>
