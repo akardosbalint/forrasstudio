@@ -24,7 +24,7 @@ export function Spotlight({ children, className = "" }: SpotlightProps) {
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background:
-            "radial-gradient(600px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(95, 179, 163, 0.12), transparent 60%)",
+            "radial-gradient(600px circle at var(--spot-x, 50%) var(--spot-y, 50%), color-mix(in srgb, var(--color-spring) 16%, transparent), transparent 60%)",
         }}
       />
       {children}

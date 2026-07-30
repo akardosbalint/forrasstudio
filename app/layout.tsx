@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import { CookieConsent } from "@/components/CookieConsent";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin", "latin-ext"],
   weight: "variable",
-  style: ["normal", "italic"],
-  axes: ["opsz", "SOFT", "WONK"],
 });
 
 const inter = Inter({
@@ -39,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="hu"
-      className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">
         <noscript>

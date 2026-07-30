@@ -158,7 +158,7 @@ function ProcessPinned() {
         <div className="mx-auto flex h-full max-w-6xl flex-col justify-center px-5 sm:px-8">
           <Reveal>
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-              Hogyan dolgozunk
+              <span className="text-ink/30">{"// "}</span>Hogyan dolgozunk
             </p>
           </Reveal>
           <Reveal delay={80}>
@@ -207,7 +207,7 @@ function ProcessSimple() {
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-            Hogyan dolgozunk
+            <span className="text-ink/30">{"// "}</span>Hogyan dolgozunk
           </p>
         </Reveal>
         <Reveal delay={80}>

@@ -29,7 +29,7 @@ export function WhyUs() {
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
-            Miért minket
+            <span className="text-ink/30">{"// "}</span>Miért minket
           </p>
         </Reveal>
         <Reveal delay={80}>

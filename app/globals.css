@@ -5,16 +5,16 @@
 }
 
 :root {
-  --color-ink: #14171f;
-  --color-ink-2: #1c202b;
-  --color-ink-3: #262b38;
-  --color-paper: #f5f1e8;
-  --color-paper-2: #ece5d5;
-  --color-paper-3: #e2d8c2;
-  --color-amber: #e2963b;
-  --color-amber-dark: #c77c28;
-  --color-spring: #5fb3a3;
-  --color-brook: #6fb8d9;
+  --color-ink: #0a0d14;
+  --color-ink-2: #10141d;
+  --color-ink-3: #161c28;
+  --color-paper: #eef1f6;
+  --color-paper-2: #e1e6ee;
+  --color-paper-3: #d2dae5;
+  --color-amber: #9a82ee;
+  --color-amber-dark: #8467e6;
+  --color-spring: #14b8a6;
+  --color-brook: #3b82f6;
 }
 
 @theme inline {
@@ -29,7 +29,7 @@
   --color-spring: var(--color-spring);
   --color-brook: var(--color-brook);
 
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-space-grotesk);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains);
 }
@@ -56,6 +56,23 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Faint schematic grid, echoing the blueprint-diagram motif — used on the
+   hero and final-CTA dark sections only, never under body copy. Lives on
+   a ::before layer (not the section's own background) so the fade-out
+   mask only ever affects the decorative grid, never the section's solid
+   background color or its content. */
+.grid-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(154, 130, 238, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 130, 238, 0.16) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 40%, transparent 90%);
 }
 
 ::selection {

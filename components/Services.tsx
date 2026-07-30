@@ -70,7 +70,7 @@ function ServiceIcon({ name }: { name: IconName }) {
 }
 
 const cardClasses =
-  "group h-full rounded-xl border border-paper-3 bg-white/50 p-6 transition-[border-color,background-color,box-shadow] duration-300 hover:border-spring/40 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15 sm:p-7";
+  "group h-full rounded-xl border border-paper-3 bg-white/50 p-6 transition-[border-color,background-color,box-shadow] duration-300 hover:border-spring/50 hover:bg-white/80 hover:shadow-2xl hover:shadow-spring/20 sm:p-7";
 
 const pillars = [
   {
@@ -117,7 +117,7 @@ export function Services() {
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
-            Szolgáltatások
+            <span className="text-ink/30">{"// "}</span>Szolgáltatások
           </p>
         </Reveal>
         <Reveal delay={80}>

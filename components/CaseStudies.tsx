@@ -72,7 +72,7 @@ export function CaseStudies() {
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
-            Referenciák
+            <span className="text-ink/30">{"// "}</span>Referenciák
           </p>
         </Reveal>
         <Reveal delay={80}>

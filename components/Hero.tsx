@@ -67,13 +67,14 @@ export function Hero() {
   }, []);
 
   return (
-    <section id="top" className="relative scroll-mt-20 overflow-hidden bg-ink text-paper">
+    <section id="top" className="grid-pattern relative scroll-mt-20 overflow-hidden bg-ink text-paper">
       <Spotlight className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
         <div>
           <p
             ref={eyebrowRef}
             className="font-mono text-xs uppercase tracking-[0.18em] text-spring"
           >
+            <span className="text-paper/30">{"// "}</span>
             {EYEBROW_TEXT}
           </p>
 

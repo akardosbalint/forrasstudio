@@ -26,7 +26,7 @@ export function Team() {
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-            Csapat
+            <span className="text-ink/30">{"// "}</span>Csapat
           </p>
         </Reveal>
         <Reveal delay={80}>
@@ -45,7 +45,7 @@ export function Team() {
           {team.map((member, index) => (
             <Reveal key={member.name} delay={index * 100} className="h-full">
               <MagneticCard className="h-full">
-                <div className="group h-full rounded-xl border border-paper-2 bg-white/50 p-6 text-center transition-all duration-300 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15">
+                <div className="group h-full rounded-xl border border-paper-2 bg-white/50 p-6 text-center transition-all duration-300 hover:border-brook/40 hover:bg-white/80 hover:shadow-2xl hover:shadow-brook/20">
                   <Image
                     src={member.photo}
                     alt={`${member.name} portréja`}

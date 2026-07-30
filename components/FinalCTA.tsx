@@ -5,12 +5,12 @@ import { AmbientFlow } from "@/components/AmbientFlow";
 
 export function FinalCTA() {
   return (
-    <section id="cta" className="relative scroll-mt-20 overflow-hidden bg-ink text-paper">
+    <section id="cta" className="grid-pattern relative scroll-mt-20 overflow-hidden bg-ink text-paper">
       <AmbientFlow />
       <Spotlight className="mx-auto max-w-3xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
-            Kezdjük el
+            <span className="text-paper/30">{"// "}</span>Kezdjük el
           </p>
         </Reveal>
         <Reveal delay={80}>

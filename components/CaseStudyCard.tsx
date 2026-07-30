@@ -39,7 +39,7 @@ export function CaseStudyCard({ href, index, children }: CaseStudyCardProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-paper-3 bg-white/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-spring/50 hover:bg-white/80 hover:shadow-2xl hover:shadow-ink/15 sm:p-7"
+      className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-paper-3 bg-white/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-spring/60 hover:bg-white/80 hover:shadow-2xl hover:shadow-spring/25 sm:p-7"
     >
       <motion.div style={{ y: innerY }} className="flex h-full flex-col">
         {children}
