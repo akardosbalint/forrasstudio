@@ -22,4 +22,17 @@ export const FALLBACK_EMAIL_TEMPLATES: Record<
       "A link {{expiresInDays}} napig érvényes.\n\n" +
       "Üdvözlettel,\nKBCo Stúdió",
   },
+  questionnaire_submitted: {
+    subject: "Köszönjük a kitöltést — foglald le a discovery call-t",
+    bodyHtml:
+      "<p>Kedves {{leadName}}!</p>" +
+      "<p>Köszönjük, hogy kitöltötted a kérdőívet. A következő lépés egy 90 perces discovery call lefoglalása, amit az alábbi linken tehetsz meg:</p>" +
+      '<p><a href="{{bookingLink}}">{{bookingLink}}</a></p>' +
+      "<p>Üdvözlettel,<br />KBCo Stúdió</p>",
+    bodyText:
+      "Kedves {{leadName}}!\n\n" +
+      "Köszönjük, hogy kitöltötted a kérdőívet. A következő lépés egy 90 perces discovery call lefoglalása, amit az alábbi linken tehetsz meg:\n" +
+      "{{bookingLink}}\n\n" +
+      "Üdvözlettel,\nKBCo Stúdió",
+  },
 };

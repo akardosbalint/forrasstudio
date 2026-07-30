@@ -161,9 +161,44 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
 - `npm test` — a `lib/pipeline/stateMachine.test.ts` 8 egységteszttel
   fedi le az átmenet-szabályokat.
 
+### Amit érdemes manuálisan tesztelni (Phase 3)
+
+A publikus kérdőív felület (`app/(public)/kerdoiv/[token]`) bejelentkezés
+nélkül érhető el — helyi teszteléshez elég egy lead + `QuestionnaireLink`
+sor manuális létrehozása (lásd lent a "Helyi teszt Postgres-szel" részt),
+nincs szükség valódi Supabase Auth-ra.
+
+- Érvényes, még ki nem töltött link megnyitása → a szeedelt kérdőív
+  kérdései megjelennek típus szerint (textarea, szám, select stb.).
+- Kitöltés + beküldés → "Köszönjük a kitöltést!" visszaigazolás; a
+  háttérben: `QuestionnaireResponse` mentve, `QuestionnaireLink.usedAt`
+  beállítva, a lead automatikusan "Időpontfoglalásra vár" stádiumba kerül,
+  `StatusHistory` bejegyzés `changedById: null`-lal (rendszer által
+  triggerelt, nem user által).
+- Ugyanannak a linknek az újranyitása → "Ezt a kérdőívet már kitöltötted".
+- Lejárt vagy nem létező token → megfelelő hibaüzenet, nincs 500-as hiba.
+- `/foglalas/[token]` (ideiglenes placeholder, a Phase 4 cseréli le valódi
+  foglalási felületre) — kitöltés előtt a kérdőívre irányít, kitöltés
+  után egy "hamarosan" üzenetet mutat.
+
+### Helyi teszt Postgres-szel (DATABASE_URL nélkül is Supabase helyett)
+
+Fejlesztés/tesztelés közben nem szükséges valódi Supabase projekt a
+Prisma-oldal (adatmodell, státuszgép, kérdőív) teszteléséhez — bármilyen
+elérhető Postgres megteszi:
+
+```bash
+# Postgres indítása, adatbázis létrehozása, majd:
+DATABASE_URL="postgresql://user:pass@localhost:5432/kbco_crm_dev" npm run prisma:migrate
+DATABASE_URL="postgresql://user:pass@localhost:5432/kbco_crm_dev" npx prisma db seed
+```
+
+Csak a `/crm/**` (bejelentkezés-védett) oldalak igényelnek valódi Supabase
+Auth projektet — a publikus kérdőív/foglalás felület nem.
+
 ### Még hátra van (a spec fázisai szerint)
 
-Phase 3 (publikus kérdőív kitöltő), Phase 4 (foglalási motor), Phase 5
+Phase 4 (foglalási motor), Phase 5
 (Google Calendar OAuth/FreeBusy/szinkron), Phase 6 (admin:
 kérdőív-szerkesztő, email sablonok, pipeline-szerkesztő, audit log nézet),
 Phase 7 (dashboard + riportolás). Ezek a Prisma adatmodellben már szerepelnek
