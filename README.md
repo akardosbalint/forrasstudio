@@ -323,11 +323,59 @@ docker compose up --build
 tényleges image-buildet és a `scheduler` service valós lefutását érdemes
 leellenőrizni az első éles/staging deploy előtt.
 
+### Admin felület (Phase 6)
+
+Az `/crm/admin` alatt (csak `ADMIN` szerepkörnek):
+
+- **Kérdőív-szerkesztő** (`/crm/admin/questionnaires`) — sablonok
+  létrehozása, aktiválása (egyszerre csak egy sablon lehet aktív — az
+  aktiválás egy tranzakcióban deaktiválja a többit), kérdések
+  hozzáadása/törlése/átrendezése (fel/le), minden kérdéstípushoz (rövid/
+  hosszú szöveg, szám, dátum, igen/nem, legördülő, jelölőnégyzetek) az
+  utóbbi kettőhöz vesszővel elválasztott opciólistával.
+- **Email sablonok** (`/crm/admin/email-templates`) — mind a 6
+  automatizált email (kérdőív-meghívó, kérdőív-visszaigazolás,
+  foglalás-visszaigazolás ügyfélnek/repnek, emlékeztető, lemondás)
+  szerkeszthető tárgy/HTML/sima szöveg mezőkkel; a sablon a beépített
+  alapértelmezést használja, amíg admin nem szabja testre.
+- **Pipeline-szerkesztő** (`/crm/admin/pipeline`) — stádiumok
+  címkéje/színe/sorrendje szerkeszthető; új (nem rendszer-) stádium
+  hozzáadható; törlés csak nem-rendszer stádiumra és csak akkor
+  engedélyezett, ha jelenleg nincs lead abban a stádiumban.
+- **Audit log** (`/crm/admin/audit-log`) — szűrés entitástípus és
+  művelet-string szerint, lapozással.
+
+### Amit érdemes manuálisan tesztelni (Phase 6)
+
+- Új kérdőív-sablon létrehozása, kérdések hozzáadása vegyes típusokkal
+  (legalább egy SELECT/MULTISELECT opciólistával) → aktiválás után az új
+  sablon jelenik meg a `/kerdoiv/[token]` publikus oldalon.
+- Kérdés átrendezése fel/le nyilakkal → a publikus kérdőívoldalon az új
+  sorrendben jelennek meg.
+- Email sablon szerkesztése (pl. `booking_confirmation_client` tárgyának
+  módosítása) → egy új foglalás visszaigazoló emailje már a módosított
+  szöveget használja.
+- Új, egyedi pipeline-stádium hozzáadása → megjelenik a lead adatlap
+  stádium-választójában; törlés csak akkor engedélyezett, ha nincs benne
+  lead.
+- Rendszer-stádium (pl. "Visszahívásra vár") törlés gombja nem jelenik
+  meg.
+- Audit log szűrése entitástípus szerint (chip) és szabad szöveges
+  keresés a művelet mezőre — az eddigi fázisok minden művelete
+  (`lead.created`, `lead.stage_changed`, `questionnaire.submitted`,
+  `booking.created`, `booking.rescheduled`, `booking.cancelled`,
+  `google_calendar.connected` stb.) megjelenik.
+- Az admin action-ök adatbázis-szintű logikáját (sablon aktiválás
+  kizárólagossága, kérdés-átrendezés, stádium törlési védelem) helyi
+  Postgres ellen script-tel végigfuttatva, közvetlenül ellenőrizve
+  (a bejelentkezett admin UI-t ebben a sandboxban nem lehetett
+  végigkattintani, mert ahhoz valódi Supabase Auth session kell).
+
 ### Még hátra van (a spec fázisai szerint)
 
-Phase 6 (admin: kérdőív-szerkesztő, email sablonok, pipeline-szerkesztő,
-audit log nézet), Phase 7 (dashboard + riportolás). Ezek a Prisma
-adatmodellben már szerepelnek, de UI/logika még nincs hozzájuk.
+Phase 7 (dashboard + riportolás) — kanban pipeline nézet, szűrők
+rep/forrás/dátum szerint, bevételi mutatók (TCV, cash collected) napi/
+heti/havi/éves/all-time bontásban.
 
 ## Build
 
