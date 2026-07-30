@@ -113,7 +113,8 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
    Settings → Database → Connection string → URI), `SUPABASE_URL` /
    `SUPABASE_PUBLISHABLE_KEY` (szerver), `NEXT_PUBLIC_SUPABASE_URL` /
    `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (böngésző), `FIRST_ADMIN_EMAIL`.
-3. Futtasd le a Prisma migrációt és a seedet (alap pipeline-stádiumok):
+3. Futtasd le a Prisma migrációt és a seedet (alap pipeline-stádiumok,
+   alap kérdőív-sablon, email sablonok):
    ```bash
    npm run prisma:migrate
    npx prisma db seed
@@ -123,6 +124,11 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
    első bejelentkezéskor a rendszer automatikusan admin `Profile` sort hoz
    létre neki.
 5. `npm run dev`, majd `/crm/login`.
+
+6. Email küldéshez (kérdőív-meghívó) állítsd be a `RESEND_API_KEY` /
+   `NOTIFICATION_EMAIL_FROM` env változókat is (lásd fent, "Email-értesítés
+   beüzemelése"), enélkül a stádiumváltás lefut, de figyelmeztetést kapsz,
+   hogy az email küldése nem sikerült.
 
 ### Amit érdemes manuálisan tesztelni (Phase 1)
 
@@ -137,13 +143,30 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
 - Bejelentkezés nélkül `/crm/leads`-re navigálva → redirect `/crm/login`-ra.
 - Kijelentkezés → `/crm/leads` ismét `/crm/login`-ra redirectel.
 
+### Amit érdemes manuálisan tesztelni (Phase 2)
+
+- Lead adatlapján email cím **nélkül** próbáld "Kérdőív kitöltés alatt"
+  státuszba tenni → hibaüzenet, a stádium nem változik.
+- Adj meg email címet a leadhez (jelenleg csak létrehozáskor lehet — lead
+  szerkesztés a Phase 6 admin körben bővül), majd váltsd "Kérdőív kitöltés
+  alatt" státuszba → a stádium frissül, és ha be van állítva a Resend, a
+  megadott email címre megérkezik a kérdőív-meghívó linkkel; ha nincs
+  beállítva, sárga figyelmeztetés jelenik meg, de a stádium akkor is
+  frissül.
+- Próbálj sales rep userrel visszafelé lépni egy stádiumban (pl.
+  "Discovery call lefoglalva" → "Visszahívásra vár") → hibaüzenet
+  ("Nem engedélyezett átmenet"); ugyanez admin userrel engedélyezett.
+- Sales rep bármikor "Elveszett"-re állíthatja a leadet, de admin nélkül
+  nem nyitható vissza onnan.
+- `npm test` — a `lib/pipeline/stateMachine.test.ts` 8 egységteszttel
+  fedi le az átmenet-szabályokat.
+
 ### Még hátra van (a spec fázisai szerint)
 
-Phase 2 (státuszgép + kérdőív-link + email), Phase 3 (publikus kérdőív
-kitöltő), Phase 4 (foglalási motor), Phase 5 (Google Calendar
-OAuth/FreeBusy/szinkron), Phase 6 (admin: kérdőív-szerkesztő, email
-sablonok, pipeline-szerkesztő, audit log nézet), Phase 7 (dashboard +
-riportolás). Ezek a Prisma adatmodellben már szerepelnek
+Phase 3 (publikus kérdőív kitöltő), Phase 4 (foglalási motor), Phase 5
+(Google Calendar OAuth/FreeBusy/szinkron), Phase 6 (admin:
+kérdőív-szerkesztő, email sablonok, pipeline-szerkesztő, audit log nézet),
+Phase 7 (dashboard + riportolás). Ezek a Prisma adatmodellben már szerepelnek
 (`QuestionnaireTemplate`, `Booking`, `GoogleCalendarConnection` stb.), de
 UI/logika még nincs hozzájuk.
 

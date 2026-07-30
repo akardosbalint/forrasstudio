@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth/rbac";
 import { writeAuditLog } from "@/lib/audit/log";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
+import { canTransition } from "@/lib/pipeline/stateMachine";
+import { triggerQuestionnaireSend } from "@/lib/questionnaire/dispatch";
 
 const createLeadSchema = z.object({
   name: z.string().trim().min(1, "A név megadása kötelező."),
@@ -84,7 +86,14 @@ export async function createLead(
   redirect(`/crm/leads/${lead.id}`);
 }
 
-export async function changeLeadStage(formData: FormData): Promise<void> {
+export type ChangeLeadStageState =
+  | { error?: string; warning?: string }
+  | undefined;
+
+export async function changeLeadStage(
+  _prevState: ChangeLeadStageState,
+  formData: FormData,
+): Promise<ChangeLeadStageState> {
   const { profile } = await requireRole("ADMIN", "SALES_REP");
 
   const leadId = String(formData.get("leadId") ?? "");
@@ -92,12 +101,12 @@ export async function changeLeadStage(formData: FormData): Promise<void> {
   const note = formData.get("note");
 
   if (!leadId || !toStageId) {
-    throw new Error("Hiányzó lead vagy stádium azonosító.");
+    return { error: "Hiányzó lead vagy stádium azonosító." };
   }
 
   const lead = await prisma.lead.findUnique({ where: { id: leadId } });
   if (!lead) {
-    throw new Error("A lead nem található.");
+    return { error: "A lead nem található." };
   }
 
   // Sales rep csak a saját (vagy gazdátlan) leadjeit módosíthatja, admin bármit.
@@ -106,10 +115,44 @@ export async function changeLeadStage(formData: FormData): Promise<void> {
     lead.ownerId &&
     lead.ownerId !== profile.id
   ) {
-    throw new Error("Nincs jogosultságod ehhez a leadhez.");
+    return { error: "Nincs jogosultságod ehhez a leadhez." };
   }
 
-  const fromStageId = lead.currentStageId;
+  const [fromStage, toStage] = await Promise.all([
+    prisma.pipelineStage.findUnique({ where: { id: lead.currentStageId } }),
+    prisma.pipelineStage.findUnique({ where: { id: toStageId } }),
+  ]);
+  if (!fromStage || !toStage) {
+    return { error: "A stádium nem található." };
+  }
+
+  if (!canTransition(fromStage, toStage, profile.role)) {
+    return {
+      error: `Nem engedélyezett átmenet: "${fromStage.label}" → "${toStage.label}".`,
+    };
+  }
+
+  // A kérdőív-kiküldés triggerelő stádiumba lépés előfeltételeit itt
+  // validáljuk, mielőtt a leadet ténylegesen átmozgatnánk — így nem
+  // kerülhet olyan állapotba, ami "kiküldve"-t állít, miközben nem sikerült
+  // linket generálni.
+  if (toStage.key === SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING) {
+    if (!lead.email) {
+      return {
+        error:
+          "A leadhez nincs email cím rögzítve — a kérdőívet nem lehet kiküldeni. Rögzítsd az email címet, majd próbáld újra.",
+      };
+    }
+    const activeTemplate = await prisma.questionnaireTemplate.findFirst({
+      where: { isActive: true },
+    });
+    if (!activeTemplate) {
+      return {
+        error:
+          "Nincs aktív kérdőív-sablon — hozz létre egyet az admin felületen, mielőtt kiküldöd.",
+      };
+    }
+  }
 
   await prisma.$transaction([
     prisma.lead.update({
@@ -119,7 +162,7 @@ export async function changeLeadStage(formData: FormData): Promise<void> {
     prisma.statusHistory.create({
       data: {
         leadId,
-        fromStageId,
+        fromStageId: fromStage.id,
         toStageId,
         changedById: profile.id,
         note: typeof note === "string" && note.trim() ? note.trim() : null,
@@ -132,11 +175,28 @@ export async function changeLeadStage(formData: FormData): Promise<void> {
     entityType: "Lead",
     entityId: leadId,
     action: "lead.stage_changed",
-    metadata: { fromStageId, toStageId },
+    metadata: { fromStageId: fromStage.id, toStageId },
   });
+
+  let warning: string | undefined;
+  if (toStage.key === SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING) {
+    try {
+      const result = await triggerQuestionnaireSend(leadId, profile.id);
+      if (!result.emailSent) {
+        warning =
+          "A stádium frissült, de a kérdőív-link emailben való kiküldése nem sikerült (Resend nincs beállítva vagy hibát adott — lásd audit log).";
+      }
+    } catch (error) {
+      warning =
+        error instanceof Error
+          ? error.message
+          : "Ismeretlen hiba a kérdőív kiküldésekor.";
+    }
+  }
 
   revalidatePath(`/crm/leads/${leadId}`);
   revalidatePath("/crm/leads");
+  return { warning };
 }
 
 export async function assignLeadOwner(formData: FormData): Promise<void> {
