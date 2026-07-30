@@ -3,8 +3,8 @@ import Link from "next/link";
 import { LegalPageShell, LegalSection } from "@/components/LegalPageShell";
 
 export const metadata: Metadata = {
-  title: "Impresszum — Forrás Stúdió",
-  description: "A Forrás Stúdió weboldal üzemeltetőjének adatai.",
+  title: "Impresszum — KBCo Stúdió",
+  description: "A KBCo Stúdió weboldal üzemeltetőjének adatai.",
 };
 
 export default function ImpresszumPage() {
@@ -12,7 +12,7 @@ export default function ImpresszumPage() {
     <LegalPageShell eyebrow="Jogi dokumentum" title="Impresszum" updated="2026. július 1.">
       <LegalSection title="Szolgáltató adatai">
         <ul>
-          <li>Márkanév: Forrás Stúdió</li>
+          <li>Márkanév: KBCo Stúdió</li>
           <li>Szolgáltató (egyéni vállalkozó) neve: Kardos Bálint e.v.</li>
           <li>Székhely: 1027 Budapest, Bem József utca 6. fsz. 3.</li>
           <li>Nyilvántartási szám: 61623820</li>

@@ -24,9 +24,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Forrás Stúdió — Egyedi digitális rendszerek vállalkozásoknak",
+  title: "KBCo Stúdió — Egyedi digitális rendszerek vállalkozásoknak",
   description:
-    "A Forrás Stúdió vállalkozások és közösségek teljes online rendszerét tervezi, építi és üzemelteti: webalkalmazások, közösségi és tagsági platformok, foglalás, fizetés, ügyfél-CRM, tartalmi oldalak hírlevél-automatizációval, valamint AI-alapú funkciók egy kézből.",
+    "A KBCo Stúdió vállalkozások és közösségek teljes online rendszerét tervezi, építi és üzemelteti: webalkalmazások, közösségi és tagsági platformok, foglalás, fizetés, ügyfél-CRM, tartalmi oldalak hírlevél-automatizációval, valamint AI-alapú funkciók egy kézből.",
 };
 
 export default function RootLayout({

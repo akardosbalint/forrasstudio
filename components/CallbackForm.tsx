@@ -183,7 +183,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
           >
             adatkezelési tájékoztatót
           </a>
-          , és hozzájárulok, hogy a Forrás Stúdió a megadott adataimat a
+          , és hozzájárulok, hogy a KBCo Stúdió a megadott adataimat a
           kapcsolatfelvétel céljából kezelje.
         </label>
       </div>

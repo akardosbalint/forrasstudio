@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { LegalPageShell, LegalSection } from "@/components/LegalPageShell";
 
 export const metadata: Metadata = {
-  title: "Sütikezelési tájékoztató — Forrás Stúdió",
-  description: "A Forrás Stúdió weboldalán használt sütik és hasonló technológiák.",
+  title: "Sütikezelési tájékoztató — KBCo Stúdió",
+  description: "A KBCo Stúdió weboldalán használt sütik és hasonló technológiák.",
 };
 
 export default function CookieTajekoztatoPage() {
@@ -17,14 +17,14 @@ export default function CookieTajekoztatoPage() {
         <p>
           A sütik olyan kis szövegfájlok, amelyeket a böngésződ ment el a
           meglátogatott weboldalak beállításai alapján. Ez a tájékoztató a
-          Forrás Stúdió weboldalán használt sütikről és hasonló technológiákról
+          KBCo Stúdió weboldalán használt sütikről és hasonló technológiákról
           (pl. a böngésző helyi tárolójáról, localStorage) szól.
         </p>
       </LegalSection>
 
       <LegalSection title="2. Milyen sütiket használunk jelenleg">
         <p>
-          A Forrás Stúdió weboldala jelenleg <strong>nem használ analitikai,
+          A KBCo Stúdió weboldala jelenleg <strong>nem használ analitikai,
           marketing vagy hirdetési célú sütiket</strong>.
         </p>
         <p>

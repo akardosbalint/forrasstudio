@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { LegalPageShell, LegalSection } from "@/components/LegalPageShell";
 
 export const metadata: Metadata = {
-  title: "Adatkezelési tájékoztató — Forrás Stúdió",
+  title: "Adatkezelési tájékoztató — KBCo Stúdió",
   description:
-    "A Forrás Stúdió adatkezelési tájékoztatója a weboldalon leadott visszahívás-kérésekkel kapcsolatban.",
+    "A KBCo Stúdió adatkezelési tájékoztatója a weboldalon leadott visszahívás-kérésekkel kapcsolatban.",
 };
 
 export default function AdatvedelemPage() {
@@ -16,7 +16,7 @@ export default function AdatvedelemPage() {
     >
       <LegalSection title="1. Az adatkezelő">
         <p>
-          A jelen tájékoztató szerinti adatkezelő a Forrás Stúdió{" "}
+          A jelen tájékoztató szerinti adatkezelő a KBCo Stúdió{" "}
           <span className="font-mono text-sm">(Kardos Bálint e.v.)</span>.
         </p>
         <ul>
