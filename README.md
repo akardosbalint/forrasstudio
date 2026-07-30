@@ -1,9 +1,9 @@
 # Forrás Stúdió — landing page
 
 Egyoldalas B2B értékesítési landing page a Forrás Stúdió (3 fős fejlesztői
-kollektíva) számára. A cél: segítő szakmában dolgozó szakemberek (coachok,
-pszichológusok, terapeuták, tanácsadók, wellness-vállalkozások)
-visszahívást kérjenek.
+kollektíva) számára. A cél: vállalkozások és közösségek, akiknek egyedi
+webalkalmazásra, közösségi/tagsági platformra vagy automatizációra van
+szükségük, visszahívást kérjenek.
 
 ## Stack
 

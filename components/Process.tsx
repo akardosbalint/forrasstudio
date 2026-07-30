@@ -15,7 +15,7 @@ const steps: { number: string; title: string; description: string; icon: StepIco
     number: "01",
     title: "Egyeztetés",
     description:
-      "Megismerjük a praxisod vagy vállalkozásod működését: hogyan foglalnak időpontot, fizetnek, és hol van most súrlódás.",
+      "Megismerjük a vállalkozásod vagy szervezeted működését: hogyan érnek el az ügyfeleid, hogyan fizetnek, és hol van most súrlódás.",
     icon: "talk",
   },
   {

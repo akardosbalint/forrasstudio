@@ -43,7 +43,7 @@ export default function AdatvedelemPage() {
         <ul>
           <li>Név (kötelező)</li>
           <li>Telefonszám (kötelező)</li>
-          <li>Cég / praxis neve (opcionális)</li>
+          <li>Cég / szervezet neve (opcionális)</li>
           <li>Email cím (opcionális)</li>
           <li>Üzenet (opcionális)</li>
         </ul>

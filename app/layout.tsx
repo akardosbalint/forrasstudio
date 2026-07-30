@@ -26,9 +26,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Forrás Stúdió — Digitális rendszerek a segítő szakmának",
+  title: "Forrás Stúdió — Egyedi digitális rendszerek vállalkozásoknak",
   description:
-    "A Forrás Stúdió a segítő szakmában dolgozó szakemberek (coachok, pszichológusok, terapeuták, tanácsadók, wellness-vállalkozások) teljes online rendszerét tervezi, építi és üzemelteti: időpontfoglalás, fizetés, ügyfél-CRM, zárt közösségi felületek és AI-alapú automatizáció egy kézből.",
+    "A Forrás Stúdió vállalkozások és közösségek teljes online rendszerét tervezi, építi és üzemelteti: webalkalmazások, közösségi és tagsági platformok, foglalás, fizetés, ügyfél-CRM, tartalmi oldalak hírlevél-automatizációval, valamint AI-alapú funkciók egy kézből.",
 };
 
 export default function RootLayout({

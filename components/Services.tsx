@@ -76,23 +76,23 @@ const pillars = [
   {
     icon: "sales" as const,
     eyebrow: "1. pillér",
-    title: "Sales System Engineering",
+    title: "Webalkalmazás-fejlesztés",
     description:
-      "Időpontfoglalás, fizetési integráció és ügyfél-CRM — a rétegek, amik meghatározzák, hogyan jut el hozzád a kliens, és hogyan fizet.",
+      "Modern, típusbiztos webalkalmazások React/Next.js és TypeScript alapokon — időpontfoglalás, fizetési integráció és ügyfél-CRM, a vállalkozásod folyamataira szabva.",
   },
   {
     icon: "community" as const,
     eyebrow: "2. pillér",
-    title: "Community Platform Building",
+    title: "Közösségi & tagsági platformok",
     description:
-      "Zárt, jogosultságkezelt tagi felületek azoknak, akik nem csak egyéni ügyfeleket szolgálnak ki, hanem saját közösséget építenek — biztonságos beléptetéssel és tagsági szintekkel.",
+      "Zárt, jogosultságkezelt tagi felületek azoknak, akik saját közösséget vagy tagságot építenek — biztonságos beléptetéssel, szerepkör-alapú hozzáféréssel és tagsági szintekkel.",
   },
   {
     icon: "ai" as const,
     eyebrow: "3. pillér",
-    title: "AI Automation Design",
+    title: "Automatizáció & AI",
     description:
-      "Lead-scoring, intelligens emlékeztetők és automatizált riportok veszik le rólad az ismétlődő adminisztrációt — és jelzik, mikor van szükség rád személyesen.",
+      "Hírlevél- és e-mail-automatizáció, admin dashboardok, intelligens riportok és AI-alapú funkciók veszik le rólad az ismétlődő adminisztrációt — és jelzik, mikor van szükség rád személyesen.",
   },
 ];
 
@@ -101,7 +101,7 @@ const capabilities = [
     icon: "system" as const,
     title: "Teljes rendszer egy kézből",
     description:
-      "A foglalás, a fizetés, a CRM, a beléptetés és az AI-alapú automatizáció nem külön projektek, hanem egymással összehangolt modulok — egy csapat tervezi és köti össze mindet, nem több különálló szállító.",
+      "A weboldal, a foglalás, a fizetés, a CRM, a beléptetés és az automatizáció nem külön projektek, hanem egymással összehangolt modulok — egy csapat tervezi és köti össze mindet, nem több különálló szállító.",
   },
   {
     icon: "ops" as const,

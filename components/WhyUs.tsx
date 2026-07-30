@@ -2,9 +2,9 @@ import { Reveal } from "@/components/Reveal";
 
 const reasons = [
   {
-    title: "Egyetlen niche, nem generalista fejlesztés",
+    title: "Modern technológiai stack, éles gyakorlatban bevizsgálva",
     description:
-      "A segítő szakmára szakosodtunk — foglalás, ügyfél-bizalmasság, fizetés, közösségi tér és AI-alapú automatizáció együtt, adatvédelmi érzékenységgel. Nem minden projektnél tanuljuk újra ezt a domaint.",
+      "React, Next.js, Astro, Supabase, automatizáció és AI — olyan technológiák, amiket több iparágban, valós forgalmú rendszerekben teszteltünk, nem csak elméletben.",
   },
   {
     title: "Közvetlen kapcsolat a fejlesztőkkel",
@@ -19,7 +19,7 @@ const reasons = [
   {
     title: "Teljes rendszer, egy kézből",
     description:
-      "A foglalás, a fizetés, a CRM, a beléptetés és az AI-alapú automatizáció egymással összehangolva készül — nem több különálló szállítótól összerakva.",
+      "A weboldal, a foglalás, a fizetés, a CRM, a beléptetés és az automatizáció egymással összehangolva készül — nem több különálló szállítótól összerakva.",
   },
 ];
 

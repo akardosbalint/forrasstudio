@@ -105,14 +105,14 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
         {variant === "full" && (
           <div className="flex flex-1 flex-col gap-1.5">
             <label htmlFor={`${formId}-organization`} className={labelClasses}>
-              Cég / praxis neve <span className="normal-case text-paper/40">(opcionális)</span>
+              Cég / szervezet neve <span className="normal-case text-paper/40">(opcionális)</span>
             </label>
             <input
               id={`${formId}-organization`}
               name="organization"
               type="text"
               autoComplete="organization"
-              placeholder="Praxis vagy cégnév"
+              placeholder="Cég vagy szervezet neve"
               className={inputClasses}
             />
           </div>
@@ -144,7 +144,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="nev@praxis.hu"
+                placeholder="nev@cegnev.hu"
                 className={inputClasses}
               />
             </div>
@@ -157,7 +157,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
                 id={`${formId}-message`}
                 name="message"
                 rows={3}
-                placeholder="Mesélj pár szóban a praxisodról, és miben segíthetünk."
+                placeholder="Mesélj pár szóban a vállalkozásodról, és miben segíthetünk."
                 className={inputClasses}
               />
             </div>

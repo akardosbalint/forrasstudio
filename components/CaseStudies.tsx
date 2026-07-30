@@ -1,18 +1,20 @@
 import { Reveal } from "@/components/Reveal";
 import { CaseStudyCard } from "@/components/CaseStudyCard";
 
-type Pillar = "sales" | "community" | "both" | "none";
+type Pillar = "sales" | "community" | "content" | "both" | "none";
 
 const pillarLabels: Record<Pillar, string> = {
-  sales: "Sales System Engineering",
-  community: "Community Platform Building",
-  both: "Sales System Engineering + Community Platform Building",
+  sales: "Webalkalmazás-fejlesztés",
+  community: "Közösségi & tagsági platform",
+  content: "Tartalmi platform & automatizáció",
+  both: "Webalkalmazás-fejlesztés + Közösségi platform",
   none: "Bemutatkozó weboldal",
 };
 
 const pillarColors: Record<Pillar, string> = {
   sales: "border-spring/40 text-spring",
   community: "border-brook/40 text-brook",
+  content: "border-amber/30 text-amber",
   both: "border-amber/50 text-amber-dark",
   none: "border-ink/20 text-ink/50",
 };
@@ -22,7 +24,8 @@ const caseStudies = [
     name: "ECO Portal",
     domain: "portal.ecokozosseg.hu",
     href: "https://portal.ecokozosseg.hu",
-    description: "Zárt, belsős közösségi felület a közösség tagjainak.",
+    description:
+      "Zárt közösségi platform: tagság, csoportok, receptek, képzések, szakértői értékelések és jelvényrendszer egy helyen.",
     pillar: "community" as Pillar,
     modules: ["Jogosultságkezelés", "Tagi felület"],
   },
@@ -30,7 +33,8 @@ const caseStudies = [
     name: "ECO Weboldal",
     domain: "ecokozosseg.hu",
     href: "https://ecokozosseg.hu",
-    description: "Egyszerű, letisztult frontend weboldal.",
+    description:
+      "Statikus, gyors betöltésű bemutató oldal egy önismereti rendszer moduljainak és partnerközpontjainak bemutatására.",
     pillar: "none" as Pillar,
     modules: ["Frontend / megjelenés"],
   },
@@ -38,7 +42,8 @@ const caseStudies = [
     name: "Ösvény App by eptestben.hu",
     domain: "eptestben.hu",
     href: "https://eptestben.hu",
-    description: "Egészség-coaching alkalmazás.",
+    description:
+      "Egészség-coaching alkalmazás időpontfoglalással, fizetési integrációval és kvíz-alapú felhasználói úttal.",
     pillar: "sales" as Pillar,
     modules: ["Fizetési kapu integráció", "Felhasználókezelés"],
   },
@@ -46,9 +51,18 @@ const caseStudies = [
     name: "Purnima Vision",
     domain: "purnima.vision",
     href: "https://purnima.vision",
-    description: "Vedikus asztrológiai weboldal.",
+    description: "Vedikus asztrológiai weboldal időpontfoglalással és belsős CRM rendszerrel.",
     pillar: "both" as Pillar,
     modules: ["Időpontfoglalás", "Belsős CRM rendszer"],
+  },
+  {
+    name: "Okoskonyha",
+    domain: "akardosbalint.hu",
+    href: "https://akardosbalint.hu",
+    description:
+      "Statikusan generált tartalmi oldal blog rovattal, hírlevél-automatizációval és tagsági közösséggel.",
+    pillar: "content" as Pillar,
+    modules: ["Blog / MDX tartalomkezelés", "Hírlevél-automatizáció"],
   },
 ];
 

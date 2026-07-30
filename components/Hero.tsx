@@ -7,10 +7,10 @@ import { ControlledBlueprintDiagram } from "@/components/BlueprintDiagram";
 import { Spotlight } from "@/components/Spotlight";
 
 const EYEBROW_TEXT =
-  "Sales System Engineering, Community Platform Building, and AI Automation Design";
+  "Webalkalmazás-fejlesztés, közösségi platformok és AI-alapú automatizáció";
 
 const BODY_TEXT =
-  "A Forrás Stúdió egyetlen niche-re szakosodott: coachok, pszichológusok, terapeuták, tanácsadók és wellness-vállalkozások számára építjük meg és üzemeltetjük a teljes online működést — az időpontfoglalástól a fizetésen és az ügyfél-CRM-en át a zárt, tagi közösségi felületekig, kiegészítve AI-alapú automatizációval (pl. lead-scoring, intelligens emlékeztetők). Egy kézből, egymással összehangolva.";
+  "A Forrás Stúdió egyedi digitális rendszereket tervez, épít és üzemeltet vállalkozásoknak és közösségeknek — az időpontfoglalástól a fizetésen és az ügyfél-CRM-en át a zárt, tagi közösségi felületekig és a hírlevél-automatizációval támogatott tartalmi oldalakig, kiegészítve AI-alapú funkciókkal (pl. intelligens indexelés, automatizált emlékeztetők). Egy kézből, egymással összehangolva.";
 
 /** Plays automatically on load — no scroll required. The streams draw
  * in staggered, the source node converges, the headline unmasks from
@@ -82,7 +82,7 @@ export function Hero() {
               ref={headlineRef}
               className="font-display text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.2rem]"
             >
-              A segítő szakma teljes digitális rendszere —{" "}
+              A vállalkozásod teljes digitális rendszere —{" "}
               <span className="italic text-amber">
                 megtervezve, megépítve, üzemeltetve.
               </span>
