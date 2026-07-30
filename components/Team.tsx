@@ -5,7 +5,7 @@ import { MagneticCard } from "@/components/MagneticCard";
 const team = [
   {
     name: "Kardos Bálint",
-    role: "Alapító & vezető fejlesztő (Founder & Lead Engineer)",
+    role: "Alapító & vezető fejlesztő",
     photo: "/team/kardos-balint.jpg",
   },
   {
