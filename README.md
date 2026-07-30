@@ -1,11 +1,14 @@
-# KBCo Stúdió — landing page
+# KBCo Stúdió — landing page + belső sales CRM
 
-Egyoldalas B2B értékesítési landing page a KBCo Stúdió (3 fős fejlesztői
-kollektíva) számára. A cél: vállalkozások és közösségek, akiknek egyedi
-webalkalmazásra, közösségi/tagsági platformra vagy automatizációra van
-szükségük, visszahívást kérjenek.
+A repo két részből áll:
 
-## Stack
+- **Landing page** (`app/(site)/`) — egyoldalas B2B értékesítési oldal a
+  KBCo Stúdió számára, visszahívás-kérés formmal.
+- **CRM** (`app/crm/`) — belső, bejelentkezés-védett sales CRM: lead/deal
+  pipeline, kérdőív-automatizáció, discovery call foglalás, Google Calendar
+  integráció, riportok. Lásd lent a "CRM" szekciót.
+
+## Stack (landing page)
 
 - **Next.js (App Router)** — frontend és backend egy keretrendszerben.
   API route: `app/api/callback-request/route.ts`.
@@ -70,9 +73,84 @@ Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
   választásod a böngésző helyi tárolójában; a lábléc
   &bdquo;Süti beállítások&rdquo; linkje bármikor újra megnyitja.
 
+## CRM
+
+Enterprise belsős sales CRM, a beérkező visszahívás-kérésektől a discovery
+call-ig. Fejlesztése fázisokban zajlik (lásd a projekt specifikációját);
+ez a szakasz a **Phase 1** állapotát dokumentálja.
+
+### Architektúra-döntések
+
+- **Adatbázis: Prisma + a meglévő Supabase Postgres.** A landing page már
+  Supabase-t használ, ezért a CRM domain-tábláit (Lead, pipeline stb.) is
+  ugyanazon a Postgres adatbázison tartjuk, Prisma-val kezelve
+  (`prisma/schema.prisma`) — nem kellett külön Postgres-t + NextAuth-ot
+  bevezetni, kevesebb mozgó alkatrész, ugyanaz a garancia.
+  - **Prisma 7**: a `PrismaClient` mindig explicit driver adaptert vár
+    (`@prisma/adapter-pg`), a kapcsolati URL nem a `schema.prisma`-ban, hanem
+    a `prisma.config.ts`-ben és a `DATABASE_URL` env változóban él. A
+    generált kliens az (gitignore-olt) `generated/prisma/` mappába kerül,
+    `npm install` után automatikusan (`postinstall` script).
+- **Auth: Supabase Auth** (email/jelszó + később Google SSO) a NextAuth.js
+  helyett — a projekt már Supabase-re épül, a Supabase Auth managed
+  jelszó-hash-elést, munkamenet-JWT-t, rate limitinget (a login endpoint a
+  Supabase saját, hoszingolt Auth API-ja, amit a böngésző hív közvetlenül —
+  ezért nincs saját login API route-unk rate limitelni) és email-alapú
+  jelszó-visszaállítást ad készen.
+- **Jogosultságkezelés**: `Profile` tábla (Prisma) 1:1-ben a Supabase Auth
+  felhasználóval, `role` mezővel (`ADMIN` / `SALES_REP` / `VIEWER`).
+  `lib/auth/rbac.ts` a Data Access Layer: minden CRM oldal/server action
+  `verifySession()` / `requireRole(...)` hívással ellenőrzi újra a
+  jogosultságot (nem csak a `proxy.ts` optimista redirect-jére támaszkodva).
+- **Route védelem**: `proxy.ts` (Next.js 16-ban ez a `middleware.ts` új
+  neve) a `/crm/**` útvonalakat védi, nem bejelentkezett usert
+  `/crm/login`-ra irányít.
+
+### Beüzemelés
+
+1. Hozz létre (vagy használd a meglévő) Supabase projektet.
+2. Töltsd ki a `.env.example` alapján: `DATABASE_URL` (Supabase projekt
+   Settings → Database → Connection string → URI), `SUPABASE_URL` /
+   `SUPABASE_PUBLISHABLE_KEY` (szerver), `NEXT_PUBLIC_SUPABASE_URL` /
+   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (böngésző), `FIRST_ADMIN_EMAIL`.
+3. Futtasd le a Prisma migrációt és a seedet (alap pipeline-stádiumok):
+   ```bash
+   npm run prisma:migrate
+   npx prisma db seed
+   ```
+4. Hozz létre egy usert a Supabase Auth-ban (Dashboard → Authentication →
+   Users → Add user), a `FIRST_ADMIN_EMAIL`-ben megadott email címmel —
+   első bejelentkezéskor a rendszer automatikusan admin `Profile` sort hoz
+   létre neki.
+5. `npm run dev`, majd `/crm/login`.
+
+### Amit érdemes manuálisan tesztelni (Phase 1)
+
+- Bejelentkezés a `FIRST_ADMIN_EMAIL`-lel → `/crm`-en admin menüpont
+  látszik, a pipeline-stádiumok kártyái helyes lead-számokat mutatnak.
+- `/crm/leads/new` — lead létrehozása → átirányít a lead adatlapjára,
+  "Visszahívásra vár" kezdő stádiummal, az előzmények szekcióban egy
+  "Létrehozva →" bejegyzéssel.
+- Lead adatlapján stádium váltása → az előzmények lista frissül, új sor
+  jelenik meg a régi/új stádiummal, időbélyeggel és a bejelentkezett user
+  nevével (audit trail).
+- Bejelentkezés nélkül `/crm/leads`-re navigálva → redirect `/crm/login`-ra.
+- Kijelentkezés → `/crm/leads` ismét `/crm/login`-ra redirectel.
+
+### Még hátra van (a spec fázisai szerint)
+
+Phase 2 (státuszgép + kérdőív-link + email), Phase 3 (publikus kérdőív
+kitöltő), Phase 4 (foglalási motor), Phase 5 (Google Calendar
+OAuth/FreeBusy/szinkron), Phase 6 (admin: kérdőív-szerkesztő, email
+sablonok, pipeline-szerkesztő, audit log nézet), Phase 7 (dashboard +
+riportolás). Ezek a Prisma adatmodellben már szerepelnek
+(`QuestionnaireTemplate`, `Booking`, `GoogleCalendarConnection` stb.), de
+UI/logika még nincs hozzájuk.
+
 ## Build
 
 ```bash
 npm run lint
 npm run build
+npm test
 ```

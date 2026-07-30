@@ -1,0 +1,279 @@
+// KBCo CRM — adatmodell.
+//
+// A DATABASE_URL a Supabase projekt Postgres kapcsolati sztringjére mutat
+// (Settings -> Database -> Connection string -> "URI", direct connection
+// vagy pooled — lásd README). A Supabase Auth (auth.users) kezeli a
+// bejelentkezést; a "Profile" tábla 1:1 kiegészítő adat egy auth.users
+// sorhoz, ugyanazzal az UUID-vel (nincs FK, mert az auth séma Supabase által
+// kezelt, de az id értéke mindig egy auth.users.id).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  SALES_REP
+  VIEWER
+}
+
+// Kiegészítő profil egy Supabase Auth felhasználóhoz (auth.users.id-vel megegyező id).
+model Profile {
+  id        String   @id @db.Uuid
+  email     String   @unique
+  name      String
+  role      Role     @default(SALES_REP)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  ownedLeads          Lead[]                   @relation("LeadOwner")
+  statusChanges       StatusHistory[]
+  availability        RepAvailability[]
+  googleCalendar      GoogleCalendarConnection?
+  bookingsAsRep       Booking[]                @relation("BookingRep")
+  createdBookings     Booking[]                @relation("BookingCreatedBy")
+  auditLogEntries     AuditLog[]
+
+  @@map("profiles")
+}
+
+// Konfigurálható pipeline stádium (admin szerkesztheti/bővítheti).
+model PipelineStage {
+  id         String   @id @default(uuid()) @db.Uuid
+  key        String   @unique // stabil azonosító a kódban hivatkozott rendszer-stádiumokhoz
+  label      String
+  order      Int
+  color      String   @default("#6366f1")
+  isSystem   Boolean  @default(false) @map("is_system") // rendszer-stádium: nem törölhető, kódból triggerelt logikával jár
+  isTerminal Boolean  @default(false) @map("is_terminal") // pl. "Nyert" / "Elveszett" — nincs tovább belőle átmenet
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  leads            Lead[]
+  historyFrom      StatusHistory[] @relation("StatusFrom")
+  historyTo        StatusHistory[] @relation("StatusTo")
+
+  @@map("pipeline_stages")
+}
+
+model Lead {
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String
+  company        String?
+  email          String?
+  phone          String
+  source         String   @default("manual")
+  message        String?
+  dealValueCents Int?     @map("deal_value_cents") // ajánlat / TCV, fillér-pontosságú egész (forint * 100)
+  cashCollectedCents Int? @map("cash_collected_cents")
+
+  currentStageId String        @map("current_stage_id") @db.Uuid
+  currentStage   PipelineStage @relation(fields: [currentStageId], references: [id])
+
+  ownerId String? @map("owner_id") @db.Uuid
+  owner   Profile? @relation("LeadOwner", fields: [ownerId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  statusHistory          StatusHistory[]
+  questionnaireLinks     QuestionnaireLink[]
+  questionnaireResponses QuestionnaireResponse[]
+  bookings               Booking[]
+
+  @@index([currentStageId])
+  @@index([ownerId])
+  @@map("leads")
+}
+
+model StatusHistory {
+  id            String        @id @default(uuid()) @db.Uuid
+  leadId        String        @map("lead_id") @db.Uuid
+  lead          Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  fromStageId   String?       @map("from_stage_id") @db.Uuid
+  fromStage     PipelineStage? @relation("StatusFrom", fields: [fromStageId], references: [id])
+  toStageId     String        @map("to_stage_id") @db.Uuid
+  toStage       PipelineStage @relation("StatusTo", fields: [toStageId], references: [id])
+  changedById   String?       @map("changed_by_id") @db.Uuid
+  changedBy     Profile?      @relation(fields: [changedById], references: [id])
+  note          String?
+  changedAt     DateTime      @default(now()) @map("changed_at")
+
+  @@index([leadId])
+  @@map("status_history")
+}
+
+enum QuestionType {
+  TEXT
+  TEXTAREA
+  NUMBER
+  SELECT
+  MULTISELECT
+  BOOLEAN
+  DATE
+}
+
+// A kérdőív kérdéslistája adatbázisban konfigurálható, admin szerkeszthető.
+model QuestionnaireTemplate {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  questions QuestionnaireQuestion[]
+  links     QuestionnaireLink[]
+  responses QuestionnaireResponse[]
+
+  @@map("questionnaire_templates")
+}
+
+model QuestionnaireQuestion {
+  id         String       @id @default(uuid()) @db.Uuid
+  templateId String       @map("template_id") @db.Uuid
+  template   QuestionnaireTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  label      String
+  helpText   String?      @map("help_text")
+  type       QuestionType @default(TEXT)
+  options    Json? // SELECT/MULTISELECT esetén: string[] a választható opciókhoz
+  required   Boolean      @default(true)
+  order      Int
+
+  @@index([templateId])
+  @@map("questionnaire_questions")
+}
+
+// Egyedi, tokenes, lejáró link a kérdőív kitöltéséhez — bejelentkezés nélkül nyitható.
+model QuestionnaireLink {
+  id         String    @id @default(uuid()) @db.Uuid
+  token      String    @unique
+  leadId     String    @map("lead_id") @db.Uuid
+  lead       Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  templateId String    @map("template_id") @db.Uuid
+  template   QuestionnaireTemplate @relation(fields: [templateId], references: [id])
+  expiresAt  DateTime  @map("expires_at")
+  usedAt     DateTime? @map("used_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@index([leadId])
+  @@map("questionnaire_links")
+}
+
+model QuestionnaireResponse {
+  id           String   @id @default(uuid()) @db.Uuid
+  leadId       String   @map("lead_id") @db.Uuid
+  lead         Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  templateId   String   @map("template_id") @db.Uuid
+  template     QuestionnaireTemplate @relation(fields: [templateId], references: [id])
+  answers      Json // { [questionId]: string | string[] | number | boolean }
+  submittedAt  DateTime @default(now()) @map("submitted_at")
+
+  @@index([leadId])
+  @@map("questionnaire_responses")
+}
+
+// Sales rep alap heti elérhetősége (a globális munkanap/9-18 kereten belül szűkíthető).
+model RepAvailability {
+  id        String  @id @default(uuid()) @db.Uuid
+  repId     String  @map("rep_id") @db.Uuid
+  rep       Profile @relation(fields: [repId], references: [id], onDelete: Cascade)
+  weekday   Int // 1 = hétfő ... 5 = péntek (ISO, munkanapokra korlátozva a globális szabály miatt)
+  startTime String  @map("start_time") // "HH:mm", 09:00-nál nem korábbi
+  endTime   String  @map("end_time") // "HH:mm", 18:00-nál nem későbbi
+
+  @@index([repId])
+  @@map("rep_availability")
+}
+
+enum CalendarSyncStatus {
+  CONNECTED
+  ERROR
+  DISCONNECTED
+}
+
+// Titkosított Google OAuth2 tokenek repenként (bővíthető: később Outlook is idekerülhetne
+// egy "provider" mezővel, ha kell — most Google-specifikus modell, egyértelműség kedvéért).
+model GoogleCalendarConnection {
+  id                String             @id @default(uuid()) @db.Uuid
+  repId             String             @unique @map("rep_id") @db.Uuid
+  rep               Profile            @relation(fields: [repId], references: [id], onDelete: Cascade)
+  calendarId        String             @default("primary") @map("calendar_id")
+  accessTokenEnc    String             @map("access_token_enc") // AES-256-GCM titkosítva, lásd lib/crypto/secretBox.ts
+  refreshTokenEnc   String             @map("refresh_token_enc")
+  tokenExpiresAt    DateTime           @map("token_expires_at")
+  syncStatus        CalendarSyncStatus @default(CONNECTED) @map("sync_status")
+  lastError         String?            @map("last_error")
+  lastSyncedAt      DateTime?          @map("last_synced_at")
+  watchChannelId    String?            @map("watch_channel_id")
+  watchResourceId   String?            @map("watch_resource_id")
+  watchExpiresAt    DateTime?          @map("watch_expires_at")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  @@map("google_calendar_connections")
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  RESCHEDULED
+}
+
+model Booking {
+  id        String        @id @default(uuid()) @db.Uuid
+  leadId    String        @map("lead_id") @db.Uuid
+  lead      Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  repId     String        @map("rep_id") @db.Uuid
+  rep       Profile       @relation("BookingRep", fields: [repId], references: [id])
+  startsAt  DateTime      @map("starts_at")
+  endsAt    DateTime      @map("ends_at") // startsAt + 90 perc, mindig
+  status    BookingStatus @default(CONFIRMED)
+  googleEventId String?   @map("google_event_id")
+
+  rescheduleOfId String?  @map("reschedule_of_id") @db.Uuid
+  rescheduleOf   Booking? @relation("BookingReschedule", fields: [rescheduleOfId], references: [id])
+  rescheduledTo  Booking[] @relation("BookingReschedule")
+
+  createdById String?  @map("created_by_id") @db.Uuid
+  createdBy   Profile? @relation("BookingCreatedBy", fields: [createdById], references: [id])
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  cancelledAt DateTime? @map("cancelled_at")
+
+  @@index([leadId])
+  @@index([repId, startsAt])
+  @@map("bookings")
+}
+
+// Admin által szerkeszthető email sablonok (kérdőív kiküldés, visszaigazolás, emlékeztető...).
+model EmailTemplate {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String   @unique // pl. "questionnaire_invite", "booking_confirmation_client", "reminder_24h"
+  name      String
+  subject   String
+  bodyHtml  String   @map("body_html")
+  bodyText  String   @map("body_text")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("email_templates")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String?  @map("user_id") @db.Uuid
+  user       Profile? @relation(fields: [userId], references: [id])
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  action     String
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@map("audit_log")
+}

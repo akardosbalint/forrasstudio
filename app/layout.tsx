@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
-import { MotionConfig } from "framer-motion";
-import { CookieConsent } from "@/components/CookieConsent";
-import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -43,11 +40,7 @@ export default function RootLayout({
         <noscript>
           <style>{`.reveal { opacity: 1 !important; transform: none !important; }`}</style>
         </noscript>
-        <MotionConfig reducedMotion="user">
-          {children}
-          <CookieConsent />
-          <SmoothScroll />
-        </MotionConfig>
+        {children}
       </body>
     </html>
   );
