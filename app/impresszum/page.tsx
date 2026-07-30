@@ -37,8 +37,7 @@ export default function ImpresszumPage() {
 
       <LegalSection title="Domain">
         <p>
-          A weboldal végleges domainje: forras.studio. Egyelőre az
-          akardosbalint.hu domainen érhető el.
+          A weboldal végleges domainje: kbco.hu.
         </p>
       </LegalSection>
 
