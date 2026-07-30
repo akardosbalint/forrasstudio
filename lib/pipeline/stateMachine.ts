@@ -42,10 +42,3 @@ export function canTransition(
 
   return to.order > from.order;
 }
-
-export class InvalidTransitionError extends Error {
-  constructor(fromLabel: string, toLabel: string) {
-    super(`Nem engedélyezett átmenet: "${fromLabel}" → "${toLabel}".`);
-    this.name = "InvalidTransitionError";
-  }
-}

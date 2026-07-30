@@ -2,6 +2,7 @@ import {
   getCalendarClientForRep,
   GoogleCalendarNotConnectedError,
 } from "@/lib/google/connection";
+import { reportGoogleApiError } from "@/lib/google/errors";
 
 // Esemény létrehozása a rep Google Calendarjában foglaláskor (spec 5.
 // pont: "a rendszer... automatikusan létrehoz egy eseményt a rep Google
@@ -34,6 +35,7 @@ export async function createGoogleCalendarEvent(params: {
   } catch (error) {
     if (!(error instanceof GoogleCalendarNotConnectedError)) {
       console.error("[google-events] Esemény létrehozási hiba:", error);
+      await reportGoogleApiError(params.repId, error);
     }
     return null;
   }
@@ -49,6 +51,7 @@ export async function deleteGoogleCalendarEvent(
   } catch (error) {
     if (!(error instanceof GoogleCalendarNotConnectedError)) {
       console.error("[google-events] Esemény törlési hiba:", error);
+      await reportGoogleApiError(repId, error);
     }
   }
 }

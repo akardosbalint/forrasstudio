@@ -224,6 +224,17 @@ enum BookingStatus {
   RESCHEDULED
 }
 
+// FONTOS: az adatbázisban emellett létezik egy kézzel írt SQL migrációval
+// (prisma/migrations/20260730125823_booking_no_overlap_constraint) felvitt
+// EXCLUDE USING gist constraint is: `(rep_id WITH =, tsrange(starts_at,
+// ends_at) WITH &&) WHERE status = 'CONFIRMED'`. Ez zárja ki adatbázis-
+// szinten két átfedő CONFIRMED foglalás létrejöttét ugyanahhoz a rephez —
+// az alkalmazás-szintű `isBookableSlot` ellenőrzés (lib/booking/rules.ts)
+// önmagában nem atomi (read-then-write), ezért erre a constraintra van
+// szükség konkurrens foglalási kérések ellen. A Prisma séma nem tudja
+// kifejezni az EXCLUDE constraintot, ezért ez itt nem jelenik meg — ne
+// felejtsd el, ha a Booking modellt módosítod (pl. új migráció generálása
+// előtt ellenőrizd, hogy a constraint megmarad-e).
 model Booking {
   id        String        @id @default(uuid()) @db.Uuid
   leadId    String        @map("lead_id") @db.Uuid

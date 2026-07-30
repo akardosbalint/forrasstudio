@@ -8,6 +8,23 @@ import { getOAuthClient } from "@/lib/google/oauth";
 import { decryptSecret } from "@/lib/crypto/secretBox";
 
 const WEEKDAYS = [1, 2, 3, 4, 5] as const;
+const WEEKDAY_LABELS: Record<number, string> = {
+  1: "Hétfő",
+  2: "Kedd",
+  3: "Szerda",
+  4: "Csütörtök",
+  5: "Péntek",
+};
+
+const HHMM_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
+const BUSINESS_START_MINUTES = 9 * 60;
+const BUSINESS_END_MINUTES = 18 * 60;
+
+function parseHHmmMinutes(value: string): number | null {
+  if (!HHMM_PATTERN.test(value)) return null;
+  const [h, m] = value.split(":").map(Number);
+  return h * 60 + m;
+}
 
 export async function disconnectGoogleCalendar(): Promise<void> {
   const { profile } = await verifySession();
@@ -39,7 +56,12 @@ export async function disconnectGoogleCalendar(): Promise<void> {
   revalidatePath("/crm/settings/calendar");
 }
 
-export async function saveRepAvailability(formData: FormData): Promise<void> {
+export type SaveAvailabilityState = { error?: string; success?: boolean } | undefined;
+
+export async function saveRepAvailability(
+  _prevState: SaveAvailabilityState,
+  formData: FormData,
+): Promise<SaveAvailabilityState> {
   const { profile } = await verifySession();
 
   const rows: { weekday: number; startTime: string; endTime: string }[] = [];
@@ -48,6 +70,28 @@ export async function saveRepAvailability(formData: FormData): Promise<void> {
     if (!enabled) continue;
     const startTime = String(formData.get(`start-${weekday}`) ?? "09:00");
     const endTime = String(formData.get(`end-${weekday}`) ?? "18:00");
+
+    const startMinutes = parseHHmmMinutes(startTime);
+    const endMinutes = parseHHmmMinutes(endTime);
+    const dayLabel = WEEKDAY_LABELS[weekday];
+
+    if (startMinutes === null || endMinutes === null) {
+      return { error: `${dayLabel}: érvénytelen időformátum.` };
+    }
+    if (
+      startMinutes < BUSINESS_START_MINUTES ||
+      endMinutes > BUSINESS_END_MINUTES
+    ) {
+      return {
+        error: `${dayLabel}: a sávnak a globális 9:00-18:00 kereten belül kell lennie.`,
+      };
+    }
+    if (startMinutes >= endMinutes) {
+      return {
+        error: `${dayLabel}: a kezdő időpontnak a záró időpont előtt kell lennie.`,
+      };
+    }
+
     rows.push({ weekday, startTime, endTime });
   }
 
@@ -69,4 +113,5 @@ export async function saveRepAvailability(formData: FormData): Promise<void> {
   });
 
   revalidatePath("/crm/settings/calendar");
+  return { success: true };
 }

@@ -4,6 +4,8 @@ import { getLeadDetail, listPipelineStages } from "@/lib/leads/queries";
 import { StageChangeForm } from "./StageChangeForm";
 import { CancelBookingButton } from "./CancelBookingButton";
 import { FinancialsForm } from "./FinancialsForm";
+import { ResendQuestionnaireButton } from "./ResendQuestionnaireButton";
+import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 
 export default async function LeadDetailPage({
   params,
@@ -42,6 +44,11 @@ export default async function LeadDetailPage({
           currentStageId={lead.currentStageId}
           stages={stages}
         />
+        {lead.currentStage.key === SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING && (
+          <div className="mt-4 border-t border-paper-3 pt-4">
+            <ResendQuestionnaireButton leadId={lead.id} />
+          </div>
+        )}
       </section>
 
       <section className="rounded-xl border border-paper-3 bg-white p-5">

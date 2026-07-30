@@ -433,6 +433,80 @@ kezelés valós Google Cloud projekttel való végigtesztelése (lásd Phase 5
 szekció), a Docker Compose deploy tényleges kipróbálása, és a jogi oldalak
 (`app/(site)/adatvedelem` stb.) `[TODO]` jelöléseinek kitöltése ügyvéddel.
 
+## Diagnosztika és javítások
+
+A 7 fázis elkészülte után egy teljes diagnosztikai átvizsgálás (típus-
+ellenőrzés, lint, build, a kritikus üzleti logika manuális végigkövetése,
+valós Postgres ellen reprodukált hibák) az alábbi problémákat találta és
+javította — mindegyiket helyi Postgres ellen reprodukálva a javítás előtt,
+majd a javítás után újra lefuttatva a repró-scriptet a tényleges javulás
+igazolására:
+
+- **Elavult kérdőív-link visszaregressziózhatta a lead státuszát**
+  (`app/(public)/kerdoiv/[token]/actions.ts`): ha egy leadhez több
+  kérdőív-link is kiment (pl. újraküldés miatt), egy korábbi, még nem
+  lejárt/fel nem használt link beküldése felülírhatta egy azóta
+  továbbhaladt (akár már megnyert/elveszett) lead stádiumát. Most a
+  beküldés egy tranzakción belül frissen ellenőrzi, hogy a lead
+  ténylegesen még "Kérdőív kitöltés alatt" státuszban van-e, és a
+  linkfelhasználást is atomi, feltételes update-tel zárja ki (konkurrens
+  beküldés ellen).
+- **Kérdőív-link újraküldése** (`resendQuestionnaireInvite`, lead
+  adatlap): admin/rep most manuálisan újraküldheti a linket, ha az első
+  email nem érkezett meg — nem kell a stádiumot ki-be mozgatni ehhez (ami
+  korábban éppen a fenti hibát okozta). Újraküldéskor a korábbi, fel nem
+  használt link automatikusan lejárttá válik.
+- **Konkurrens foglalási kérések ütköző (átfedő) foglalást hozhattak
+  létre** ugyanahhoz a saleshez: az alkalmazás-szintű ütközésvizsgálat
+  (`isBookableSlot`) nem atomi. Ezt egy adatbázis-szintű Postgres EXCLUDE
+  constraint zárja ki most véglegesen (`prisma/migrations/
+  20260730125823_booking_no_overlap_constraint` — igényli a
+  `btree_gist` extension-t; standard Postgres contrib modul, Supabase-en
+  is elérhető, de ellenőrizd más hosztolt Postgres szolgáltatónál).
+- **Email küldési hibák (foglalás-visszaigazolás, lemondás,
+  emlékeztető) korábban csak szerver logba kerültek**, sehol nem voltak
+  auditálva vagy a felhasználó felé jelezve — most minden ilyen email
+  kimenetele (siker/hiba) audit log bejegyzést kap
+  (`booking.confirmation_email_sent`, `booking.cancellation_email_sent`,
+  `booking.reminder_24h_sent`/`_1h_sent`). Az emlékeztető emailek emellett
+  mostantól csak sikeres küldés esetén jelölődnek "kiküldve"-nek, így egy
+  átmeneti Resend-hiba esetén a következő háttérjob-futás újra
+  megpróbálja.
+- **Email sablonok HTML-injekció kockázata**: a `{{leadName}}`/
+  `{{repName}}` típusú változók korábban escape-elés nélkül kerültek a
+  HTML email törzsbe — egy lead neve (amit egy publikus formon bárki
+  megadhat) tetszőleges markup-ot injektálhatott volna a (főleg rep felé
+  menő) kimenő emailekbe. Most a HTML változat minden változóját
+  escape-eljük (`lib/email/render.ts` `escapeHtml`), a sima szöveg
+  változat változatlan marad.
+- **`assignLeadOwner` és `updateLeadFinancials` hardening**: az előbbi
+  most ellenőrzi, hogy a megadott `ownerId` valóban létező, jogosult
+  profilra mutat-e (korábban egy érvénytelen ID kezeletlen adatbázis-
+  hibát dobott), az utóbbi elutasítja a negatív összegeket.
+- **`saveRepAvailability` szerveroldali validáció**: időformátum,
+  9:00-18:00 globális kereten belüliség, és kezdő < záró idő ellenőrzése
+  — korábban egy hibás bemenet (elgépelés, felcserélt idők) csendben nulla
+  szabad időpontot eredményezett, visszajelzés nélkül.
+- **Google Calendar kapcsolat állapota reaktívan is frissül** most: ha
+  egy tényleges API hívás (nem csak a proaktív, lejárat előtti token-
+  frissítés) auth-hibával (401/403) bukik el, a `syncStatus` azonnal
+  "Hiba" állapotba vált, ahelyett hogy akár egy órán át hamisan
+  "Csatlakoztatva"-t mutatna.
+- **Apróbb takarítás**: eltávolítva egy soha nem használt
+  `InvalidTransitionError` osztály; új `instrumentation.ts` szerver-
+  indításkor figyelmeztet, ha a `NEXT_PUBLIC_APP_URL` nincs beállítva
+  (enélkül minden kiküldött email linkje csendben domain nélküli,
+  nem-kattintható relatív útvonal lenne).
+
+**Amit a fenti javítások NEM fednek le** (a diagnosztika során azonosított,
+de nem javított — ilyen nem maradt a listán, minden azonosított,
+önállóan javítható tétel javításra került). Ami továbbra is emberi
+döntést/kézi munkát igényel: a Google OAuth/Calendar API-hívások valós
+Google Cloud projekttel való tesztelése, és a `npm test` jelenleg
+kizárólag unit tesztekből áll — a fenti javításokat egy-egy, helyi
+Postgres ellen futtatott, egyszer-használatos script-tel verifikáltam,
+ezek nincsenek a repóba commitolva mint ismételhető regressziós teszt.
+
 ## Build
 
 ```bash

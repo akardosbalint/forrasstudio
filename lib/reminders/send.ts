@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { renderEmailTemplate } from "@/lib/email/templates";
 import { sendTransactionalEmail } from "@/lib/email/resend";
+import { writeAuditLog } from "@/lib/audit/log";
 import { isReminderDue } from "@/lib/reminders/rules";
 import { DEFAULT_TIMEZONE } from "@/lib/booking/rules";
 
@@ -23,8 +24,10 @@ async function sendReminder(
   },
   hoursBefore: 24 | 1,
   manageLink: string,
-) {
-  if (!booking.lead.email) return;
+): Promise<{ sent: boolean; error?: string | null }> {
+  if (!booking.lead.email) {
+    return { sent: false, error: "A leadhez nincs email cím rögzítve." };
+  }
 
   const email = await renderEmailTemplate("booking_reminder", {
     leadName: booking.lead.name,
@@ -34,12 +37,13 @@ async function sendReminder(
     manageLink,
   });
 
-  await sendTransactionalEmail({
+  const result = await sendTransactionalEmail({
     to: booking.lead.email,
     subject: email.subject,
     html: email.html,
     text: email.text,
   });
+  return { sent: result.ok, error: result.error };
 }
 
 // A háttérjob (scripts/run-scheduled-tasks.ts) periodikusan hívja. Minden
@@ -47,6 +51,11 @@ async function sendReminder(
 // kaptak (reminder24hSentAt/reminder1hSentAt mezők), és éppen esedékesek
 // a toleranciaablakon belül — így a futási gyakoriságtól függetlenül sem
 // marad ki, sem duplázódik emlékeztető.
+//
+// A `reminderXhSentAt` mezőt csak sikeres küldés esetén állítjuk be — ha a
+// Resend hívás hibázik, a következő (5-20 percenkénti) futás újra
+// megpróbálja, amíg a toleranciaablakon belül vagyunk, és minden kísérlet
+// audit logba kerül (sikeres/sikertelen egyaránt).
 export async function sendDueReminders(now: Date = new Date()): Promise<void> {
   const windowMinutes =
     Number(process.env.REMINDER_CHECK_WINDOW_MINUTES) || DEFAULT_WINDOW_MINUTES;
@@ -62,21 +71,30 @@ export async function sendDueReminders(now: Date = new Date()): Promise<void> {
   });
 
   for (const booking of upcomingBookings) {
-    const manageLink = `${appUrl}/foglalas/`; // a tényleges token a lead kérdőív-linkjéből származik, lásd lent
+    const manageLinkBase = `${appUrl}/foglalas/`;
     const link = await prisma.questionnaireLink.findFirst({
       where: { leadId: booking.leadId },
       orderBy: { createdAt: "desc" },
     });
-    const fullManageLink = link ? `${manageLink}${link.token}` : appUrl;
+    const fullManageLink = link ? `${manageLinkBase}${link.token}` : appUrl;
 
     if (
       !booking.reminder24hSentAt &&
       isReminderDue({ now, startsAt: booking.startsAt, hoursBefore: 24, windowMinutes })
     ) {
-      await sendReminder(booking, 24, fullManageLink);
-      await prisma.booking.update({
-        where: { id: booking.id },
-        data: { reminder24hSentAt: now },
+      const outcome = await sendReminder(booking, 24, fullManageLink);
+      if (outcome.sent) {
+        await prisma.booking.update({
+          where: { id: booking.id },
+          data: { reminder24hSentAt: now },
+        });
+      }
+      await writeAuditLog({
+        userId: null,
+        entityType: "Booking",
+        entityId: booking.id,
+        action: "booking.reminder_24h_sent",
+        metadata: { emailSent: outcome.sent, emailError: outcome.error ?? null },
       });
     }
 
@@ -84,10 +102,19 @@ export async function sendDueReminders(now: Date = new Date()): Promise<void> {
       !booking.reminder1hSentAt &&
       isReminderDue({ now, startsAt: booking.startsAt, hoursBefore: 1, windowMinutes })
     ) {
-      await sendReminder(booking, 1, fullManageLink);
-      await prisma.booking.update({
-        where: { id: booking.id },
-        data: { reminder1hSentAt: now },
+      const outcome = await sendReminder(booking, 1, fullManageLink);
+      if (outcome.sent) {
+        await prisma.booking.update({
+          where: { id: booking.id },
+          data: { reminder1hSentAt: now },
+        });
+      }
+      await writeAuditLog({
+        userId: null,
+        entityType: "Booking",
+        entityId: booking.id,
+        action: "booking.reminder_1h_sent",
+        metadata: { emailSent: outcome.sent, emailError: outcome.error ?? null },
       });
     }
   }

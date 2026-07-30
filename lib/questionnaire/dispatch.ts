@@ -43,6 +43,16 @@ export async function triggerQuestionnaireSend(
     );
   }
 
+  // Ha korábban már ment ki (fel nem használt) link ehhez a leadhez —
+  // pl. újraküldés esetén —, azt lejárttá tesszük, hogy legfeljebb egy
+  // élő link legyen egyszerre. Ez elsősorban UX-tisztaság (a kliens ne
+  // kapjon két egyszerre érvényes linket), a tényleges biztonsági hálót a
+  // beküldés-kezelő saját, friss stádium-ellenőrzése adja.
+  await prisma.questionnaireLink.updateMany({
+    where: { leadId, usedAt: null, expiresAt: { gt: new Date() } },
+    data: { expiresAt: new Date() },
+  });
+
   const token = generateQuestionnaireToken();
   const expiresAt = questionnaireLinkExpiry();
 

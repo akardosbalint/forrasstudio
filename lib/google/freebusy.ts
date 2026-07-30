@@ -2,6 +2,7 @@ import {
   getCalendarClientForRep,
   GoogleCalendarNotConnectedError,
 } from "@/lib/google/connection";
+import { reportGoogleApiError } from "@/lib/google/errors";
 
 // A rep Google Calendarjában lévő (nem a CRM-ből eredő) foglalt sávok
 // lekérdezése, hogy a szabad-sáv generálás ne ajánljon fel ütköző
@@ -33,6 +34,7 @@ export async function getGoogleBusyIntervals(
   } catch (error) {
     if (!(error instanceof GoogleCalendarNotConnectedError)) {
       console.error("[freebusy] Google FreeBusy lekérdezési hiba:", error);
+      await reportGoogleApiError(repId, error);
     }
     return [];
   }

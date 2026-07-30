@@ -1,14 +1,7 @@
 import { verifySession } from "@/lib/auth/rbac";
 import { prisma } from "@/lib/prisma";
-import { disconnectGoogleCalendar, saveRepAvailability } from "./actions";
-
-const WEEKDAY_LABELS: Record<number, string> = {
-  1: "Hétfő",
-  2: "Kedd",
-  3: "Szerda",
-  4: "Csütörtök",
-  5: "Péntek",
-};
+import { disconnectGoogleCalendar } from "./actions";
+import { AvailabilityForm } from "./AvailabilityForm";
 
 const STATUS_LABELS: Record<string, string> = {
   CONNECTED: "Csatlakoztatva",
@@ -33,10 +26,6 @@ export default async function CalendarSettingsPage({
       orderBy: { weekday: "asc" },
     }),
   ]);
-
-  const availabilityByWeekday = new Map(
-    availability.map((row) => [row.weekday, row]),
-  );
 
   return (
     <div className="flex max-w-lg flex-col gap-8">
@@ -99,46 +88,7 @@ export default async function CalendarSettingsPage({
           engedélyezettek. Ha egy napot nem jelölsz be, azon a napon nem
           kapsz discovery call-t.
         </p>
-        <form action={saveRepAvailability} className="flex flex-col gap-3">
-          {[1, 2, 3, 4, 5].map((weekday) => {
-            const existing = availabilityByWeekday.get(weekday);
-            return (
-              <div key={weekday} className="flex items-center gap-3 text-sm">
-                <label className="flex w-28 items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name={`enabled-${weekday}`}
-                    defaultChecked={!!existing}
-                  />
-                  {WEEKDAY_LABELS[weekday]}
-                </label>
-                <input
-                  type="time"
-                  name={`start-${weekday}`}
-                  defaultValue={existing?.startTime ?? "09:00"}
-                  min="09:00"
-                  max="18:00"
-                  className="rounded-lg border border-paper-3 bg-white px-2 py-1"
-                />
-                <span className="text-ink/40">–</span>
-                <input
-                  type="time"
-                  name={`end-${weekday}`}
-                  defaultValue={existing?.endTime ?? "18:00"}
-                  min="09:00"
-                  max="18:00"
-                  className="rounded-lg border border-paper-3 bg-white px-2 py-1"
-                />
-              </div>
-            );
-          })}
-          <button
-            type="submit"
-            className="mt-2 self-start rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper"
-          >
-            Mentés
-          </button>
-        </form>
+        <AvailabilityForm availability={availability} />
       </section>
     </div>
   );

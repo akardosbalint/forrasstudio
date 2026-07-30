@@ -9,6 +9,7 @@ import { isBookableSlot, DEFAULT_TIMEZONE } from "@/lib/booking/rules";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 import { getGoogleBusyIntervals } from "@/lib/google/freebusy";
 import { createGoogleCalendarEvent, deleteGoogleCalendarEvent } from "@/lib/google/events";
+import { isBookingOverlapConstraintError } from "@/lib/prisma/errors";
 
 export class BookingError extends Error {}
 
@@ -24,6 +25,8 @@ function toBase64(text: string): string {
   return Buffer.from(text, "utf-8").toString("base64");
 }
 
+type EmailOutcome = { sent: boolean; error?: string | null };
+
 async function sendBookingConfirmationEmails(params: {
   leadName: string;
   leadEmail: string | null;
@@ -33,7 +36,7 @@ async function sendBookingConfirmationEmails(params: {
   endsAt: Date;
   bookingId: string;
   manageLink: string;
-}) {
+}): Promise<{ client: EmailOutcome | null; rep: EmailOutcome }> {
   const startsAtFormatted = formatSlot(params.startsAt);
   const ics = buildIcsEvent({
     uid: `booking-${params.bookingId}@kbco-crm`,
@@ -50,6 +53,7 @@ async function sendBookingConfirmationEmails(params: {
     { filename: "discovery-call.ics", content: toBase64(ics) },
   ];
 
+  let client: EmailOutcome | null = null;
   if (params.leadEmail) {
     const clientEmail = await renderEmailTemplate("booking_confirmation_client", {
       leadName: params.leadName,
@@ -57,13 +61,14 @@ async function sendBookingConfirmationEmails(params: {
       startsAtFormatted,
       manageLink: params.manageLink,
     });
-    await sendTransactionalEmail({
+    const clientResult = await sendTransactionalEmail({
       to: params.leadEmail,
       subject: clientEmail.subject,
       html: clientEmail.html,
       text: clientEmail.text,
       attachments,
     });
+    client = { sent: clientResult.ok, error: clientResult.error };
   }
 
   const repEmail = await renderEmailTemplate("booking_confirmation_rep", {
@@ -71,13 +76,15 @@ async function sendBookingConfirmationEmails(params: {
     repName: params.repName,
     startsAtFormatted,
   });
-  await sendTransactionalEmail({
+  const repResult = await sendTransactionalEmail({
     to: params.repEmail,
     subject: repEmail.subject,
     html: repEmail.html,
     text: repEmail.text,
     attachments,
   });
+
+  return { client, rep: { sent: repResult.ok, error: repResult.error } };
 }
 
 // Új foglalás létrehozása — a hívó felelős azért, hogy a `startsAt`
@@ -143,31 +150,47 @@ export async function createBookingCore(params: {
     throw new BookingError("Hiányzó pipeline stádium.");
   }
 
-  const [booking] = await prisma.$transaction([
-    prisma.booking.create({
-      data: {
-        leadId: lead.id,
-        repId: lead.owner.id,
-        startsAt: params.startsAt,
-        endsAt,
-        status: "CONFIRMED",
-        createdById: params.actingUserId,
-      },
-    }),
-    prisma.lead.update({
-      where: { id: lead.id },
-      data: { currentStageId: callScheduledStage.id },
-    }),
-    prisma.statusHistory.create({
-      data: {
-        leadId: lead.id,
-        fromStageId: lead.currentStageId,
-        toStageId: callScheduledStage.id,
-        changedById: params.actingUserId,
-        note: "Discovery call lefoglalva.",
-      },
-    }),
-  ]);
+  // Az `isBookableSlot` fenti ellenőrzése nem atomi (read-then-write) —
+  // ha két kérés versenyez ugyanarra az időpontra, mindkettő átmehet ezen
+  // a checken. A tényleges kizárást a DB-szintű
+  // `bookings_no_overlap_confirmed` EXCLUDE constraint garantálja (lásd
+  // prisma/schema.prisma), ezt itt csak elkapjuk és barátságos hibává
+  // alakítjuk.
+  let booking;
+  try {
+    [booking] = await prisma.$transaction([
+      prisma.booking.create({
+        data: {
+          leadId: lead.id,
+          repId: lead.owner.id,
+          startsAt: params.startsAt,
+          endsAt,
+          status: "CONFIRMED",
+          createdById: params.actingUserId,
+        },
+      }),
+      prisma.lead.update({
+        where: { id: lead.id },
+        data: { currentStageId: callScheduledStage.id },
+      }),
+      prisma.statusHistory.create({
+        data: {
+          leadId: lead.id,
+          fromStageId: lead.currentStageId,
+          toStageId: callScheduledStage.id,
+          changedById: params.actingUserId,
+          note: "Discovery call lefoglalva.",
+        },
+      }),
+    ]);
+  } catch (error) {
+    if (isBookingOverlapConstraintError(error)) {
+      throw new BookingError(
+        "Ezt az időpontot közben valaki más lefoglalta. Kérjük válassz másikat.",
+      );
+    }
+    throw error;
+  }
 
   await writeAuditLog({
     userId: params.actingUserId,
@@ -192,7 +215,7 @@ export async function createBookingCore(params: {
     });
   }
 
-  await sendBookingConfirmationEmails({
+  const emailOutcome = await sendBookingConfirmationEmails({
     leadName: lead.name,
     leadEmail: lead.email,
     repName: lead.owner.name,
@@ -201,6 +224,18 @@ export async function createBookingCore(params: {
     endsAt,
     bookingId: booking.id,
     manageLink: params.manageLinkBase,
+  });
+  await writeAuditLog({
+    userId: params.actingUserId,
+    entityType: "Booking",
+    entityId: booking.id,
+    action: "booking.confirmation_email_sent",
+    metadata: {
+      clientEmailSent: emailOutcome.client?.sent ?? null,
+      clientEmailError: emailOutcome.client?.error ?? null,
+      repEmailSent: emailOutcome.rep.sent,
+      repEmailError: emailOutcome.rep.error ?? null,
+    },
   });
 
   return booking;
@@ -265,11 +300,18 @@ export async function cancelBookingCore(params: {
       startsAtFormatted,
       manageLink: params.manageLinkBase,
     });
-    await sendTransactionalEmail({
+    const sendResult = await sendTransactionalEmail({
       to: booking.lead.email,
       subject: email.subject,
       html: email.html,
       text: email.text,
+    });
+    await writeAuditLog({
+      userId: params.actingUserId,
+      entityType: "Booking",
+      entityId: booking.id,
+      action: "booking.cancellation_email_sent",
+      metadata: { emailSent: sendResult.ok, emailError: sendResult.error ?? null },
     });
   }
 }
@@ -328,23 +370,33 @@ export async function rescheduleBookingCore(params: {
     );
   }
 
-  const [, newBooking] = await prisma.$transaction([
-    prisma.booking.update({
-      where: { id: oldBooking.id },
-      data: { status: "RESCHEDULED" },
-    }),
-    prisma.booking.create({
-      data: {
-        leadId: oldBooking.leadId,
-        repId: oldBooking.repId,
-        startsAt: params.newStartsAt,
-        endsAt: newEndsAt,
-        status: "CONFIRMED",
-        rescheduleOfId: oldBooking.id,
-        createdById: params.actingUserId,
-      },
-    }),
-  ]);
+  let newBooking;
+  try {
+    [, newBooking] = await prisma.$transaction([
+      prisma.booking.update({
+        where: { id: oldBooking.id },
+        data: { status: "RESCHEDULED" },
+      }),
+      prisma.booking.create({
+        data: {
+          leadId: oldBooking.leadId,
+          repId: oldBooking.repId,
+          startsAt: params.newStartsAt,
+          endsAt: newEndsAt,
+          status: "CONFIRMED",
+          rescheduleOfId: oldBooking.id,
+          createdById: params.actingUserId,
+        },
+      }),
+    ]);
+  } catch (error) {
+    if (isBookingOverlapConstraintError(error)) {
+      throw new BookingError(
+        "Ezt az időpontot közben valaki más lefoglalta. Kérjük válassz másikat.",
+      );
+    }
+    throw error;
+  }
 
   await writeAuditLog({
     userId: params.actingUserId,
@@ -376,7 +428,7 @@ export async function rescheduleBookingCore(params: {
     });
   }
 
-  await sendBookingConfirmationEmails({
+  const emailOutcome = await sendBookingConfirmationEmails({
     leadName: oldBooking.lead.name,
     leadEmail: oldBooking.lead.email,
     repName: oldBooking.lead.owner.name,
@@ -385,6 +437,18 @@ export async function rescheduleBookingCore(params: {
     endsAt: newEndsAt,
     bookingId: newBooking.id,
     manageLink: params.manageLinkBase,
+  });
+  await writeAuditLog({
+    userId: params.actingUserId,
+    entityType: "Booking",
+    entityId: newBooking.id,
+    action: "booking.confirmation_email_sent",
+    metadata: {
+      clientEmailSent: emailOutcome.client?.sent ?? null,
+      clientEmailError: emailOutcome.client?.error ?? null,
+      repEmailSent: emailOutcome.rep.sent,
+      repEmailError: emailOutcome.rep.error ?? null,
+    },
   });
 
   return newBooking;

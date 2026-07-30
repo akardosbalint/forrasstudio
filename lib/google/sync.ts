@@ -5,6 +5,7 @@ import {
   getCalendarClientForRep,
   GoogleCalendarNotConnectedError,
 } from "@/lib/google/connection";
+import { reportGoogleApiError } from "@/lib/google/errors";
 
 // Periodikus (polling) szinkronizáció: ha a rep törli vagy áthelyezi a
 // discovery call eseményt közvetlenül a Google Calendarban (nem a
@@ -97,6 +98,7 @@ export async function syncRepCalendar(repId: string): Promise<void> {
         `[google-sync] Hiba a(z) ${booking.id} foglalás szinkronizálásakor:`,
         error,
       );
+      await reportGoogleApiError(repId, error);
     }
   }
 }

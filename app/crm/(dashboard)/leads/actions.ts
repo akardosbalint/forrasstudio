@@ -200,16 +200,33 @@ export async function changeLeadStage(
   return { warning };
 }
 
-export async function assignLeadOwner(formData: FormData): Promise<void> {
+export type AssignLeadOwnerState = { error?: string } | undefined;
+
+export async function assignLeadOwner(
+  _prevState: AssignLeadOwnerState,
+  formData: FormData,
+): Promise<AssignLeadOwnerState> {
   const { profile } = await requireRole("ADMIN");
 
   const leadId = String(formData.get("leadId") ?? "");
   const ownerId = String(formData.get("ownerId") ?? "");
+  if (!leadId) return { error: "Hiányzó lead azonosító." };
 
-  await prisma.lead.update({
-    where: { id: leadId },
-    data: { ownerId: ownerId || null },
-  });
+  if (ownerId) {
+    const owner = await prisma.profile.findUnique({ where: { id: ownerId } });
+    if (!owner || !["ADMIN", "SALES_REP"].includes(owner.role)) {
+      return { error: "Érvénytelen felelős — válassz a listából." };
+    }
+  }
+
+  try {
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: { ownerId: ownerId || null },
+    });
+  } catch {
+    return { error: "A lead nem található, vagy nem sikerült frissíteni." };
+  }
 
   await writeAuditLog({
     userId: profile.id,
@@ -220,6 +237,7 @@ export async function assignLeadOwner(formData: FormData): Promise<void> {
   });
 
   revalidatePath(`/crm/leads/${leadId}`);
+  return undefined;
 }
 
 export type CancelBookingState = { error?: string } | undefined;
@@ -305,6 +323,12 @@ export async function updateLeadFinancials(
   ) {
     return { error: "Érvénytelen összeg." };
   }
+  if (
+    (dealValueCents !== null && dealValueCents < 0) ||
+    (cashCollectedCents !== null && cashCollectedCents < 0)
+  ) {
+    return { error: "Az összeg nem lehet negatív." };
+  }
 
   await prisma.lead.update({
     where: { id: leadId },
@@ -321,4 +345,61 @@ export async function updateLeadFinancials(
 
   revalidatePath(`/crm/leads/${leadId}`);
   return undefined;
+}
+
+export type ResendQuestionnaireState =
+  | { error?: string; warning?: string; success?: boolean }
+  | undefined;
+
+// Kérdőív-link újraküldése — anélkül, hogy a stádiumot ki-be kellene
+// mozgatni ehhez (ami korábban egy elavult link visszaregressziózhatta a
+// lead státuszát). Csak akkor van értelme, amíg a lead ténylegesen
+// "Kérdőív kitöltés alatt" státuszban van.
+export async function resendQuestionnaireInvite(
+  _prevState: ResendQuestionnaireState,
+  formData: FormData,
+): Promise<ResendQuestionnaireState> {
+  const { profile } = await requireRole("ADMIN", "SALES_REP");
+
+  const leadId = String(formData.get("leadId") ?? "");
+  if (!leadId) return { error: "Hiányzó lead azonosító." };
+
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+    include: { currentStage: true },
+  });
+  if (!lead) return { error: "A lead nem található." };
+  if (
+    profile.role === "SALES_REP" &&
+    lead.ownerId &&
+    lead.ownerId !== profile.id
+  ) {
+    return { error: "Nincs jogosultságod ehhez a leadhez." };
+  }
+  if (lead.currentStage.key !== SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING) {
+    return {
+      error:
+        "A lead nincs \"Kérdőív kitöltés alatt\" státuszban — az újraküldés csak ekkor lehetséges.",
+    };
+  }
+
+  try {
+    const result = await triggerQuestionnaireSend(leadId, profile.id);
+    if (!result.emailSent) {
+      return {
+        warning:
+          "Új link generálva, de az email kiküldése nem sikerült (Resend nincs beállítva vagy hibát adott — lásd audit log).",
+      };
+    }
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Ismeretlen hiba a kérdőív újraküldésekor.",
+    };
+  }
+
+  revalidatePath(`/crm/leads/${leadId}`);
+  return { success: true };
 }
