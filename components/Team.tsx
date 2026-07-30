@@ -5,17 +5,17 @@ import { MagneticCard } from "@/components/MagneticCard";
 const team = [
   {
     name: "Kardos Bálint",
-    role: "Alapító, ügyvezető (CEO)",
+    role: "Alapító & vezető fejlesztő (Founder & Lead Engineer)",
     photo: "/team/kardos-balint.jpg",
   },
   {
     name: "Kányási Soma",
-    role: "Technológiai vezető (Tech Lead)",
+    role: "Technológiai tanácsadó",
     photo: "/team/kanyasi-soma.jpg",
   },
   {
     name: "Csábi Eszter",
-    role: "Minőségbiztosítási vezető (QA Lead)",
+    role: "Minőségbiztosítási tanácsadó",
     photo: "/team/csabi-eszter.jpg",
   },
 ];
