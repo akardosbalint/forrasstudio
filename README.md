@@ -371,11 +371,67 @@ Az `/crm/admin` alatt (csak `ADMIN` szerepkörnek):
   (a bejelentkezett admin UI-t ebben a sandboxban nem lehetett
   végigkattintani, mert ahhoz valódi Supabase Auth session kell).
 
-### Még hátra van (a spec fázisai szerint)
+### Dashboard + riportolás (Phase 7)
 
-Phase 7 (dashboard + riportolás) — kanban pipeline nézet, szűrők
-rep/forrás/dátum szerint, bevételi mutatók (TCV, cash collected) napi/
-heti/havi/éves/all-time bontásban.
+A `/crm` (Áttekintés) mostantól:
+
+- **Kanban nézet** (`KanbanBoard.tsx`) — minden pipeline-stádium egy
+  oszlop, benne a leadek kártyaszerűen (név, cég, felelős), rákattintva a
+  lead adatlapjára visz. Az oszlopok a Phase 6 pipeline-szerkesztőben
+  beállított sorrendet/címkét/színt követik.
+- **Szűrők** (`DashboardFilters.tsx`) — sales rep és forrás szerint
+  (mindkettő a kanban-ra és a bevételi mutatókra is hat), valamint egy
+  időszak-választó (nap/hét/hónap/év/all-time), ami csak a bevételi
+  mutatókat szűkíti (a kanban mindig a jelenlegi, élő pipeline-állapotot
+  mutatja, nem historikus).
+- **Bevételi mutatók** (`RevenueCards.tsx`, `lib/dashboard/queries.ts`):
+  - *Kiadott ajánlat*: azon leadek `dealValueCents` összege és száma,
+    amik a kiválasztott időszakban léptek "Ajánlat készítés alatt"
+    stádiumba (a `StatusHistory` alapján, nem a lead létrehozási
+    dátuma alapján — a "mikor adtuk ki az ajánlatot" a releváns
+    pénzügyi esemény).
+  - *TCV*: a kiválasztott időszakban "Nyert" stádiumba lépett leadek
+    `dealValueCents` összege.
+  - *Cash Collected*: ugyanezen leadek `cashCollectedCents` összege.
+  - *Elveszett*: a kiválasztott időszakban "Elveszett"-be lépett leadek
+    száma.
+  - Ha egy lead több alkalommal is belépett ugyanabba a stádiumba
+    (pl. újranyitás után újra megnyerve), csak a legutóbbi belépés
+    számít — nincs duplikált összesítés.
+- A lead adatlapon új "Pénzügyi adatok" szekció (`FinancialsForm.tsx`)
+  teszi lehetővé az ajánlat összegének és a cash collected értéknek a
+  rögzítését forintban (az adatbázisban fillér-pontosságú egészként
+  tárolva, a spec adatmodell-vázlata szerint).
+
+### Amit érdemes manuálisan tesztelni (Phase 7)
+
+- Adj meg egy leadhez ajánlat-összeget a "Pénzügyi adatok" szekcióban,
+  majd léptesd "Ajánlat készítés alatt" stádiumba → a `/crm` "Kiadott
+  ajánlat" kártyája megnő az összeggel, "Hónap" nézetben.
+- Léptesd a leadet "Nyert"-re, add meg a cash collected összeget is → a
+  TCV és Cash Collected kártyák frissülnek; "Nap"/"Hét" nézetben csak
+  akkor jelenik meg, ha a "Nyert" átmenet ma/ezen a héten történt.
+- Válts "All-time" nézetre → egy régebbi (múltbeli időpontra
+  visszadátumozott `StatusHistory`-val rendelkező) nyert lead is
+  megjelenik, amit a szűkebb időszak-nézetek kihagynak.
+- Szűrj sales rep vagy forrás szerint → mind a kanban oszlopok, mind a
+  bevételi kártyák csak a szűrésnek megfelelő leadeket veszik figyelembe.
+- Ellenőrizve helyi Postgres ellen, közvetlen script-tel (a
+  `getRevenueSummary` és `getKanbanBoard` alapjául szolgáló lekérdezés-
+  logikával): egy "ma nyert" és egy "400 napja nyert" teszt-lead közül a
+  "hónap" nézet csak az elsőt számolja, az "all-time" mindkettőt; a
+  rep/forrás szűrés helyesen szűkíti a találatokat.
+- `npm test` — `lib/dashboard/period.test.ts` fedi le az
+  időszak-számítást (hét eleje hétfőre esik akkor is, ha a mai nap
+  vasárnap, stb.).
+
+### Még hátra van
+
+Mind a 7 fázis elkészült a spec fejlesztési sorrendje szerint. Amit egy
+éles bevezetés előtt még érdemes átnézni: a Google OAuth/FreeBusy/esemény-
+kezelés valós Google Cloud projekttel való végigtesztelése (lásd Phase 5
+szekció), a Docker Compose deploy tényleges kipróbálása, és a jogi oldalak
+(`app/(site)/adatvedelem` stb.) `[TODO]` jelöléseinek kitöltése ügyvéddel.
 
 ## Build
 

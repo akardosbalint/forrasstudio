@@ -1,14 +1,38 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { verifySession } from "@/lib/auth/rbac";
-import { prisma } from "@/lib/prisma";
+import {
+  getFilterOptions,
+  getKanbanBoard,
+  getRevenueSummary,
+} from "@/lib/dashboard/queries";
+import { isPeriod, type Period } from "@/lib/dashboard/period";
+import { DashboardFilters } from "./DashboardFilters";
+import { RevenueCards } from "./RevenueCards";
+import { KanbanBoard } from "./KanbanBoard";
 
-export default async function CrmOverviewPage() {
+export default async function CrmOverviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    ownerId?: string;
+    source?: string;
+    period?: string;
+  }>;
+}) {
   await verifySession();
+  const params = await searchParams;
+  const ownerId = params.ownerId ?? "";
+  const source = params.source ?? "";
+  const period: Period = isPeriod(params.period) ? params.period : "month";
 
-  const stages = await prisma.pipelineStage.findMany({
-    orderBy: { order: "asc" },
-    include: { _count: { select: { leads: true } } },
-  });
+  const filters = { ownerId, source };
+
+  const [{ profiles, sources }, stages, revenue] = await Promise.all([
+    getFilterOptions(),
+    getKanbanBoard(filters),
+    getRevenueSummary(period, filters),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -21,28 +45,20 @@ export default async function CrmOverviewPage() {
           + Új lead
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {stages.map((stage) => (
-          <Link
-            key={stage.id}
-            href={`/crm/leads?stage=${stage.id}`}
-            className="rounded-xl border border-paper-3 bg-white p-4 transition-colors hover:border-ink/30"
-          >
-            <div
-              className="mb-2 h-1.5 w-8 rounded-full"
-              style={{ backgroundColor: stage.color }}
-            />
-            <p className="text-sm text-ink/60">{stage.label}</p>
-            <p className="font-display text-2xl font-semibold">
-              {stage._count.leads}
-            </p>
-          </Link>
-        ))}
-      </div>
-      <p className="text-sm text-ink/50">
-        Részletes kanban nézet, szűrők és bevételi riportok a Phase 7-ben
-        (Dashboard + reporting) készülnek el.
-      </p>
+
+      <Suspense>
+        <DashboardFilters
+          profiles={profiles}
+          sources={sources}
+          currentOwnerId={ownerId}
+          currentSource={source}
+          currentPeriod={period}
+        />
+      </Suspense>
+
+      <RevenueCards summary={revenue} />
+
+      <KanbanBoard stages={stages} />
     </div>
   );
 }

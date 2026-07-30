@@ -266,3 +266,59 @@ export async function cancelBookingInternal(
   revalidatePath(`/crm/leads/${leadId}`);
   return undefined;
 }
+
+export type UpdateFinancialsState = { error?: string } | undefined;
+
+// A forint-összegeket fillér-pontosságú egészként tároljuk (spec 6. pont
+// adatmodell-vázlata), a form viszont forintban kér bemenetet a
+// felhasználótól.
+export async function updateLeadFinancials(
+  _prevState: UpdateFinancialsState,
+  formData: FormData,
+): Promise<UpdateFinancialsState> {
+  const { profile } = await requireRole("ADMIN", "SALES_REP");
+
+  const leadId = String(formData.get("leadId") ?? "");
+  const dealValueHuf = String(formData.get("dealValueHuf") ?? "").trim();
+  const cashCollectedHuf = String(formData.get("cashCollectedHuf") ?? "").trim();
+
+  if (!leadId) return { error: "Hiányzó lead azonosító." };
+
+  const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+  if (!lead) return { error: "A lead nem található." };
+  if (
+    profile.role === "SALES_REP" &&
+    lead.ownerId &&
+    lead.ownerId !== profile.id
+  ) {
+    return { error: "Nincs jogosultságod ehhez a leadhez." };
+  }
+
+  const dealValueCents = dealValueHuf ? Math.round(Number(dealValueHuf) * 100) : null;
+  const cashCollectedCents = cashCollectedHuf
+    ? Math.round(Number(cashCollectedHuf) * 100)
+    : null;
+
+  if (
+    (dealValueHuf && Number.isNaN(dealValueCents)) ||
+    (cashCollectedHuf && Number.isNaN(cashCollectedCents))
+  ) {
+    return { error: "Érvénytelen összeg." };
+  }
+
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: { dealValueCents, cashCollectedCents },
+  });
+
+  await writeAuditLog({
+    userId: profile.id,
+    entityType: "Lead",
+    entityId: leadId,
+    action: "lead.financials_updated",
+    metadata: { dealValueCents, cashCollectedCents },
+  });
+
+  revalidatePath(`/crm/leads/${leadId}`);
+  return undefined;
+}

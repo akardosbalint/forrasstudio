@@ -3,6 +3,7 @@ import { verifySession } from "@/lib/auth/rbac";
 import { getLeadDetail, listPipelineStages } from "@/lib/leads/queries";
 import { StageChangeForm } from "./StageChangeForm";
 import { CancelBookingButton } from "./CancelBookingButton";
+import { FinancialsForm } from "./FinancialsForm";
 
 export default async function LeadDetailPage({
   params,
@@ -40,6 +41,17 @@ export default async function LeadDetailPage({
           leadId={lead.id}
           currentStageId={lead.currentStageId}
           stages={stages}
+        />
+      </section>
+
+      <section className="rounded-xl border border-paper-3 bg-white p-5">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          Pénzügyi adatok
+        </h2>
+        <FinancialsForm
+          leadId={lead.id}
+          dealValueCents={lead.dealValueCents}
+          cashCollectedCents={lead.cashCollectedCents}
         />
       </section>
 
