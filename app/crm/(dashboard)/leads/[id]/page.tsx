@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { verifySession } from "@/lib/auth/rbac";
 import { getLeadDetail, listPipelineStages } from "@/lib/leads/queries";
 import { StageChangeForm } from "./StageChangeForm";
+import { CancelBookingButton } from "./CancelBookingButton";
 
 export default async function LeadDetailPage({
   params,
@@ -82,9 +83,7 @@ export default async function LeadDetailPage({
         {lead.questionnaireResponses.length === 0 &&
         lead.bookings.length === 0 ? (
           <p className="text-sm text-ink/50">
-            Még nincs kiküldött/kitöltött kérdőív vagy foglalás — ez a Phase
-            2–4-ben kerül automatizálásra (link generálás, email küldés,
-            időpontfoglalás).
+            Még nincs kitöltött kérdőív vagy foglalás ehhez a leadhez.
           </p>
         ) : (
           <div className="flex flex-col gap-4 text-sm">
@@ -95,9 +94,17 @@ export default async function LeadDetailPage({
               </div>
             ))}
             {lead.bookings.map((booking) => (
-              <div key={booking.id}>
-                Discovery call: {booking.startsAt.toLocaleString("hu-HU")} —{" "}
-                {booking.rep.name} ({booking.status})
+              <div
+                key={booking.id}
+                className="flex items-center justify-between gap-3"
+              >
+                <span>
+                  Discovery call: {booking.startsAt.toLocaleString("hu-HU")} —{" "}
+                  {booking.rep.name} ({booking.status})
+                </span>
+                {booking.status === "CONFIRMED" && (
+                  <CancelBookingButton leadId={lead.id} bookingId={booking.id} />
+                )}
               </div>
             ))}
           </div>

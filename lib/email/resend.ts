@@ -5,6 +5,7 @@ type SendEmailParams = {
   subject: string;
   html: string;
   text: string;
+  attachments?: { filename: string; content: string }[];
 };
 
 // Általános célú Resend email küldő a CRM automatizált leveleihez
@@ -16,6 +17,7 @@ export async function sendTransactionalEmail({
   subject,
   html,
   text,
+  attachments,
 }: SendEmailParams): Promise<{ ok: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.NOTIFICATION_EMAIL_FROM;
@@ -34,7 +36,7 @@ export async function sendTransactionalEmail({
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from, to, subject, html, text }),
+      body: JSON.stringify({ from, to, subject, html, text, attachments }),
     });
 
     if (!response.ok) {

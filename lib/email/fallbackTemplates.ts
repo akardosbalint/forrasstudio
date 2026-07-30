@@ -22,6 +22,41 @@ export const FALLBACK_EMAIL_TEMPLATES: Record<
       "A link {{expiresInDays}} napig érvényes.\n\n" +
       "Üdvözlettel,\nKBCo Stúdió",
   },
+  booking_confirmation_client: {
+    subject: "Foglalás visszaigazolva — {{startsAtFormatted}}",
+    bodyHtml:
+      "<p>Kedves {{leadName}}!</p>" +
+      "<p>Visszaigazoljuk a discovery call időpontját: <strong>{{startsAtFormatted}}</strong> (90 perc), {{repName}} kollégánkkal.</p>" +
+      "<p>A naptármeghívót csatoltuk ehhez az emailhez.</p>" +
+      '<p>Ha át kell ütemezned vagy le kell mondanod, kattints ide: <a href="{{manageLink}}">{{manageLink}}</a></p>' +
+      "<p>Üdvözlettel,<br />KBCo Stúdió</p>",
+    bodyText:
+      "Kedves {{leadName}}!\n\n" +
+      "Visszaigazoljuk a discovery call időpontját: {{startsAtFormatted}} (90 perc), {{repName}} kollégánkkal.\n\n" +
+      "A naptármeghívót csatoltuk ehhez az emailhez.\n\n" +
+      "Ha át kell ütemezned vagy le kell mondanod: {{manageLink}}\n\n" +
+      "Üdvözlettel,\nKBCo Stúdió",
+  },
+  booking_confirmation_rep: {
+    subject: "Új discovery call — {{startsAtFormatted}} ({{leadName}})",
+    bodyHtml:
+      "<p>Új discovery call került lefoglalásra:</p>" +
+      "<p><strong>{{leadName}}</strong> — {{startsAtFormatted}} (90 perc)</p>" +
+      "<p>A naptármeghívót csatoltuk ehhez az emailhez.</p>",
+    bodyText:
+      "Új discovery call került lefoglalásra:\n\n" +
+      "{{leadName}} — {{startsAtFormatted}} (90 perc)\n\n" +
+      "A naptármeghívót csatoltuk ehhez az emailhez.",
+  },
+  booking_cancelled: {
+    subject: "Discovery call lemondva — {{startsAtFormatted}}",
+    bodyHtml:
+      "<p>A(z) {{startsAtFormatted}} időpontra foglalt discovery call lemondásra került.</p>" +
+      '<p>Új időpont foglalásához: <a href="{{manageLink}}">{{manageLink}}</a></p>',
+    bodyText:
+      "A(z) {{startsAtFormatted}} időpontra foglalt discovery call lemondásra került.\n\n" +
+      "Új időpont foglalásához: {{manageLink}}",
+  },
   questionnaire_submitted: {
     subject: "Köszönjük a kitöltést — foglald le a discovery call-t",
     bodyHtml:

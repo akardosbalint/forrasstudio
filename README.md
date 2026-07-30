@@ -196,9 +196,47 @@ DATABASE_URL="postgresql://user:pass@localhost:5432/kbco_crm_dev" npx prisma db 
 Csak a `/crm/**` (bejelentkezés-védett) oldalak igényelnek valódi Supabase
 Auth projektet — a publikus kérdőív/foglalás felület nem.
 
+### Amit érdemes manuálisan tesztelni (Phase 4)
+
+A foglalási motor (`lib/booking/rules.ts`, `lib/booking/slots.ts`,
+`lib/booking/actions-core.ts`) a publikus `/foglalas/[token]` felületen és
+a CRM lead adatlapon (`Lemondás` gomb) keresztül érhető el.
+
+- Kérdőív kitöltése után `/foglalas/[token]` → csak munkanapi, 9-18 közti,
+  90 percbe beleférő, a beküldéstől számított 24 óránál későbbi időpontok
+  jelennek meg, napok szerint csoportosítva.
+- Időpont választása + "Időpont lefoglalása" → a lead automatikusan
+  "Discovery call lefoglalva" státuszba kerül, a kiválasztott időpont
+  eltűnik a szabad sávok közül (ütközésvizsgálat), és — ha a Resend be van
+  állítva — az ügyfél és a rep is kap egy visszaigazoló emailt `.ics`
+  naptármeghívó csatolással.
+- "Átütemezés" → új időpont választható, a régi foglalás
+  `RESCHEDULED` státuszba kerül, új `Booking` sor jön létre
+  (`rescheduleOfId` lánccal); a felület visszatér a "lefoglalva" nézetbe
+  (nem ragad benn az időpontválasztóban).
+- "Lemondás" → a foglalás `CANCELLED`-re vált, a lead visszakerül
+  "Időpontfoglalásra vár" státuszba, újra foglalható.
+- Ugyanez a lemondás a CRM-ben (`/crm/leads/[id]`) is elérhető sales
+  rep/admin számára a foglalás melletti "Lemondás" gombbal.
+- `npm test` — a `lib/booking/rules.test.ts` (17 teszt: 24 órás szabály,
+  munkanap/9-18 ablak, 90 perces ütközésvizsgálat) és a
+  `lib/booking/timezone.test.ts` (DST-biztos időzóna-konverzió) fedi le a
+  foglalási szabályokat.
+- Végigfuttatva egy helyi Postgres ellen, fejjel nélküli böngészőben:
+  foglalás → átütemezés → lemondás teljes láncolat, audit log
+  bejegyzésekkel (`booking.created` → `booking.rescheduled` →
+  `booking.cancelled`) és a `StatusHistory`/pipeline-státusz helyes
+  követésével.
+
+**Ismert korlátozás (Phase 5-ig)**: a szabad sávok generálása egyelőre
+csak a `RepAvailability` táblát (ha van beállítva a repnek) és a meglévő
+CRM-foglalásokat veszi figyelembe — a rep Google Calendarjában lévő egyéb
+(nem CRM-es) elfoglaltságát még nem, ez a Google Calendar
+FreeBusy-integrációval kerül be.
+
 ### Még hátra van (a spec fázisai szerint)
 
-Phase 4 (foglalási motor), Phase 5
+Phase 5
 (Google Calendar OAuth/FreeBusy/szinkron), Phase 6 (admin:
 kérdőív-szerkesztő, email sablonok, pipeline-szerkesztő, audit log nézet),
 Phase 7 (dashboard + riportolás). Ezek a Prisma adatmodellben már szerepelnek

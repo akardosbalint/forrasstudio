@@ -9,6 +9,7 @@ import { writeAuditLog } from "@/lib/audit/log";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 import { canTransition } from "@/lib/pipeline/stateMachine";
 import { triggerQuestionnaireSend } from "@/lib/questionnaire/dispatch";
+import { BookingError, cancelBookingCore } from "@/lib/booking/actions-core";
 
 const createLeadSchema = z.object({
   name: z.string().trim().min(1, "A név megadása kötelező."),
@@ -219,4 +220,49 @@ export async function assignLeadOwner(formData: FormData): Promise<void> {
   });
 
   revalidatePath(`/crm/leads/${leadId}`);
+}
+
+export type CancelBookingState = { error?: string } | undefined;
+
+export async function cancelBookingInternal(
+  _prevState: CancelBookingState,
+  formData: FormData,
+): Promise<CancelBookingState> {
+  const { profile } = await requireRole("ADMIN", "SALES_REP");
+
+  const bookingId = String(formData.get("bookingId") ?? "");
+  const leadId = String(formData.get("leadId") ?? "");
+  if (!bookingId || !leadId) {
+    return { error: "Hiányzó azonosító." };
+  }
+
+  const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+  if (!lead) return { error: "A lead nem található." };
+  if (
+    profile.role === "SALES_REP" &&
+    lead.ownerId &&
+    lead.ownerId !== profile.id
+  ) {
+    return { error: "Nincs jogosultságod ehhez a leadhez." };
+  }
+
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+
+  try {
+    await cancelBookingCore({
+      bookingId,
+      actingUserId: profile.id,
+      manageLinkBase: `${appUrl}/crm/leads/${leadId}`,
+    });
+  } catch (error) {
+    return {
+      error:
+        error instanceof BookingError
+          ? error.message
+          : "Ismeretlen hiba a lemondás során.",
+    };
+  }
+
+  revalidatePath(`/crm/leads/${leadId}`);
+  return undefined;
 }
