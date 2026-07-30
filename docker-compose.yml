@@ -1,0 +1,43 @@
+# Self-hosted deploy — lásd README "Docker Compose (self-hosted) deploy"
+# szekció. A `postgres` service opcionális: ha inkább a Supabase-hosztolt
+# Postgrest használod (ahogy ez a repo alapból teszi), hagyd ki ezt a
+# service-t és a DATABASE_URL-t állítsd a Supabase kapcsolati sztringre.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kbco
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set a POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: kbco_crm
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+
+  scheduler:
+    build:
+      context: .
+      target: scheduler
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SCHEDULER_INTERVAL_SECONDS: "300"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

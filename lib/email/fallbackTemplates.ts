@@ -48,6 +48,17 @@ export const FALLBACK_EMAIL_TEMPLATES: Record<
       "{{leadName}} — {{startsAtFormatted}} (90 perc)\n\n" +
       "A naptármeghívót csatoltuk ehhez az emailhez.",
   },
+  booking_reminder: {
+    subject: "Emlékeztető — discovery call {{hoursLabel}} múlva",
+    bodyHtml:
+      "<p>Kedves {{leadName}}!</p>" +
+      "<p>Emlékeztetünk, hogy a discovery call időpontod {{hoursLabel}} múlva kezdődik: <strong>{{startsAtFormatted}}</strong>, {{repName}} kollégánkkal.</p>" +
+      '<p>Átütemezés vagy lemondás: <a href="{{manageLink}}">{{manageLink}}</a></p>',
+    bodyText:
+      "Kedves {{leadName}}!\n\n" +
+      "Emlékeztetünk, hogy a discovery call időpontod {{hoursLabel}} múlva kezdődik: {{startsAtFormatted}}, {{repName}} kollégánkkal.\n\n" +
+      "Átütemezés vagy lemondás: {{manageLink}}",
+  },
   booking_cancelled: {
     subject: "Discovery call lemondva — {{startsAtFormatted}}",
     bodyHtml:

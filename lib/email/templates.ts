@@ -1,5 +1,3 @@
-import "server-only";
-
 import { prisma } from "@/lib/prisma";
 import { renderEmailString } from "@/lib/email/render";
 import { FALLBACK_EMAIL_TEMPLATES } from "@/lib/email/fallbackTemplates";

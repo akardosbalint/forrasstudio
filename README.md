@@ -228,20 +228,106 @@ a CRM lead adatlapon (`Lemondás` gomb) keresztül érhető el.
   `booking.cancelled`) és a `StatusHistory`/pipeline-státusz helyes
   követésével.
 
-**Ismert korlátozás (Phase 5-ig)**: a szabad sávok generálása egyelőre
-csak a `RepAvailability` táblát (ha van beállítva a repnek) és a meglévő
-CRM-foglalásokat veszi figyelembe — a rep Google Calendarjában lévő egyéb
-(nem CRM-es) elfoglaltságát még nem, ez a Google Calendar
-FreeBusy-integrációval kerül be.
+### Google Calendar integráció (Phase 5)
+
+- **OAuth2** (`lib/google/oauth.ts`, `app/api/google/oauth/connect`,
+  `app/api/google/oauth/callback`): minden sales rep a saját
+  `/crm/settings/calendar` oldaláról csatlakoztathatja a Google
+  Calendarját (`access_type: offline` + `prompt: consent`, hogy mindig
+  kapjunk refresh tokent). A `state` paraméter a kezdeményező rep saját
+  profil id-ja — a callback újra ellenőrzi, hogy a bejelentkezett user
+  egyezik-e vele (CSRF védelem).
+- **Titkosítás** (`lib/crypto/secretBox.ts`): AES-256-GCM, `ENCRYPTION_KEY`
+  env változóval — az access/refresh tokenek soha nem kerülnek
+  plaintext-ben az adatbázisba.
+- **FreeBusy** (`lib/google/freebusy.ts`): a szabad sávok generálása
+  (`lib/booking/slots.ts`) mostantól a rep Google Calendarjában lévő
+  foglalt időket is kizárja, nem csak a CRM-es foglalásokat. Ha a rep
+  nincs csatlakoztatva, vagy a Google API hibázik, a rendszer csendben
+  visszaesik a Phase 4-es (csak CRM-es) viselkedésre — egy külső
+  integrációs hiba nem blokkolhatja a foglalást.
+- **Esemény létrehozás/törlés** (`lib/google/events.ts`): foglaláskor a
+  rendszer létrehoz egy eseményt a rep naptárában, lemondáskor/
+  átütemezéskor törli/újra létrehozza — ha a rep nincs csatlakoztatva,
+  ez csendben kimarad (a CRM-es `Booking` rekord ettől függetlenül
+  működik).
+- **Szinkron** (`lib/google/sync.ts`, `scripts/run-scheduled-tasks.ts`):
+  polling alapú (nem push webhook — ahhoz publikusan elérhető HTTPS
+  végpont kellene, amit ebben a fejlesztési fázisban nem lehet éles
+  Google-lel tesztelni). Periodikusan (docker-compose `scheduler`
+  service, alapból 5 percenként) ellenőrzi a repek naptárában lévő,
+  CRM-ből származó eseményeket; ha egy eseményt a rep törölt vagy
+  áthelyezett közvetlenül a Google Calendarban, a CRM-es `Booking` sort
+  ennek megfelelően frissíti (`booking.cancelled_externally` /
+  `booking.updated_externally` audit log bejegyzésekkel).
+- Ugyanez a `scripts/run-scheduled-tasks.ts` küldi ki a **24 órás és 1
+  órás emlékeztető emaileket** is (`lib/reminders/`) — ez technikailag a
+  spec 4. pontjához (foglalási logika) tartozik, de mivel mindkettő
+  ugyanazt az időzített háttérjob-infrastruktúrát igényli, egyben
+  készült el a Google-szinkronnal.
+
+**Fontos korlátozás**: a Google OAuth/FreeBusy/esemény-kezelés kódja
+valódi Google Cloud OAuth kliens hitelesítő adatok nélkül nem
+tesztelhető végponttól végpontig — ebben a sandboxban nincs ilyen. A
+kód type-check-elt, lint-elt és a *hiányzó kapcsolat* ági viselkedés
+(graceful fallback) élesben tesztelve lett (foglalás/átütemezés/lemondás
+Google nélkül változatlanul működik), de a tényleges OAuth-csere,
+FreeBusy-lekérdezés és esemény-CRUD helyességét egy valós Google Cloud
+projekttel (`GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`) kell manuálisan
+leellenőrizni éles/staging környezetben.
+
+### Amit érdemes manuálisan tesztelni (Phase 5)
+
+Ehhez valódi Google Cloud OAuth 2.0 Client ID kell (Google Calendar API
+engedélyezve, `GOOGLE_OAUTH_REDIRECT_URI` hozzáadva az Authorized
+redirect URIs listához):
+
+- `/crm/settings/calendar` → "Csatlakozás Google Calendarhoz" →
+  Google consent képernyő → visszairányítás után "Csatlakoztatva"
+  állapot látszik.
+- Heti elérhetőség mentése → csak a bejelölt napokon/sávokban jelennek
+  meg szabad időpontok a `/foglalas/[token]` oldalon.
+- Foglalás után az esemény megjelenik a rep valódi Google Calendarjában;
+  a Google Calendarban meglévő (nem CRM-es) elfoglaltság idejére a
+  `/foglalas/[token]` nem ajánl fel időpontot.
+- A Google Calendarban közvetlenül törölt/áthelyezett esemény
+  `npm run tasks:run` lefuttatása (vagy a `scheduler` service várakozása)
+  után frissül a CRM-ben (audit log: `booking.cancelled_externally` /
+  `booking.updated_externally`).
+- "Lecsatlakoztatás" → a kapcsolat törlődik, a szabad sávok generálása
+  visszaáll a csak-CRM-es viselkedésre.
+- `npm run tasks:run` — helyi Postgres ellen lefuttatva (Google
+  kapcsolat nélkül) hibamentesen fut le, nem küld emlékeztetőt, ha nincs
+  esedékes foglalás.
+- `npm test` — `lib/crypto/secretBox.test.ts` (titkosítás round-trip +
+  tamper-elutasítás) és `lib/reminders/rules.test.ts` (24h/1h emlékeztető
+  esedékesség-ablak) fedi le a tesztelhető logikát.
+
+### Docker Compose (self-hosted) deploy
+
+`docker-compose.yml` három service-t indít: `app` (Next.js, `runner`
+build target, `output: "standalone"`), `scheduler` (Google-szinkron +
+emlékeztetők, `scheduler` build target, `SCHEDULER_INTERVAL_SECONDS`
+env-vel állítható gyakorisággal), és opcionálisan `postgres` (ha nem a
+Supabase-hosztolt Postgrest használod — ez esetben hagyd ki és a
+`DATABASE_URL`-t állítsd a Supabase kapcsolati sztringre). Mindkét app
+service a `.env` fájlt olvassa be.
+
+```bash
+docker compose up --build
+```
+
+**Nem tesztelt ebben a sandboxban** (nincs elérhető Docker daemon): a
+`Dockerfile`/`docker-compose.yml` type-check-elt, a Next.js
+`output: "standalone"` a dokumentált hivatalos mintát követi, de a
+tényleges image-buildet és a `scheduler` service valós lefutását érdemes
+leellenőrizni az első éles/staging deploy előtt.
 
 ### Még hátra van (a spec fázisai szerint)
 
-Phase 5
-(Google Calendar OAuth/FreeBusy/szinkron), Phase 6 (admin:
-kérdőív-szerkesztő, email sablonok, pipeline-szerkesztő, audit log nézet),
-Phase 7 (dashboard + riportolás). Ezek a Prisma adatmodellben már szerepelnek
-(`QuestionnaireTemplate`, `Booking`, `GoogleCalendarConnection` stb.), de
-UI/logika még nincs hozzájuk.
+Phase 6 (admin: kérdőív-szerkesztő, email sablonok, pipeline-szerkesztő,
+audit log nézet), Phase 7 (dashboard + riportolás). Ezek a Prisma
+adatmodellben már szerepelnek, de UI/logika még nincs hozzájuk.
 
 ## Build
 

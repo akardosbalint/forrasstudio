@@ -245,6 +245,11 @@ model Booking {
   createdAt   DateTime  @default(now()) @map("created_at")
   cancelledAt DateTime? @map("cancelled_at")
 
+  // Emlékeztető email küldés nyomon követése (spec 4. pont: 24 óra és 1
+  // óra előtti emlékeztető) — lásd lib/reminders/send.ts.
+  reminder24hSentAt DateTime? @map("reminder_24h_sent_at")
+  reminder1hSentAt  DateTime? @map("reminder_1h_sent_at")
+
   @@index([leadId])
   @@index([repId, startsAt])
   @@map("bookings")

@@ -13,6 +13,7 @@ import {
   zonedTimeToUtc,
   weekdayOfCalendarDate,
 } from "@/lib/booking/timezone";
+import { getGoogleBusyIntervals } from "@/lib/google/freebusy";
 
 const SLOT_GRANULARITY_MINUTES = 30;
 const DEFAULT_SEARCH_WINDOW_DAYS = 21;
@@ -57,16 +58,23 @@ export async function getAvailableSlots(params: {
   const searchWindowDays =
     params.searchWindowDays ?? DEFAULT_SEARCH_WINDOW_DAYS;
 
-  const [repAvailability, existingBookings] = await Promise.all([
-    prisma.repAvailability.findMany({ where: { repId: params.repId } }),
-    prisma.booking.findMany({
-      where: { repId: params.repId, status: "CONFIRMED" },
-      select: { startsAt: true, endsAt: true },
-    }),
-  ]);
-
   const today = zonedDateParts(now, timeZone);
   const todayUtcMidnight = Date.UTC(today.year, today.month - 1, today.day);
+  const searchEnd = new Date(
+    todayUtcMidnight + (searchWindowDays + 1) * 24 * 60 * 60_000,
+  );
+
+  const [repAvailability, existingBookings, googleBusyIntervals] =
+    await Promise.all([
+      prisma.repAvailability.findMany({ where: { repId: params.repId } }),
+      prisma.booking.findMany({
+        where: { repId: params.repId, status: "CONFIRMED" },
+        select: { startsAt: true, endsAt: true },
+      }),
+      getGoogleBusyIntervals(params.repId, now, searchEnd),
+    ]);
+
+  const blockedIntervals = [...existingBookings, ...googleBusyIntervals];
 
   const slots: Date[] = [];
 
@@ -97,7 +105,7 @@ export async function getAvailableSlots(params: {
           isBookableSlot({
             candidateStart: candidate,
             submittedAt: params.submittedAt,
-            existingBookings,
+            existingBookings: blockedIntervals,
             now,
             timeZone,
           })

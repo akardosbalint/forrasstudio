@@ -7,6 +7,8 @@ import { sendTransactionalEmail } from "@/lib/email/resend";
 import { buildIcsEvent } from "@/lib/calendar/ics";
 import { isBookableSlot, DEFAULT_TIMEZONE } from "@/lib/booking/rules";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
+import { getGoogleBusyIntervals } from "@/lib/google/freebusy";
+import { createGoogleCalendarEvent, deleteGoogleCalendarEvent } from "@/lib/google/events";
 
 export class BookingError extends Error {}
 
@@ -114,16 +116,19 @@ export async function createBookingCore(params: {
 
   const endsAt = new Date(params.startsAt.getTime() + 90 * 60_000);
 
-  const existingBookings = await prisma.booking.findMany({
-    where: { repId: lead.owner.id, status: "CONFIRMED" },
-    select: { startsAt: true, endsAt: true },
-  });
+  const [existingBookings, googleBusyIntervals] = await Promise.all([
+    prisma.booking.findMany({
+      where: { repId: lead.owner.id, status: "CONFIRMED" },
+      select: { startsAt: true, endsAt: true },
+    }),
+    getGoogleBusyIntervals(lead.owner.id, params.startsAt, endsAt),
+  ]);
 
   if (
     !isBookableSlot({
       candidateStart: params.startsAt,
       submittedAt: submission.submittedAt,
-      existingBookings,
+      existingBookings: [...existingBookings, ...googleBusyIntervals],
     })
   ) {
     throw new BookingError(
@@ -171,6 +176,21 @@ export async function createBookingCore(params: {
     action: "booking.created",
     metadata: { leadId: lead.id, startsAt: params.startsAt.toISOString() },
   });
+
+  const googleEventId = await createGoogleCalendarEvent({
+    repId: lead.owner.id,
+    summary: `Discovery Call — ${lead.name}`,
+    description: "KBCo Stúdió discovery call (90 perc).",
+    startsAt: params.startsAt,
+    endsAt,
+    attendeeEmails: lead.email ? [lead.email] : [],
+  });
+  if (googleEventId) {
+    await prisma.booking.update({
+      where: { id: booking.id },
+      data: { googleEventId },
+    });
+  }
 
   await sendBookingConfirmationEmails({
     leadName: lead.name,
@@ -235,6 +255,10 @@ export async function cancelBookingCore(params: {
     metadata: { leadId: booking.leadId },
   });
 
+  if (booking.googleEventId) {
+    await deleteGoogleCalendarEvent(booking.repId, booking.googleEventId);
+  }
+
   const startsAtFormatted = formatSlot(booking.startsAt);
   if (booking.lead.email) {
     const email = await renderEmailTemplate("booking_cancelled", {
@@ -276,20 +300,27 @@ export async function rescheduleBookingCore(params: {
 
   const newEndsAt = new Date(params.newStartsAt.getTime() + 90 * 60_000);
 
-  const existingBookings = await prisma.booking.findMany({
-    where: {
-      repId: oldBooking.lead.owner.id,
-      status: "CONFIRMED",
-      id: { not: oldBooking.id },
-    },
-    select: { startsAt: true, endsAt: true },
-  });
+  const [existingBookings, googleBusyIntervals] = await Promise.all([
+    prisma.booking.findMany({
+      where: {
+        repId: oldBooking.lead.owner.id,
+        status: "CONFIRMED",
+        id: { not: oldBooking.id },
+      },
+      select: { startsAt: true, endsAt: true },
+    }),
+    getGoogleBusyIntervals(
+      oldBooking.lead.owner.id,
+      params.newStartsAt,
+      newEndsAt,
+    ),
+  ]);
 
   if (
     !isBookableSlot({
       candidateStart: params.newStartsAt,
       submittedAt: submission.submittedAt,
-      existingBookings,
+      existingBookings: [...existingBookings, ...googleBusyIntervals],
     })
   ) {
     throw new BookingError(
@@ -326,6 +357,24 @@ export async function rescheduleBookingCore(params: {
       newStartsAt: params.newStartsAt.toISOString(),
     },
   });
+
+  if (oldBooking.googleEventId) {
+    await deleteGoogleCalendarEvent(oldBooking.repId, oldBooking.googleEventId);
+  }
+  const googleEventId = await createGoogleCalendarEvent({
+    repId: oldBooking.lead.owner.id,
+    summary: `Discovery Call — ${oldBooking.lead.name}`,
+    description: "KBCo Stúdió discovery call (90 perc).",
+    startsAt: params.newStartsAt,
+    endsAt: newEndsAt,
+    attendeeEmails: oldBooking.lead.email ? [oldBooking.lead.email] : [],
+  });
+  if (googleEventId) {
+    await prisma.booking.update({
+      where: { id: newBooking.id },
+      data: { googleEventId },
+    });
+  }
 
   await sendBookingConfirmationEmails({
     leadName: oldBooking.lead.name,

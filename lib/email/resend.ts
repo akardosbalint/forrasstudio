@@ -1,5 +1,3 @@
-import "server-only";
-
 type SendEmailParams = {
   to: string;
   subject: string;
