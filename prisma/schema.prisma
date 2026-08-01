@@ -1,4 +1,4 @@
-// KBCo CRM — adatmodell.
+// FlowCore CRM — adatmodell.
 //
 // A DATABASE_URL a Supabase projekt Postgres kapcsolati sztringjére mutat
 // (Settings -> Database -> Connection string -> "URI", direct connection

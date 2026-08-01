@@ -67,7 +67,7 @@ export function Nav() {
           onClick={(event) => handleAnchorClick(event, "#top")}
           className="font-display text-lg font-semibold tracking-tight text-paper transition-transform duration-300 hover:scale-[1.02]"
         >
-          KBCo Stúdió
+          FlowCore
         </a>
 
         <ul className="hidden items-center gap-7 md:flex">

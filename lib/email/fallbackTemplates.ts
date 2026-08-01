@@ -8,19 +8,19 @@ export const FALLBACK_EMAIL_TEMPLATES: Record<
   { subject: string; bodyHtml: string; bodyText: string }
 > = {
   questionnaire_invite: {
-    subject: "KBCo Stúdió — rendszertervezési kérdőív",
+    subject: "FlowCore — rendszertervezési kérdőív",
     bodyHtml:
       "<p>Kedves {{leadName}}!</p>" +
       "<p>Köszönjük a megkeresést. A discovery call előkészítéséhez kérjük, töltsd ki rövid rendszertervezési kérdőívünket az alábbi linken:</p>" +
       '<p><a href="{{link}}">{{link}}</a></p>' +
       "<p>A link {{expiresInDays}} napig érvényes.</p>" +
-      "<p>Üdvözlettel,<br />KBCo Stúdió</p>",
+      "<p>Üdvözlettel,<br />FlowCore</p>",
     bodyText:
       "Kedves {{leadName}}!\n\n" +
       "Köszönjük a megkeresést. A discovery call előkészítéséhez kérjük, töltsd ki rövid rendszertervezési kérdőívünket az alábbi linken:\n" +
       "{{link}}\n\n" +
       "A link {{expiresInDays}} napig érvényes.\n\n" +
-      "Üdvözlettel,\nKBCo Stúdió",
+      "Üdvözlettel,\nFlowCore",
   },
   booking_confirmation_client: {
     subject: "Foglalás visszaigazolva — {{startsAtFormatted}}",
@@ -29,13 +29,13 @@ export const FALLBACK_EMAIL_TEMPLATES: Record<
       "<p>Visszaigazoljuk a discovery call időpontját: <strong>{{startsAtFormatted}}</strong> (90 perc), {{repName}} kollégánkkal.</p>" +
       "<p>A naptármeghívót csatoltuk ehhez az emailhez.</p>" +
       '<p>Ha át kell ütemezned vagy le kell mondanod, kattints ide: <a href="{{manageLink}}">{{manageLink}}</a></p>' +
-      "<p>Üdvözlettel,<br />KBCo Stúdió</p>",
+      "<p>Üdvözlettel,<br />FlowCore</p>",
     bodyText:
       "Kedves {{leadName}}!\n\n" +
       "Visszaigazoljuk a discovery call időpontját: {{startsAtFormatted}} (90 perc), {{repName}} kollégánkkal.\n\n" +
       "A naptármeghívót csatoltuk ehhez az emailhez.\n\n" +
       "Ha át kell ütemezned vagy le kell mondanod: {{manageLink}}\n\n" +
-      "Üdvözlettel,\nKBCo Stúdió",
+      "Üdvözlettel,\nFlowCore",
   },
   booking_confirmation_rep: {
     subject: "Új discovery call — {{startsAtFormatted}} ({{leadName}})",
@@ -74,11 +74,11 @@ export const FALLBACK_EMAIL_TEMPLATES: Record<
       "<p>Kedves {{leadName}}!</p>" +
       "<p>Köszönjük, hogy kitöltötted a kérdőívet. A következő lépés egy 90 perces discovery call lefoglalása, amit az alábbi linken tehetsz meg:</p>" +
       '<p><a href="{{bookingLink}}">{{bookingLink}}</a></p>' +
-      "<p>Üdvözlettel,<br />KBCo Stúdió</p>",
+      "<p>Üdvözlettel,<br />FlowCore</p>",
     bodyText:
       "Kedves {{leadName}}!\n\n" +
       "Köszönjük, hogy kitöltötted a kérdőívet. A következő lépés egy 90 perces discovery call lefoglalása, amit az alábbi linken tehetsz meg:\n" +
       "{{bookingLink}}\n\n" +
-      "Üdvözlettel,\nKBCo Stúdió",
+      "Üdvözlettel,\nFlowCore",
   },
 };

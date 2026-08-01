@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { LegalPageShell, LegalSection } from "@/components/LegalPageShell";
 
 export const metadata: Metadata = {
-  title: "Adatkezelési tájékoztató — KBCo Stúdió",
+  title: "Adatkezelési tájékoztató — FlowCore",
   description:
-    "A KBCo Stúdió adatkezelési tájékoztatója a weboldalon leadott visszahívás-kérésekkel kapcsolatban.",
+    "A FlowCore adatkezelési tájékoztatója a weboldalon leadott visszahívás-kérésekkel kapcsolatban.",
 };
 
 export default function AdatvedelemPage() {
@@ -16,13 +16,13 @@ export default function AdatvedelemPage() {
     >
       <LegalSection title="1. Az adatkezelő">
         <p>
-          A jelen tájékoztató szerinti adatkezelő a KBCo Stúdió{" "}
-          <span className="font-mono text-sm">(Kardos Bálint e.v.)</span>.
+          A jelen tájékoztató szerinti adatkezelő a{" "}
+          <span className="font-mono text-sm">FlowCore Technologies Kft.</span>.
         </p>
         <ul>
           <li>Székhely: 1027 Budapest, Bem József utca 6. fsz. 3.</li>
-          <li>Nyilvántartási szám: 61623820</li>
-          <li>Adószám: 91637778-1-41</li>
+          <li>Cégjegyzékszám: <span className="font-mono text-sm">[TODO: cégjegyzékszám]</span></li>
+          <li>Adószám: <span className="font-mono text-sm">[TODO: adószám]</span></li>
           <li>
             Email: <a href="mailto:akardosbalint@gmail.com">akardosbalint@gmail.com</a>
           </li>

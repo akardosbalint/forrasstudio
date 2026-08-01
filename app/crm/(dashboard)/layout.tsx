@@ -30,7 +30,7 @@ export default async function CrmDashboardLayout({
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-6">
             <Link href="/crm" className="font-display text-lg font-semibold">
-              KBCo CRM
+              FlowCore CRM
             </Link>
             <nav className="flex items-center gap-4 text-sm">
               {navItems.map((item) => (
