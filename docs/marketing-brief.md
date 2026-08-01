@@ -1,20 +1,17 @@
-# Marketing brief — induló vállalkozás
+# Marketing brief — FlowCore
 
-> **Megjegyzés a márkanévről:** ez a brief szándékosan nem tartalmaz konkrét
-> márkanevet — a névválasztás egy külön feladat/beszélgetés keretében zajlik.
-> A dokumentumban a vállalkozásra `[MÁRKANÉV]` placeholderrel hivatkozunk. A
-> "Névbrief" szekció (a dokumentum végén) összefoglalja, milyen szempontoknak
-> kell megfelelnie a végleges névnek — ezt érdemes bemenetként használni a
-> névválasztó beszélgetéshez.
+> **Márkanév:** a vállalkozás végleges neve **FlowCore** (cégnév:
+> **FlowCore Technologies Kft.**, domain: **flowcore.hu**).
 
 ## 1. Áttekintés
 
-`[MÁRKANÉV]` egy 3 fős, boutique digitális rendszer-stúdió, ami egyedi
+**FlowCore** egy 3 fős, boutique digitális rendszer-stúdió, ami egyedi
 webalkalmazásokat, közösségi/tagsági platformokat és automatizációs/AI
 rendszereket tervez, épít és **hosszú távon üzemeltet** kis- és
 középvállalkozásoknak, valamint közösségépítőknek. A koncepció egy meglévő
 projekt (jelenlegi munkacím: "KBCo Stúdió") üzleti alapjára épül, de új
-márkanév és önálló piaci megjelenés alatt indul.
+márkanév és önálló piaci megjelenés alatt indul, **FlowCore Technologies
+Kft.** néven, a **flowcore.hu** domain alatt.
 
 A vállalkozás nem egyszeri weboldal-fejlesztést árul, hanem **teljes,
 egymással összehangolt digitális rendszereket** — időpontfoglalástól a
@@ -64,7 +61,7 @@ elérhető marad.
 ## 4. Piaci pozicionálás
 
 **Pozicionálási állítás:**
-> `[MÁRKANÉV]` azoknak a kis- és középvállalkozásoknak és
+> **FlowCore** azoknak a kis- és középvállalkozásoknak és
 > közösségépítőknek épít teljes digitális rendszert — foglalástól a
 > fizetésen és CRM-en át a tagi felületekig és automatizációig —, akik
 > egy megbízható technológiai partnert keresnek több széttöredezett
@@ -107,15 +104,15 @@ vállalkozás portfóliójaként:
 - **Tartalmi platform** — statikusan generált blog, hírlevél-
   automatizáció, tagsági közösség.
 
-> Az induló vállalkozás anyagaiban érdemes tisztázni, hogy ezek a
-> referenciák a **csapat/alapító korábbi munkájaként** szerepelnek-e,
-> vagy a régi márkanév alatt készültek — ez jogi/kommunikációs döntés,
-> amit érdemes külön tisztázni az indulás előtt.
+> A FlowCore anyagaiban érdemes tisztázni, hogy ezek a referenciák a
+> **csapat/alapító korábbi munkájaként** szerepelnek-e, vagy a régi
+> ("KBCo Stúdió") márkanév alatt készültek — ez jogi/kommunikációs
+> döntés, amit érdemes külön tisztázni az indulás előtt.
 
 ## 6. Márkahang és személyiség
 
 A meglévő vizuális/verbális rendszer (lásd a landing oldal komponenseit)
-már körvonalaz egy hangnemet, amit érdemes megőrizni az új márka alatt is:
+már körvonalaz egy hangnemet, amit érdemes megőrizni a FlowCore márka alatt is:
 
 - **Precíz, mérnöki, de nem hideg.** Rövid, konkrét mondatok, "// "
   monospace jelölések, technikai pontosság — miközben a végeredmény
@@ -135,19 +132,19 @@ már körvonalaz egy hangnemet, amit érdemes megőrizni az új márka alatt is:
 > Ezeket a leendő tulajdonossal/csapattal együtt kell pontosítani —
 > az alábbiak kiindulási javaslatok a brief kereteként.
 
-- Egyértelmű, önálló piaci megjelenés kialakítása az új márkanév alatt
+- Egyértelmű, önálló piaci megjelenés kialakítása FlowCore néven
   (weboldal, referenciák, üzenetek).
-- Első 3–5 induló ügyfél megszerzése az új márka alatt, mindhárom
+- Első 3–5 induló ügyfél megszerzése a FlowCore márka alatt, mindhárom
   pillérből legalább egy referenciaprojekttel.
 - Kiszámítható lead-folyamat kialakítása (a meglévő
   visszahívás-kérés + CRM pipeline erre már ad alapot).
 
 ## 8. Csatornák (javaslat)
 
-- **Saját landing oldal + visszahívás-form** — már létező alap, csak
-  új márka alatt kell újraépíteni/átcímkézni.
+- **Saját landing oldal (flowcore.hu) + visszahívás-form** — már létező
+  alap, csak FlowCore márka alá kell újraépíteni/átcímkézni.
 - **Közvetlen ajánlás / referencia-hálózat** — a meglévő ügyfelek
-  (ha átvihetők az új márka alá) erős kiindulópontot adnak.
+  (ha átvihetők a FlowCore márka alá) erős kiindulópontot adnak.
 - **Esettanulmány-vezérelt tartalom** — a három pillér mindegyikéhez
   egy-egy részletes case study, mert a célközönség konkrét, hasonló
   helyzetű példákra reagál a legjobban.
@@ -165,32 +162,22 @@ már körvonalaz egy hangnemet, amit érdemes megőrizni az új márka alatt is:
 4. *"Közvetlen kapcsolat, nincs közvetítő réteg."* — a boutique-modell
    előnye.
 
-## 10. Névbrief (a külön névválasztó feladathoz)
+## 10. Márkanév és céginformációk
 
-A végleges márkanévnek az alábbiaknak kell megfelelnie:
-
-- **Illeszkedjen a rendszer-metaforához** — a meglévő vizuális nyelv
-  (folyamatok/"patakok", amik egy közös forrásba/csomópontba futnak
-  össze) erős, továbbvihető alap.
-- **Legyen rövid, magyarul jól ejthető, és domainként/márkanévként
-  szabadon (ellenőrizendő .hu/.com elérhetőség).**
-- **Ne legyen túl szűk egyetlen iparágra** — a célközönség több
-  szegmensből áll (szolgáltató kkv-k, közösségépítők, tartalom-vezérelt
-  vállalkozások), a névnek mindhármat el kell bírnia.
-- **Sugalljon rendszerszemléletet és megbízhatóságot**, ne csak
-  "webfejlesztést" — a pozicionálás lényege, hogy nem egyszeri
-  weboldalt, hanem teljes, gondozott rendszert kap az ügyfél.
-- **Legyen semleges a csapatlétszámmal kapcsolatban** — kerülje azt a
-  benyomást, hogy egyetlen személyhez kötött (bus factor -kockázat).
+- **Márkanév:** FlowCore
+- **Cégnév:** FlowCore Technologies Kft.
+- **Domain:** flowcore.hu
+- A név angol "flow" (folyamat/áramlás) és "core" (mag) elemekből épül —
+  jól illeszkedik a brief 6. pontjában leírt rendszer-metaforához (több
+  folyamat fut össze egy közös, megbízható magban), és nem köti a márkát
+  egyetlen iparághoz vagy csapatlétszámhoz.
 
 ## 11. Következő lépések
 
-1. Márkanév véglegesítése (külön feladat/beszélgetés — lásd a
-   Névbrief szekciót bemenetként).
-2. Döntés a korábbi referenciák (case study-k) jogi/kommunikációs
-   kezeléséről az új márka alatt.
-3. A meglévő landing oldal tartalmának átdolgozása az új
-   márkanévre és a fenti kulcsüzenetekre.
-4. Induló célközönség-szegmens kiválasztása az első kampányhoz (javaslat:
+1. Döntés a korábbi referenciák (case study-k) jogi/kommunikációs
+   kezeléséről a FlowCore márka alatt.
+2. A meglévő landing oldal tartalmának átdolgozása a FlowCore
+   márkanévre és a fenti kulcsüzenetekre (flowcore.hu domain alá).
+3. Induló célközönség-szegmens kiválasztása az első kampányhoz (javaslat:
    szolgáltató kkv-k, mert itt a legkonkrétabb és legkönnyebben
    demonstrálható a "teljes rendszer" értékajánlat).
