@@ -62,7 +62,7 @@ export function CookieConsent() {
           <button
             type="button"
             onClick={() => choose("accepted")}
-            className="btn-shine rounded-full bg-amber px-4 py-2 text-sm font-semibold text-ink transition-all duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 active:scale-95"
+            className="btn-shine bg-gradient-brand rounded-full px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:shadow-lg hover:shadow-amber/25 active:scale-95"
           >
             Mind elfogadom
           </button>

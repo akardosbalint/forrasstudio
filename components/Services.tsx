@@ -3,8 +3,16 @@ import { Reveal } from "@/components/Reveal";
 import { TiltCard } from "@/components/TiltCard";
 
 type IconName = "webapp" | "content" | "booking" | "community" | "crm" | "ai" | "system" | "ops";
+type Accent = "spring" | "amber" | "pink" | "brook";
 
-function ServiceIcon({ name }: { name: IconName }) {
+const accentIconClasses: Record<Accent, string> = {
+  spring: "bg-spring/10 text-spring group-hover:bg-spring/15",
+  amber: "bg-amber/10 text-amber group-hover:bg-amber/15",
+  pink: "bg-pink/10 text-pink group-hover:bg-pink/15",
+  brook: "bg-brook/10 text-brook group-hover:bg-brook/15",
+};
+
+function ServiceIcon({ name, accent = "spring" }: { name: IconName; accent?: Accent }) {
   const paths: Record<IconName, ReactNode> = {
     webapp: (
       <>
@@ -76,7 +84,9 @@ function ServiceIcon({ name }: { name: IconName }) {
   };
 
   return (
-    <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-spring/10 text-spring transition-transform duration-300 group-hover:scale-110 group-hover:bg-spring/15">
+    <span
+      className={`inline-flex h-12 w-12 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110 ${accentIconClasses[accent]}`}
+    >
       <svg
         viewBox="0 0 32 32"
         aria-hidden="true"
@@ -93,12 +103,21 @@ function ServiceIcon({ name }: { name: IconName }) {
   );
 }
 
-const cardClasses =
-  "glow-card group h-full rounded-2xl border border-paper-3 bg-white/60 p-6 [--glow-color:var(--color-spring)] hover:border-spring/60 hover:bg-white/90 sm:p-7";
+const cardAccentClasses: Record<Accent, string> = {
+  spring: "[--glow-color:var(--color-spring)] hover:border-spring/60",
+  amber: "[--glow-color:var(--color-amber)] hover:border-amber/60",
+  pink: "[--glow-color:var(--color-pink)] hover:border-pink/60",
+  brook: "[--glow-color:var(--color-brook)] hover:border-brook/60",
+};
+
+function cardClasses(accent: Accent) {
+  return `glow-card group h-full rounded-2xl border border-paper-3 bg-white/60 p-6 ${cardAccentClasses[accent]} hover:bg-white/90 sm:p-7`;
+}
 
 const pillars = [
   {
     icon: "webapp" as const,
+    accent: "spring" as const,
     eyebrow: "1. pillér",
     title: "Weboldal- és webalkalmazás-fejlesztés",
     description:
@@ -106,6 +125,7 @@ const pillars = [
   },
   {
     icon: "content" as const,
+    accent: "amber" as const,
     eyebrow: "2. pillér",
     title: "Tartalmi platformok és blogrendszerek",
     description:
@@ -113,6 +133,7 @@ const pillars = [
   },
   {
     icon: "booking" as const,
+    accent: "pink" as const,
     eyebrow: "3. pillér",
     title: "Időpontfoglalás és online fizetés",
     description:
@@ -120,6 +141,7 @@ const pillars = [
   },
   {
     icon: "community" as const,
+    accent: "brook" as const,
     eyebrow: "4. pillér",
     title: "Közösségi és tagsági platformok",
     description:
@@ -127,6 +149,7 @@ const pillars = [
   },
   {
     icon: "crm" as const,
+    accent: "spring" as const,
     eyebrow: "5. pillér",
     title: "Ügyfélkezelés és CRM rendszerek",
     description:
@@ -134,22 +157,25 @@ const pillars = [
   },
   {
     icon: "ai" as const,
+    accent: "amber" as const,
     eyebrow: "6. pillér",
     title: "Automatizáció és AI-integráció",
     description:
-      "Hírlevél- és e-mail-automatizáció, intelligens riportok és AI-alapú funkciók — ugyanazok az eszközök, amikkel mi magunk is dolgozunk — veszik le rólad az ismétlődő adminisztrációt.",
+      "Hírlevél- és e-mail-automatizáció, intelligens riportok és AI-alapú funkciók — ugyanazok az eszközök, amikkel MI magunk is dolgozunk — veszik le rólad az ismétlődő adminisztrációt.",
   },
 ];
 
 const capabilities = [
   {
     icon: "system" as const,
+    accent: "pink" as const,
     title: "Teljes rendszer egy kézből",
     description:
       "A weboldal, a foglalás, a fizetés, a CRM, a beléptetés és az automatizáció nem külön projektek, hanem egymással összehangolt modulok — egy csapat tervezi és köti össze mindet, a piaci átlag töredékéért, nem több különálló szállító.",
   },
   {
     icon: "ops" as const,
+    accent: "brook" as const,
     title: "Hosszú távú üzemeltetés & továbbfejlesztés",
     description:
       "Az élesítés nem a munka vége. A megépített rendszereket folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább — biztonságosan, megbízhatóan, hosszú távon. Ez nálunk folyamatos felelősségvállalás, nem egyszeri leszállított munka.",
@@ -181,8 +207,8 @@ export function Services() {
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {pillars.map((pillar, index) => (
             <Reveal key={pillar.title} delay={index * 80} className="h-full">
-              <TiltCard className={cardClasses}>
-                <ServiceIcon name={pillar.icon} />
+              <TiltCard className={cardClasses(pillar.accent)}>
+                <ServiceIcon name={pillar.icon} accent={pillar.accent} />
                 <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-ink/40">
                   {pillar.eyebrow}
                 </p>
@@ -198,8 +224,8 @@ export function Services() {
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           {capabilities.map((capability, index) => (
             <Reveal key={capability.title} delay={index * 100} className="h-full">
-              <TiltCard className={cardClasses}>
-                <ServiceIcon name={capability.icon} />
+              <TiltCard className={cardClasses(capability.accent)}>
+                <ServiceIcon name={capability.icon} accent={capability.accent} />
                 <h3 className="mt-2 font-display text-xl font-semibold text-ink">
                   {capability.title}
                 </h3>

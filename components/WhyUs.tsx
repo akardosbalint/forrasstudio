@@ -1,12 +1,13 @@
 import { Reveal } from "@/components/Reveal";
 import { TiltCard } from "@/components/TiltCard";
 
-type Accent = "spring" | "amber" | "brook";
+type Accent = "spring" | "amber" | "brook" | "pink";
 
 const accentClasses: Record<Accent, { text: string; glow: string; border: string }> = {
   spring: { text: "text-spring", glow: "var(--color-spring)", border: "hover:border-spring/60" },
   amber: { text: "text-amber", glow: "var(--color-amber)", border: "hover:border-amber/60" },
   brook: { text: "text-brook", glow: "var(--color-brook)", border: "hover:border-brook/60" },
+  pink: { text: "text-pink", glow: "var(--color-pink)", border: "hover:border-pink/60" },
 };
 
 const reasons: { number: string; accent: Accent; title: string; description: string }[] = [
@@ -33,7 +34,7 @@ const reasons: { number: string; accent: Accent; title: string; description: str
   },
   {
     number: "04",
-    accent: "spring",
+    accent: "pink",
     title: "Felelősségvállalás az élesítés után is",
     description:
       "A rendszert nem felejtjük el a leszállítás után sem. Folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább, hosszú távon.",

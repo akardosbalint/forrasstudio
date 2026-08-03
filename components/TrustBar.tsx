@@ -31,7 +31,7 @@ export function TrustBar() {
           transition={{ duration: 0.6, ease: EXPO_OUT }}
           className="mb-5 text-center font-mono text-xs uppercase tracking-[0.14em] text-ink/50"
         >
-          <span className="text-ink/30">{"// "}</span>Ezeket a rendszereket mi építettük és üzemeltetjük
+          <span className="text-ink/30">{"// "}</span>Ezeket a rendszereket MI építettük és üzemeltetjük
         </motion.p>
         <motion.ul
           variants={listVariants}

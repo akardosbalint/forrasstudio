@@ -10,7 +10,7 @@ const EYEBROW_TEXT =
   "Weboldalak, webalkalmazások, közösségi platformok és AI-alapú automatizáció";
 
 const BODY_TEXT_1 =
-  "A legmodernebb technológiákkal és AI-alapú eszközökkel építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért.";
+  "A legmodernebb AI-eszközöket emberi szakértelemmel párosítva építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért.";
 
 const BODY_TEXT_2 =
   "Célunk, hogy elérhetővé tegyük a kompromisszum-mentes egyedi szoftverfejlesztést mindenki számára: az egyszerűbb weboldalaktól és időpontfoglalástól, a fizetésen és az ügyfél-CRM-en át a zárt közösségi felületekig és a hírlevél-automatizációig.";
@@ -70,7 +70,7 @@ export function Hero() {
   }, []);
 
   return (
-    <section id="top" className="grid-pattern relative scroll-mt-20 overflow-hidden bg-ink text-paper">
+    <section id="top" className="mesh-dark grid-pattern relative scroll-mt-20 overflow-hidden text-paper">
       <Spotlight className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
         <div>
           <p
@@ -86,9 +86,9 @@ export function Hero() {
               ref={headlineRef}
               className="font-display text-4xl font-bold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.85rem]"
             >
-              Egyedi szoftver mindenkinek —{" "}
-              <span className="bg-gradient-to-r from-amber via-amber to-spring bg-clip-text italic text-transparent">
-                a{" "}legújabb technológiával, gyorsabban, biztonságosabban, kedvezőbb áron.
+              Amit el tudsz képzelni —{" "}
+              <span className="text-gradient-brand italic">
+                MI megépítjük: gyorsabban, biztonságosabban, kedvezőbb áron.
               </span>
             </h1>
           </div>
