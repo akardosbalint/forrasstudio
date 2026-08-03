@@ -20,7 +20,7 @@ export default function LoginPage() {
           FlowCore CRM
         </h1>
         <p className="mb-6 text-sm text-ink/60">
-          Jelentkezz be a belső sales rendszerbe.
+          Add meg az email címed, és küldünk egy bejelentkező linket.
         </p>
         <Suspense>
           <LoginForm />
