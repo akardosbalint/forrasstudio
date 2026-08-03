@@ -29,12 +29,20 @@ export function Team() {
                 className="mx-auto h-32 w-32 flex-shrink-0 rounded-full border-2 border-paper-2 object-cover transition-all duration-300 group-hover:scale-105 group-hover:border-spring/50 sm:h-40 sm:w-40"
               />
               <div>
-                <p className="font-display text-xl leading-relaxed text-ink sm:text-2xl">
-                  „Szia, Kardos Bálint vagyok — a MI Építettük alapítója és vezető fejlesztője.
-                  Nincs közvetítő réteg, nincs projektmenedzser-lánc: az első egyeztetéstől az
-                  üzemeltetésig velem beszélsz. A legújabb AI-eszközökkel dolgozom, hogy
-                  gyorsabban, megbízhatóbban és a piaci árak töredékéért építsem meg, amire
-                  szükséged van.”
+                <p className="font-display text-lg leading-relaxed text-ink sm:text-xl">
+                  „Szia, Kardos Bálint vagyok. A pályám 8 éve, webfejlesztéssel és
+                  keresőoptimalizálással indult a Hong Kong University of Technology-n, aztán
+                  évekig a marketing felé sodródtam. Idén év elején tértem vissza igazán a
+                  fejlesztéshez: baráti megbízásokból kezdtem webalkalmazásokat építeni, és
+                  hamar rájöttem, hogy ezzel foglalkozom a legtöbbet mindenek közül — így lett
+                  ez a fő projektem.
+                </p>
+                <p className="mt-3 leading-relaxed text-ink/80">
+                  Ez a háttér nálam nem hátrány, hanem előny: értem a marketing és a konverzió
+                  oldalát is, nem csak a kódot — és a legújabb AI-eszközökkel gyorsabban,
+                  megbízhatóbban építem meg neked, amire szükséged van, a piaci árak
+                  töredékéért. Nincs közvetítő réteg: az első egyeztetéstől az üzemeltetésig
+                  végig velem beszélsz.”
                 </p>
                 <p className="mt-4 font-display text-base font-semibold text-ink">Kardos Bálint</p>
                 <p className="text-sm text-ink/60">Alapító & vezető fejlesztő</p>
