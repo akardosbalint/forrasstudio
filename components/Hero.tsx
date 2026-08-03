@@ -7,13 +7,13 @@ import { ControlledBlueprintDiagram } from "@/components/BlueprintDiagram";
 import { Spotlight } from "@/components/Spotlight";
 
 const EYEBROW_TEXT =
-  "AI-alapú fejlesztés — webalkalmazások, automatizáció és biztonságos rendszerek";
+  "Weboldalak, webalkalmazások, közösségi platformok és AI-alapú automatizáció";
 
 const BODY_TEXT_1 =
-  "A FlowCore a fejlesztés új generációja: a legmodernebb technológiákkal és AI-alapú eszközökkel építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért.";
+  "A legmodernebb technológiákkal és AI-alapú eszközökkel építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért.";
 
 const BODY_TEXT_2 =
-  "Egy fiatal, technológiavezérelt csapat vagyunk, amely elérhetővé teszi a kompromisszum-mentes egyedi szoftverfejlesztést mindenki számára: időpontfoglalástól a fizetésen és az ügyfél-CRM-en át a zárt közösségi felületekig és a hírlevél-automatizációig.";
+  "Célunk, hogy elérhetővé tegyük a kompromisszum-mentes egyedi szoftverfejlesztést mindenki számára: az egyszerűbb weboldalaktól és időpontfoglalástól, a fizetésen és az ügyfél-CRM-en át a zárt közösségi felületekig és a hírlevél-automatizációig.";
 
 /** Plays automatically on load — no scroll required. The streams draw
  * in staggered, the source node converges, the headline unmasks from
