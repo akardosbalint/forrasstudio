@@ -34,7 +34,7 @@ export default async function QuestionnairesPage() {
           </thead>
           <tbody>
             {templates.map((template) => (
-              <tr key={template.id} className="border-b border-paper-3 last:border-0">
+              <tr key={template.id} className="border-b border-paper-3 last:border-0 hover:bg-paper-2/40">
                 <td className="px-4 py-3">
                   <Link
                     href={`/crm/admin/questionnaires/${template.id}`}

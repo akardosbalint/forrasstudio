@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { verifySession } from "@/lib/auth/rbac";
 import { Wordmark } from "@/components/Wordmark";
+import { CrmNav } from "./CrmNav";
 import { SignOutButton } from "./SignOutButton";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -34,17 +35,7 @@ export default async function CrmDashboardLayout({
               <Wordmark toneClassName="text-ink" />
               <span className="text-ink/40">CRM</span>
             </Link>
-            <nav className="flex items-center gap-4 text-sm">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-ink/70 transition-colors hover:text-ink"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+            <CrmNav items={navItems} />
           </div>
           <div className="flex items-center gap-3 text-sm">
             <span className="text-ink/60">

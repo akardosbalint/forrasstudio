@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { changeLeadStage, type ChangeLeadStageState } from "../actions";
+import { FormMessage } from "../../FormMessage";
 import type { PipelineStage } from "@/generated/prisma/client";
 
 export function StageChangeForm({
@@ -57,9 +58,9 @@ export function StageChangeForm({
           {isPending ? "Frissítés..." : "Státusz frissítése"}
         </button>
       </div>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
       {state?.warning && (
-        <p className="text-sm text-amber-600">{state.warning}</p>
+        <FormMessage type="warning">{state.warning}</FormMessage>
       )}
     </form>
   );

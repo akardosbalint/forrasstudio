@@ -5,6 +5,7 @@ import {
   updateLeadFinancials,
   type UpdateFinancialsState,
 } from "../actions";
+import { FormMessage } from "../../FormMessage";
 
 export function FinancialsForm({
   leadId,
@@ -58,7 +59,7 @@ export function FinancialsForm({
       >
         {isPending ? "Mentés..." : "Mentés"}
       </button>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
     </form>
   );
 }

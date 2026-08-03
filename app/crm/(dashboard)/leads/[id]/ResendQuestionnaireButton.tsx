@@ -5,6 +5,7 @@ import {
   resendQuestionnaireInvite,
   type ResendQuestionnaireState,
 } from "../actions";
+import { FormMessage } from "../../FormMessage";
 
 export function ResendQuestionnaireButton({ leadId }: { leadId: string }) {
   const [state, formAction, isPending] = useActionState<
@@ -22,12 +23,12 @@ export function ResendQuestionnaireButton({ leadId }: { leadId: string }) {
       >
         {isPending ? "Küldés..." : "Kérdőív-link újraküldése"}
       </button>
-      {state?.error && <p className="text-xs text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
       {state?.warning && (
-        <p className="text-xs text-amber-600">{state.warning}</p>
+        <FormMessage type="warning">{state.warning}</FormMessage>
       )}
       {state?.success && (
-        <p className="text-xs text-green-700">Új link kiküldve.</p>
+        <FormMessage type="success">Új link kiküldve.</FormMessage>
       )}
     </form>
   );

@@ -20,7 +20,7 @@ export function StageRow({
   const [color, setColor] = useState(stage.color);
 
   return (
-    <tr className="border-b border-paper-3 last:border-0">
+    <tr className="border-b border-paper-3 last:border-0 hover:bg-paper-2/40">
       <td className="px-4 py-3">
         <div className="flex items-center gap-1">
           <form action={moveStage}>

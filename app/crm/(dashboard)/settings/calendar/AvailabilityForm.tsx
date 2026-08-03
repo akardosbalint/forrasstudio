@@ -5,6 +5,7 @@ import {
   saveRepAvailability,
   type SaveAvailabilityState,
 } from "./actions";
+import { FormMessage } from "../../FormMessage";
 import type { RepAvailability } from "@/generated/prisma/client";
 
 const WEEKDAY_LABELS: Record<number, string> = {
@@ -49,7 +50,7 @@ export function AvailabilityForm({
               defaultValue={existing?.startTime ?? "09:00"}
               min="09:00"
               max="18:00"
-              className="rounded-lg border border-paper-3 bg-white px-2 py-1"
+              className="rounded-lg border border-paper-3 bg-white px-3 py-2"
             />
             <span className="text-ink/40">–</span>
             <input
@@ -58,14 +59,14 @@ export function AvailabilityForm({
               defaultValue={existing?.endTime ?? "18:00"}
               min="09:00"
               max="18:00"
-              className="rounded-lg border border-paper-3 bg-white px-2 py-1"
+              className="rounded-lg border border-paper-3 bg-white px-3 py-2"
             />
           </div>
         );
       })}
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
       {state?.success && (
-        <p className="text-sm text-green-700">Elérhetőség elmentve.</p>
+        <FormMessage type="success">Elérhetőség elmentve.</FormMessage>
       )}
       <button
         type="submit"
