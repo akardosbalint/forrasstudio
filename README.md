@@ -91,12 +91,21 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
     a `prisma.config.ts`-ben és a `DATABASE_URL` env változóban él. A
     generált kliens az (gitignore-olt) `generated/prisma/` mappába kerül,
     `npm install` után automatikusan (`postinstall` script).
-- **Auth: Supabase Auth** (email/jelszó + később Google SSO) a NextAuth.js
-  helyett — a projekt már Supabase-re épül, a Supabase Auth managed
-  jelszó-hash-elést, munkamenet-JWT-t, rate limitinget (a login endpoint a
-  Supabase saját, hoszingolt Auth API-ja, amit a böngésző hív közvetlenül —
-  ezért nincs saját login API route-unk rate limitelni) és email-alapú
-  jelszó-visszaállítást ad készen.
+- **Auth: Supabase Auth, magic link (jelszó nélkül)** a NextAuth.js helyett
+  — a projekt már Supabase-re épül, a Supabase Auth managed munkamenet-JWT-t
+  és rate limitinget ad készen (a login endpoint a Supabase saját,
+  hosztolt Auth API-ja, amit a böngésző hív közvetlenül — ezért nincs saját
+  login API route-unk rate limitelni). Nincs jelszó: a `/crm/login` oldal
+  (`LoginForm.tsx`) `supabase.auth.signInWithOtp({ shouldCreateUser: false
+  })`-t hív, ami egyszer-használatos, rövid élettartamú bejelentkező linket
+  küld emailben — és **kizárólag** olyan email címre, ami már létezik a
+  Supabase Auth-ban (a `shouldCreateUser: false` miatt ismeretlen címre nem
+  küld linket, és nem is hoz létre új usert). A linkre kattintás az
+  `app/auth/callback/route.ts` route handlerre irányít, ami a PKCE
+  `code`-ot valódi munkamenetre váltja, majd a `/crm`-re (vagy a `next`
+  paraméterben kért oldalra) irányít. Új user tehát csak manuálisan, a
+  Supabase Auth Dashboardból hozható létre (lásd lent a "Beüzemelés"
+  résznél) — jelenleg csak egy: `balint@flowcore.hu`.
 - **Jogosultságkezelés**: `Profile` tábla (Prisma) 1:1-ben a Supabase Auth
   felhasználóval, `role` mezővel (`ADMIN` / `SALES_REP` / `VIEWER`).
   `lib/auth/rbac.ts` a Data Access Layer: minden CRM oldal/server action
@@ -120,12 +129,26 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
    npx prisma db seed
    ```
 4. Hozz létre egy usert a Supabase Auth-ban (Dashboard → Authentication →
-   Users → Add user), a `FIRST_ADMIN_EMAIL`-ben megadott email címmel —
-   első bejelentkezéskor a rendszer automatikusan admin `Profile` sort hoz
-   létre neki.
-5. `npm run dev`, majd `/crm/login`.
+   Users → Add user), a `FIRST_ADMIN_EMAIL`-ben megadott email címmel
+   (jelenleg: `balint@flowcore.hu`) — jelszó nem kell hozzá (magic link
+   auth), de az "Auto Confirm User" opciót jelöld be, hogy a cím azonnal
+   megerősítettnek számítson. Első bejelentkezéskor a rendszer
+   automatikusan admin `Profile` sort hoz létre neki. Mivel a login
+   `shouldCreateUser: false`-szal hív `signInWithOtp`-t, más email címre
+   nem is küldhető bejelentkező link, amíg ott nincs Dashboardból
+   létrehozott user — ez tartja egyelőre egyetlen userre zárva a rendszert.
+5. Supabase Dashboard → Authentication → URL Configuration: a `Site URL`
+   legyen a `NEXT_PUBLIC_APP_URL` (pl. `http://localhost:3000` fejlesztésben,
+   `https://crm.flowcore.hu` élesben), és vedd fel a `Redirect URLs` közé az
+   `<NEXT_PUBLIC_APP_URL>/auth/callback` címet — enélkül a Supabase a magic
+   link kattintás után nem a `/auth/callback` route handlerre, hanem a Site
+   URL-re irányít, és a bejelentkezés nem fejeződik be.
+6. `npm run dev`, majd `/crm/login` — add meg az email címet, a Supabase
+   elküldi a bejelentkező linket (helyi fejlesztésben a Supabase projekt
+   Dashboard → Authentication → Logs alatt, vagy a beállított SMTP-n
+   keresztül nézhető meg/érkezik meg).
 
-6. Email küldéshez (kérdőív-meghívó) állítsd be a `RESEND_API_KEY` /
+7. Email küldéshez (kérdőív-meghívó) állítsd be a `RESEND_API_KEY` /
    `NOTIFICATION_EMAIL_FROM` env változókat is (lásd fent, "Email-értesítés
    beüzemelése"), enélkül a stádiumváltás lefut, de figyelmeztetést kapsz,
    hogy az email küldése nem sikerült.
