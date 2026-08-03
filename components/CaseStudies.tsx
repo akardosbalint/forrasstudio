@@ -48,15 +48,7 @@ const caseStudies = [
     modules: ["Fizetési kapu integráció", "Felhasználókezelés"],
   },
   {
-    name: "Purnima Vision",
-    domain: "purnima.vision",
-    href: "https://purnima.vision",
-    description: "Vedikus asztrológiai weboldal időpontfoglalással és belsős CRM rendszerrel.",
-    pillar: "both" as Pillar,
-    modules: ["Időpontfoglalás", "Belsős CRM rendszer"],
-  },
-  {
-    name: "Okoskonyha",
+    name: "Kardos Bálint Okoskonyhája",
     domain: "akardosbalint.hu",
     href: "https://akardosbalint.hu",
     description:
