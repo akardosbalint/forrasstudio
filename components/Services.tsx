@@ -78,7 +78,7 @@ const pillars = [
     eyebrow: "1. pillér",
     title: "Webalkalmazás-fejlesztés",
     description:
-      "Modern, típusbiztos webalkalmazások React/Next.js és TypeScript alapokon — időpontfoglalás, fizetési integráció és ügyfél-CRM, a vállalkozásod folyamataira szabva.",
+      "Modern, típusbiztos webalkalmazások React/Next.js és TypeScript alapokon, AI-asszisztált fejlesztéssel — időpontfoglalás, fizetési integráció és ügyfél-CRM, a vállalkozásod folyamataira szabva, gyorsabban és olcsóbban, mint egy hagyományos ügynökségnél.",
   },
   {
     icon: "community" as const,
@@ -92,7 +92,7 @@ const pillars = [
     eyebrow: "3. pillér",
     title: "Automatizáció & AI",
     description:
-      "Hírlevél- és e-mail-automatizáció, admin dashboardok, intelligens riportok és AI-alapú funkciók veszik le rólad az ismétlődő adminisztrációt — és jelzik, mikor van szükség rád személyesen.",
+      "Hírlevél- és e-mail-automatizáció, admin dashboardok, intelligens riportok és AI-alapú funkciók — ugyanazok az eszközök, amikkel mi magunk is dolgozunk — veszik le rólad az ismétlődő adminisztrációt, és jelzik, mikor van szükség rád személyesen.",
   },
 ];
 
@@ -101,13 +101,13 @@ const capabilities = [
     icon: "system" as const,
     title: "Teljes rendszer egy kézből",
     description:
-      "A weboldal, a foglalás, a fizetés, a CRM, a beléptetés és az automatizáció nem külön projektek, hanem egymással összehangolt modulok — egy csapat tervezi és köti össze mindet, nem több különálló szállító.",
+      "A weboldal, a foglalás, a fizetés, a CRM, a beléptetés és az automatizáció nem külön projektek, hanem egymással összehangolt modulok — egy csapat tervezi és köti össze mindet, a piaci átlag töredékéért, nem több különálló szállító.",
   },
   {
     icon: "ops" as const,
     title: "Hosszú távú üzemeltetés & továbbfejlesztés",
     description:
-      "Az élesítés nem a munka vége. A megépített rendszereket folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább — ez nálunk folyamatos felelősségvállalás, nem egyszeri leszállított munka.",
+      "Az élesítés nem a munka vége. A megépített rendszereket folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább — biztonságosan, megbízhatóan, hosszú távon. Ez nálunk folyamatos felelősségvállalás, nem egyszeri leszállított munka.",
   },
 ];
 

@@ -36,8 +36,9 @@ export function Team() {
         </Reveal>
         <Reveal delay={160}>
           <p className="mt-3 max-w-2xl leading-relaxed text-ink/70">
-            Hárman vagyunk. Nincs közvetítő réteg — a projekt teljes ideje alatt
-            közvetlenül velünk egyeztetsz.
+            Hárman vagyunk: az új generáció fejlesztői, AI-alapú eszközökkel a hátunk
+            mögött. Nincs közvetítő réteg — a projekt teljes ideje alatt közvetlenül
+            velünk egyeztetsz.
           </p>
         </Reveal>
 

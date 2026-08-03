@@ -29,7 +29,7 @@ const steps: { number: string; title: string; description: string; icon: StepIco
     number: "03",
     title: "Fejlesztés",
     description:
-      "Megépítjük a rendszert — a modulok egymással összehangolva, a saját folyamataidra szabva.",
+      "Megépítjük a rendszert — AI-asszisztált fejlesztéssel, a modulok egymással összehangolva, gyorsabban és olcsóbban, mint egy hagyományos csapatnál.",
     icon: "build",
   },
   {

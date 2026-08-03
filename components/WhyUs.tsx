@@ -2,24 +2,24 @@ import { Reveal } from "@/components/Reveal";
 
 const reasons = [
   {
-    title: "Modern technológiai stack, éles gyakorlatban bevizsgálva",
+    title: "AI-gyorsított fejlesztés, éles gyakorlatban bevizsgálva",
     description:
-      "React, Next.js, Astro, Supabase, automatizáció és AI — olyan technológiák, amiket több iparágban, valós forgalmú rendszerekben teszteltünk, nem csak elméletben.",
+      "React, Next.js, Astro, Supabase és a legújabb AI-fejlesztői eszközök — olyan stacket használunk, amit több iparágban, valós forgalmú, biztonságos rendszerekben teszteltünk, nem csak elméletben.",
   },
   {
-    title: "Közvetlen kapcsolat a fejlesztőkkel",
+    title: "A piaci árak töredékéért, ugyanolyan megbízhatósággal",
     description:
-      "Hárman vagyunk, nincs közvetítő réteg vagy projektmenedzser-lánc — közvetlenül azzal egyeztetsz, aki a rendszert építi.",
+      "Az AI-val felgyorsított munkafolyamatunk miatt nem fizetsz rá a régi ügynökségek rezsijére — költséghatékony, mégis megbízható és biztonságos rendszert kapsz.",
+  },
+  {
+    title: "Az új generáció, közvetítők nélkül",
+    description:
+      "Hárman vagyunk, nincs közvetítő réteg vagy projektmenedzser-lánc — közvetlenül azzal egyeztetsz, aki modern eszközökkel és AI-val építi a rendszeredet.",
   },
   {
     title: "Felelősségvállalás az élesítés után is",
     description:
       "A rendszert nem felejtjük el a leszállítás után sem. Folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább, hosszú távon.",
-  },
-  {
-    title: "Teljes rendszer, egy kézből",
-    description:
-      "A weboldal, a foglalás, a fizetés, a CRM, a beléptetés és az automatizáció egymással összehangolva készül — nem több különálló szállítótól összerakva.",
   },
 ];
 
