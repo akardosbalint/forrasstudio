@@ -54,23 +54,25 @@ function ServiceIcon({ name }: { name: IconName }) {
   };
 
   return (
-    <svg
-      viewBox="0 0 32 32"
-      aria-hidden="true"
-      className="h-8 w-8 text-spring transition-transform duration-300 group-hover:scale-110"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {paths[name]}
-    </svg>
+    <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-spring/10 text-spring transition-transform duration-300 group-hover:scale-110 group-hover:bg-spring/15">
+      <svg
+        viewBox="0 0 32 32"
+        aria-hidden="true"
+        className="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {paths[name]}
+      </svg>
+    </span>
   );
 }
 
 const cardClasses =
-  "group h-full rounded-xl border border-paper-3 bg-white/50 p-6 transition-[border-color,background-color,box-shadow] duration-300 hover:border-spring/50 hover:bg-white/80 hover:shadow-2xl hover:shadow-spring/20 sm:p-7";
+  "glow-card group h-full rounded-2xl border border-paper-3 bg-white/60 p-6 [--glow-color:var(--color-spring)] hover:border-spring/60 hover:bg-white/90 sm:p-7";
 
 const pillars = [
   {
@@ -121,7 +123,7 @@ export function Services() {
           </p>
         </Reveal>
         <Reveal delay={80}>
-          <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             Három pillér, egy rendszer
           </h2>
         </Reveal>

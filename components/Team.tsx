@@ -30,7 +30,7 @@ export function Team() {
           </p>
         </Reveal>
         <Reveal delay={80}>
-          <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             Mi vagyunk a FlowCore
           </h2>
         </Reveal>
@@ -46,7 +46,9 @@ export function Team() {
           {team.map((member, index) => (
             <Reveal key={member.name} delay={index * 100} className="h-full">
               <MagneticCard className="h-full">
-                <div className="group h-full rounded-xl border border-paper-2 bg-white/50 p-6 text-center transition-all duration-300 hover:border-brook/40 hover:bg-white/80 hover:shadow-2xl hover:shadow-brook/20">
+                <div
+                  className="glow-card group h-full rounded-2xl border border-paper-2 bg-white/60 p-6 text-center [--glow-color:var(--color-brook)] hover:border-brook/50 hover:bg-white/90"
+                >
                   <Image
                     src={member.photo}
                     alt={`${member.name} portréja`}

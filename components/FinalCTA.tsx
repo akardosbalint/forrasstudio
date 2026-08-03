@@ -14,7 +14,7 @@ export function FinalCTA() {
           </p>
         </Reveal>
         <Reveal delay={80}>
-          <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Kérj visszahívást, és beszéljük át a rendszered
           </h2>
         </Reveal>

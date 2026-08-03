@@ -67,7 +67,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
   }
 
   const inputClasses =
-    "w-full rounded-md border border-white/15 bg-white/5 px-4 py-3 text-paper placeholder:text-paper/40 outline-none transition-all duration-200 focus:border-spring focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(95,179,163,0.15)]";
+    "w-full rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-paper placeholder:text-paper/40 outline-none transition-all duration-200 focus:border-spring focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(95,179,163,0.15)]";
   const labelClasses = "text-xs font-mono uppercase tracking-wider text-paper/60";
 
   if (state === "success") {
@@ -191,7 +191,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
       <MagneticButton
         type="submit"
         disabled={state === "submitting"}
-        className="btn-shine mt-4 w-full whitespace-nowrap rounded-md bg-amber px-6 py-3 font-sans font-semibold text-ink transition-colors duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
+        className="btn-shine mt-4 w-full whitespace-nowrap rounded-full bg-amber px-6 py-3 font-sans font-semibold text-ink transition-colors duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
       >
         {state === "submitting" ? "Küldés…" : "Hívjatok vissza"}
       </MagneticButton>

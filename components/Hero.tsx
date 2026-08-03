@@ -9,8 +9,11 @@ import { Spotlight } from "@/components/Spotlight";
 const EYEBROW_TEXT =
   "AI-alapú fejlesztés — webalkalmazások, automatizáció és biztonságos rendszerek";
 
-const BODY_TEXT =
-  "A FlowCore a fejlesztés új generációja: a legmodernebb technológiákkal és AI-alapú eszközökkel építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért. Nem egy bekövesedett, lassú struktúra vagyunk, hanem egy fiatal, technológiavezérelt csapat, amely elérhetővé teszi az egyedi szoftverfejlesztést mindenki számára: időpontfoglalástól a fizetésen és az ügyfél-CRM-en át a zárt közösségi felületekig és a hírlevél-automatizációig.";
+const BODY_TEXT_1 =
+  "A FlowCore a fejlesztés új generációja: a legmodernebb technológiákkal és AI-alapú eszközökkel építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért.";
+
+const BODY_TEXT_2 =
+  "Egy fiatal, technológiavezérelt csapat vagyunk, amely elérhetővé teszi a kompromisszum-mentes egyedi szoftverfejlesztést mindenki számára: időpontfoglalástól a fizetésen és az ügyfél-CRM-en át a zárt közösségi felületekig és a hírlevél-automatizációig.";
 
 /** Plays automatically on load — no scroll required. The streams draw
  * in staggered, the source node converges, the headline unmasks from
@@ -27,7 +30,7 @@ const BODY_TEXT =
 export function Hero() {
   const eyebrowRef = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
-  const bodyRef = useRef<HTMLParagraphElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const pathRefs = useRef<(SVGPathElement | null)[]>([]);
   const nodeRef = useRef<SVGGElement | null>(null);
@@ -81,22 +84,23 @@ export function Hero() {
           <div className="mt-5 overflow-hidden">
             <h1
               ref={headlineRef}
-              className="font-display text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.2rem]"
+              className="font-display text-4xl font-bold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.85rem]"
             >
               Egyedi szoftver mindenkinek —{" "}
-              <span className="italic text-amber">
-                AI-val gyorsabban, biztonságosabban, töredék áron.
+              <span className="bg-gradient-to-r from-amber via-amber to-spring bg-clip-text italic text-transparent">
+                a{" "}legújabb technológiával, gyorsabban, biztonságosabban, kedvezőbb áron.
               </span>
             </h1>
           </div>
 
-          <p ref={bodyRef} className="mt-6 max-w-xl text-lg leading-relaxed text-paper/75">
-            {BODY_TEXT}
-          </p>
+          <div ref={bodyRef} className="mt-6 max-w-xl space-y-4 text-lg leading-relaxed text-paper/75">
+            <p>{BODY_TEXT_1}</p>
+            <p>{BODY_TEXT_2}</p>
+          </div>
 
           <div
             ref={formRef}
-            className="mt-10 rounded-xl border border-white/10 bg-white/5 p-5 transition-colors duration-300 hover:border-white/20 sm:p-6"
+            className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors duration-300 hover:border-spring/40 sm:p-6"
           >
             <p className="mb-4 font-sans text-sm font-medium text-paper/90">
               Kérj visszahívást — 2 mező, egy munkanapon belül jelentkezünk.
