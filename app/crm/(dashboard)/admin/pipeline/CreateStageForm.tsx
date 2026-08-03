@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createStage, type FormState } from "./actions";
+import { FormMessage } from "../../FormMessage";
 
 export function CreateStageForm() {
   const [state, formAction, isPending] = useActionState<FormState, FormData>(
@@ -10,7 +11,7 @@ export function CreateStageForm() {
   );
 
   return (
-    <form action={formAction} className="flex items-end gap-3 rounded-xl border border-dashed border-paper-3 p-4">
+    <form action={formAction} className="flex items-end gap-3 rounded-xl border border-dashed border-amber/30 p-4">
       <div className="flex flex-col gap-1.5">
         <label htmlFor="label" className="text-sm font-medium">
           Új stádium neve
@@ -30,7 +31,7 @@ export function CreateStageForm() {
           id="color"
           name="color"
           type="color"
-          defaultValue="#6366f1"
+          defaultValue="#8b5cf6"
           className="h-9 w-12 rounded"
         />
       </div>
@@ -45,7 +46,7 @@ export function CreateStageForm() {
       >
         {isPending ? "Létrehozás..." : "+ Stádium hozzáadása"}
       </button>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
     </form>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { addQuestion, type FormState } from "../actions";
+import { FormMessage } from "../../../FormMessage";
 
 const TYPE_LABELS: Record<string, string> = {
   TEXT: "Rövid szöveg",
@@ -24,7 +25,7 @@ export function AddQuestionForm({ templateId }: { templateId: string }) {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-xl border border-dashed border-paper-3 p-4"
+      className="flex flex-col gap-3 rounded-xl border border-dashed border-amber/30 p-4"
     >
       <input type="hidden" name="templateId" value={templateId} />
       <div className="flex flex-col gap-1.5">
@@ -85,7 +86,7 @@ export function AddQuestionForm({ templateId }: { templateId: string }) {
           />
         </div>
       )}
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
       <button
         type="submit"
         disabled={isPending}

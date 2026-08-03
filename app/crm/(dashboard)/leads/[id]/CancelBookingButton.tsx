@@ -5,6 +5,7 @@ import {
   cancelBookingInternal,
   type CancelBookingState,
 } from "../actions";
+import { FormMessage } from "../../FormMessage";
 
 export function CancelBookingButton({
   leadId,
@@ -34,7 +35,7 @@ export function CancelBookingButton({
       >
         {isPending ? "Lemondás..." : "Lemondás"}
       </button>
-      {state?.error && <p className="text-xs text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
     </form>
   );
 }

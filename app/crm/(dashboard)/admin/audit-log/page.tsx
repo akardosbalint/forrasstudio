@@ -56,7 +56,7 @@ export default async function AuditLogPage({
         <Link
           href="/crm/admin/audit-log"
           className={`rounded-full border px-3 py-1 ${
-            !entityType ? "border-ink bg-ink text-paper" : "border-paper-3"
+            !entityType ? "bg-gradient-brand border-transparent text-white" : "border-paper-3"
           }`}
         >
           Összes
@@ -67,7 +67,7 @@ export default async function AuditLogPage({
             href={`/crm/admin/audit-log${buildQuery({ entityType: et.entityType, page: undefined })}`}
             className={`rounded-full border px-3 py-1 ${
               entityType === et.entityType
-                ? "border-ink bg-ink text-paper"
+                ? "bg-gradient-brand border-transparent text-white"
                 : "border-paper-3"
             }`}
           >
@@ -106,7 +106,7 @@ export default async function AuditLogPage({
           </thead>
           <tbody>
             {entries.map((entry) => (
-              <tr key={entry.id} className="border-b border-paper-3 last:border-0">
+              <tr key={entry.id} className="border-b border-paper-3 last:border-0 hover:bg-paper-2/40">
                 <td className="px-4 py-3 text-ink/50">
                   {entry.createdAt.toLocaleString("hu-HU")}
                 </td>
