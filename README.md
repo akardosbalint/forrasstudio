@@ -1,9 +1,9 @@
-# FlowCore — landing page + belső sales CRM
+# MI Építettük — landing page + belső sales CRM
 
 A repo két részből áll:
 
 - **Landing page** (`app/(site)/`) — egyoldalas B2B értékesítési oldal a
-  FlowCore számára, visszahívás-kérés formmal.
+  MI Építettük számára, visszahívás-kérés formmal.
 - **CRM** (`app/crm/`) — belső, bejelentkezés-védett sales CRM: lead/deal
   pipeline, kérdőív-automatizáció, discovery call foglalás, Google Calendar
   integráció, riportok. Lásd lent a "CRM" szekciót.
@@ -105,7 +105,7 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
   `code`-ot valódi munkamenetre váltja, majd a `/crm`-re (vagy a `next`
   paraméterben kért oldalra) irányít. Új user tehát csak manuálisan, a
   Supabase Auth Dashboardból hozható létre (lásd lent a "Beüzemelés"
-  résznél) — jelenleg csak egy: `balint@flowcore.hu`.
+  résznél) — jelenleg csak egy: `balint@miepitettuk.hu`.
 - **Jogosultságkezelés**: `Profile` tábla (Prisma) 1:1-ben a Supabase Auth
   felhasználóval, `role` mezővel (`ADMIN` / `SALES_REP` / `VIEWER`).
   `lib/auth/rbac.ts` a Data Access Layer: minden CRM oldal/server action
@@ -130,7 +130,7 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
    ```
 4. Hozz létre egy usert a Supabase Auth-ban (Dashboard → Authentication →
    Users → Add user), a `FIRST_ADMIN_EMAIL`-ben megadott email címmel
-   (jelenleg: `balint@flowcore.hu`) — jelszó nem kell hozzá (magic link
+   (jelenleg: `balint@miepitettuk.hu`) — jelszó nem kell hozzá (magic link
    auth), de az "Auto Confirm User" opciót jelöld be, hogy a cím azonnal
    megerősítettnek számítson. Első bejelentkezéskor a rendszer
    automatikusan admin `Profile` sort hoz létre neki. Mivel a login
@@ -139,7 +139,7 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
    létrehozott user — ez tartja egyelőre egyetlen userre zárva a rendszert.
 5. Supabase Dashboard → Authentication → URL Configuration: a `Site URL`
    legyen a `NEXT_PUBLIC_APP_URL` (pl. `http://localhost:3000` fejlesztésben,
-   `https://crm.flowcore.hu` élesben), és vedd fel a `Redirect URLs` közé az
+   `https://miepitettuk.hu` élesben), és vedd fel a `Redirect URLs` közé az
    `<NEXT_PUBLIC_APP_URL>/auth/callback` címet — enélkül a Supabase a magic
    link kattintás után nem a `/auth/callback` route handlerre, hanem a Site
    URL-re irányít, és a bejelentkezés nem fejeződik be.
@@ -212,8 +212,8 @@ elérhető Postgres megteszi:
 
 ```bash
 # Postgres indítása, adatbázis létrehozása, majd:
-DATABASE_URL="postgresql://user:pass@localhost:5432/flowcore_crm_dev" npm run prisma:migrate
-DATABASE_URL="postgresql://user:pass@localhost:5432/flowcore_crm_dev" npx prisma db seed
+DATABASE_URL="postgresql://user:pass@localhost:5432/mi_epitettuk_crm_dev" npm run prisma:migrate
+DATABASE_URL="postgresql://user:pass@localhost:5432/mi_epitettuk_crm_dev" npx prisma db seed
 ```
 
 Csak a `/crm/**` (bejelentkezés-védett) oldalak igényelnek valódi Supabase

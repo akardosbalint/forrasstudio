@@ -183,7 +183,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
           >
             adatkezelési tájékoztatót
           </a>
-          , és hozzájárulok, hogy a FlowCore a megadott adataimat a
+          , és hozzájárulok, hogy a MI Építettük a megadott adataimat a
           kapcsolatfelvétel céljából kezelje.
         </label>
       </div>
@@ -191,13 +191,13 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
       <MagneticButton
         type="submit"
         disabled={state === "submitting"}
-        className="btn-shine mt-4 w-full whitespace-nowrap rounded-full bg-amber px-6 py-3 font-sans font-semibold text-ink transition-colors duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
+        className="btn-shine bg-gradient-brand mt-4 w-full whitespace-nowrap rounded-full px-6 py-3 font-sans font-semibold text-white transition-shadow duration-200 hover:shadow-lg hover:shadow-amber/30 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
       >
         {state === "submitting" ? "Küldés…" : "Hívjatok vissza"}
       </MagneticButton>
 
       {state === "error" && (
-        <p role="alert" className="pop-in mt-3 text-sm text-amber">
+        <p role="alert" className="pop-in mt-3 text-sm text-red-400">
           {errorMessage}
         </p>
       )}

@@ -11,7 +11,7 @@ export const DIAGRAM_CENTER_X = 600;
 export const DIAGRAM_CENTER_Y = 240;
 
 const DIAGRAM_ARIA_LABEL =
-  "Rendszerdiagram: weboldal, időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés és AI-alapú automatizáció egy közös rendszerbe, a FlowCore-ba folynak össze.";
+  "Rendszerdiagram: weboldal, időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés és AI-alapú automatizáció egy közös rendszerbe, a MI Építettükbe folynak össze.";
 
 type ControlledBlueprintDiagramProps = {
   registerPath: (el: SVGPathElement | null, index: number) => void;
@@ -78,7 +78,7 @@ export function ControlledBlueprintDiagram({
           dominantBaseline="middle"
           className="font-mono text-[13px] font-semibold tracking-tight fill-ink"
         >
-          FlowCore
+          MI
         </text>
       </g>
     </svg>

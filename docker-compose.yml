@@ -7,9 +7,9 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: flowcore
+      POSTGRES_USER: mi_epitettuk
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set a POSTGRES_PASSWORD in .env}
-      POSTGRES_DB: flowcore_crm
+      POSTGRES_DB: mi_epitettuk_crm
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

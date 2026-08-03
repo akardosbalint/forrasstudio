@@ -5,7 +5,7 @@ import { AmbientFlow } from "@/components/AmbientFlow";
 
 export function FinalCTA() {
   return (
-    <section id="cta" className="grid-pattern relative scroll-mt-20 overflow-hidden bg-ink text-paper">
+    <section id="cta" className="mesh-dark grid-pattern relative scroll-mt-20 overflow-hidden text-paper">
       <AmbientFlow />
       <Spotlight className="mx-auto max-w-3xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
@@ -15,7 +15,8 @@ export function FinalCTA() {
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Kérj visszahívást, és beszéljük át a rendszered
+            Kérj visszahívást — beszéljük át,{" "}
+            <span className="text-gradient-brand">mit építsünk neked</span>
           </h2>
         </Reveal>
         <Reveal delay={160}>

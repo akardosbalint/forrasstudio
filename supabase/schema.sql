@@ -1,4 +1,4 @@
--- FlowCore — visszahívás-kérés tábla
+-- MI Építettük — visszahívás-kérés tábla
 -- Futtasd le a Supabase projekt SQL editorában (vagy migrációként),
 -- miután a [TODO: Supabase env változók] be vannak állítva.
 

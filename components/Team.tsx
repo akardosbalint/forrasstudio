@@ -30,8 +30,8 @@ export function Team() {
           </p>
         </Reveal>
         <Reveal delay={80}>
-          <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-            Mi vagyunk a FlowCore
+          <h2 className="text-gradient-brand mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            Mi építettük
           </h2>
         </Reveal>
         <Reveal delay={160}>

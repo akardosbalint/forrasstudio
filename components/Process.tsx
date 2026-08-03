@@ -226,7 +226,7 @@ function ProcessSimple() {
                   {index < steps.length - 1 && (
                     <span
                       aria-hidden="true"
-                      className="absolute left-0 top-6 hidden h-px w-full translate-x-1/2 bg-gradient-to-r from-spring/60 to-transparent lg:block"
+                      className="absolute left-0 top-6 hidden h-px w-full translate-x-1/2 bg-gradient-to-r from-amber/50 via-pink/40 to-transparent lg:block"
                     />
                   )}
                   <StepIconGraphic name={step.icon} />
