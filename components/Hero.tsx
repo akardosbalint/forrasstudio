@@ -7,10 +7,10 @@ import { ControlledBlueprintDiagram } from "@/components/BlueprintDiagram";
 import { Spotlight } from "@/components/Spotlight";
 
 const EYEBROW_TEXT =
-  "Webalkalmazás-fejlesztés, közösségi platformok és AI-alapú automatizáció";
+  "AI-alapú fejlesztés — webalkalmazások, automatizáció és biztonságos rendszerek";
 
 const BODY_TEXT =
-  "A FlowCore egyedi digitális rendszereket tervez, épít és üzemeltet vállalkozásoknak és közösségeknek — az időpontfoglalástól a fizetésen és az ügyfél-CRM-en át a zárt, tagi közösségi felületekig és a hírlevél-automatizációval támogatott tartalmi oldalakig, kiegészítve AI-alapú funkciókkal (pl. intelligens indexelés, automatizált emlékeztetők). Egy kézből, egymással összehangolva.";
+  "A FlowCore a fejlesztés új generációja: a legmodernebb technológiákkal és AI-alapú eszközökkel építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért. Nem egy bekövesedett, lassú struktúra vagyunk, hanem egy fiatal, technológiavezérelt csapat, amely elérhetővé teszi az egyedi szoftverfejlesztést mindenki számára: időpontfoglalástól a fizetésen és az ügyfél-CRM-en át a zárt közösségi felületekig és a hírlevél-automatizációig.";
 
 /** Plays automatically on load — no scroll required. The streams draw
  * in staggered, the source node converges, the headline unmasks from
@@ -83,9 +83,9 @@ export function Hero() {
               ref={headlineRef}
               className="font-display text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.2rem]"
             >
-              A vállalkozásod teljes digitális rendszere —{" "}
+              Egyedi szoftver mindenkinek —{" "}
               <span className="italic text-amber">
-                megtervezve, megépítve, üzemeltetve.
+                AI-val gyorsabban, biztonságosabban, töredék áron.
               </span>
             </h1>
           </div>

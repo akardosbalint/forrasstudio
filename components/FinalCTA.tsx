@@ -22,7 +22,7 @@ export function FinalCTA() {
           <p className="mt-4 max-w-xl leading-relaxed text-paper/70">
             Írd meg az elérhetőségeidet, mi visszahívunk, és átbeszéljük, milyen
             modulokra van szükséged — foglalás, fizetés, ügyfél-CRM vagy zárt közösségi
-            felület.
+            felület. AI-val gyorsított fejlesztéssel, a piaci árak töredékéért.
           </p>
         </Reveal>
 

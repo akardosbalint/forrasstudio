@@ -21,9 +21,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FlowCore — Egyedi digitális rendszerek vállalkozásoknak",
+  title: "FlowCore — AI-alapú szoftverfejlesztés, töredék áron",
   description:
-    "A FlowCore vállalkozások és közösségek teljes online rendszerét tervezi, építi és üzemelteti: webalkalmazások, közösségi és tagsági platformok, foglalás, fizetés, ügyfél-CRM, tartalmi oldalak hírlevél-automatizációval, valamint AI-alapú funkciók egy kézből.",
+    "A FlowCore a fejlesztés új generációja: modern technológiákkal és AI-alapú eszközökkel épít megbízható, biztonságos digitális rendszereket vállalkozásoknak és közösségeknek — webalkalmazások, automatizáció, foglalás, fizetés, ügyfél-CRM és zárt közösségi platformok, a hagyományos ügynökségek árának töredékéért.",
 };
 
 export default function RootLayout({
