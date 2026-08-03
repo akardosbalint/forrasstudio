@@ -30,7 +30,7 @@ const reasons: { number: string; accent: Accent; title: string; description: str
     accent: "brook",
     title: "Az új generáció, közvetítők nélkül",
     description:
-      "Hárman vagyunk, nincs közvetítő réteg vagy projektmenedzser-lánc — közvetlenül azzal egyeztetsz, aki modern eszközökkel és AI-val építi a rendszeredet.",
+      "Nincs közvetítő réteg vagy projektmenedzser-lánc — közvetlenül azzal egyeztetsz, aki modern eszközökkel és AI-val építi a rendszeredet.",
   },
   {
     number: "04",
