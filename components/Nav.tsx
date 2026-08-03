@@ -71,7 +71,7 @@ export function Nav() {
             aria-hidden="true"
             className="h-2 w-2 flex-shrink-0 rounded-full bg-spring shadow-[0_0_10px_2px] shadow-spring/60 transition-transform duration-300 group-hover:scale-125"
           />
-          FlowCore
+          MI Építettük
         </a>
 
         <ul className="hidden items-center gap-7 md:flex">

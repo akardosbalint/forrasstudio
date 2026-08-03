@@ -39,11 +39,11 @@ async function sendBookingConfirmationEmails(params: {
 }): Promise<{ client: EmailOutcome | null; rep: EmailOutcome }> {
   const startsAtFormatted = formatSlot(params.startsAt);
   const ics = buildIcsEvent({
-    uid: `booking-${params.bookingId}@flowcore-crm`,
+    uid: `booking-${params.bookingId}@miepitettuk-crm`,
     startsAt: params.startsAt,
     endsAt: params.endsAt,
     summary: `Discovery Call — ${params.leadName}`,
-    description: "FlowCore discovery call (90 perc).",
+    description: "MI Építettük discovery call (90 perc).",
     organizerEmail: params.repEmail,
     attendeeEmails: params.leadEmail
       ? [params.repEmail, params.leadEmail]
@@ -203,7 +203,7 @@ export async function createBookingCore(params: {
   const googleEventId = await createGoogleCalendarEvent({
     repId: lead.owner.id,
     summary: `Discovery Call — ${lead.name}`,
-    description: "FlowCore discovery call (90 perc).",
+    description: "MI Építettük discovery call (90 perc).",
     startsAt: params.startsAt,
     endsAt,
     attendeeEmails: lead.email ? [lead.email] : [],
@@ -416,7 +416,7 @@ export async function rescheduleBookingCore(params: {
   const googleEventId = await createGoogleCalendarEvent({
     repId: oldBooking.lead.owner.id,
     summary: `Discovery Call — ${oldBooking.lead.name}`,
-    description: "FlowCore discovery call (90 perc).",
+    description: "MI Építettük discovery call (90 perc).",
     startsAt: params.newStartsAt,
     endsAt: newEndsAt,
     attendeeEmails: oldBooking.lead.email ? [oldBooking.lead.email] : [],

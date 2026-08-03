@@ -31,7 +31,7 @@ export function Footer() {
         <div>
           <p className="flex items-center gap-2 font-display text-lg font-semibold text-paper">
             <span aria-hidden="true" className="h-2 w-2 rounded-full bg-spring" />
-            FlowCore
+            MI Építettük
           </p>
           <p className="mt-2 text-sm">
             Email:{" "}
@@ -65,7 +65,7 @@ export function Footer() {
 
       <div className="border-t border-white/5 px-5 py-5 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-xs text-paper/40 sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} FlowCore. Minden jog fenntartva.</p>
+          <p>© {new Date().getFullYear()} MI Építettük. Minden jog fenntartva.</p>
           <nav aria-label="Jogi dokumentumok" className="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
             {legalLinks.map((link) => (
               <a key={link.href} href={link.href} className="underline decoration-white/20 hover:text-paper">

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
-  title: "Bejelentkezés — FlowCore CRM",
+  title: "Bejelentkezés — MI Építettük CRM",
 };
 
 // A middleware (proxy.ts) session-állapot alapján feltételesen átirányít
@@ -17,7 +17,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="w-full max-w-sm rounded-2xl border border-paper-3 bg-white p-8 shadow-sm">
         <h1 className="mb-1 font-display text-xl font-semibold text-ink">
-          FlowCore CRM
+          MI Építettük CRM
         </h1>
         <p className="mb-6 text-sm text-ink/60">
           Add meg az email címed, és küldünk egy bejelentkező linket.

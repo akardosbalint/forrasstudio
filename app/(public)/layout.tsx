@@ -12,7 +12,7 @@ export default function PublicLayout({
       <header className="border-b border-paper-3 bg-white">
         <div className="mx-auto max-w-2xl px-4 py-4">
           <span className="font-display text-lg font-semibold text-ink">
-            FlowCore
+            MI Építettük
           </span>
         </div>
       </header>
@@ -20,7 +20,7 @@ export default function PublicLayout({
         {children}
       </main>
       <footer className="border-t border-paper-3 py-4 text-center text-xs text-ink/40">
-        © {new Date().getFullYear()} FlowCore
+        © {new Date().getFullYear()} MI Építettük
       </footer>
     </div>
   );

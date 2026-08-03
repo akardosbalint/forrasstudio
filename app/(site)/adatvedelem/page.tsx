@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { LegalPageShell, LegalSection } from "@/components/LegalPageShell";
 
 export const metadata: Metadata = {
-  title: "Adatkezelési tájékoztató — FlowCore",
+  title: "Adatkezelési tájékoztató — MI Építettük",
   description:
-    "A FlowCore adatkezelési tájékoztatója a weboldalon leadott visszahívás-kérésekkel kapcsolatban.",
+    "A MI Építettük adatkezelési tájékoztatója a weboldalon leadott visszahívás-kérésekkel kapcsolatban.",
 };
 
 export default function AdatvedelemPage() {
@@ -17,7 +17,7 @@ export default function AdatvedelemPage() {
       <LegalSection title="1. Az adatkezelő">
         <p>
           A jelen tájékoztató szerinti adatkezelő a{" "}
-          <span className="font-mono text-sm">FlowCore Technologies Kft.</span>.
+          <span className="font-mono text-sm">MI Építettük Kft.</span>.
         </p>
         <ul>
           <li>Székhely: 1027 Budapest, Bem József utca 6. fsz. 3.</li>
