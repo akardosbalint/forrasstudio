@@ -21,8 +21,8 @@ export function FinalCTA() {
         <Reveal delay={160}>
           <p className="mt-4 max-w-xl leading-relaxed text-paper/70">
             Írd meg az elérhetőségeidet, mi visszahívunk, és átbeszéljük, milyen
-            modulokra van szükséged — foglalás, fizetés, ügyfél-CRM vagy zárt közösségi
-            felület. AI-val gyorsított fejlesztéssel, a piaci árak töredékéért.
+            modulokra van szükséged — weboldal, foglalás, fizetés, ügyfél-CRM vagy zárt
+            közösségi felület. AI-val gyorsított fejlesztéssel, a piaci árak töredékéért.
           </p>
         </Reveal>
 

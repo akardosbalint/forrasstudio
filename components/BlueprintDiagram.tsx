@@ -1,16 +1,17 @@
 export const DIAGRAM_MODULES = [
-  { label: "Időpontfoglalás", y: 50, color: "var(--color-spring)" },
-  { label: "Fizetés", y: 145, color: "var(--color-brook)" },
-  { label: "Ügyfél-CRM", y: 240, color: "var(--color-spring)" },
-  { label: "Biztonságos beléptetés", y: 335, color: "var(--color-brook)" },
-  { label: "AI-alapú automatizáció", y: 430, color: "var(--color-spring)" },
+  { label: "Weboldal", y: 50, color: "var(--color-spring)" },
+  { label: "Időpontfoglalás", y: 126, color: "var(--color-brook)" },
+  { label: "Fizetés", y: 202, color: "var(--color-spring)" },
+  { label: "Ügyfél-CRM", y: 278, color: "var(--color-brook)" },
+  { label: "Biztonságos beléptetés", y: 354, color: "var(--color-spring)" },
+  { label: "AI-alapú automatizáció", y: 430, color: "var(--color-brook)" },
 ];
 
 export const DIAGRAM_CENTER_X = 600;
 export const DIAGRAM_CENTER_Y = 240;
 
 const DIAGRAM_ARIA_LABEL =
-  "Rendszerdiagram: időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés és AI-alapú automatizáció egy közös rendszerbe, 'A te forrásod'-ba folynak össze.";
+  "Rendszerdiagram: weboldal, időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés és AI-alapú automatizáció egy közös rendszerbe, a FlowCore-ba folynak össze.";
 
 type ControlledBlueprintDiagramProps = {
   registerPath: (el: SVGPathElement | null, index: number) => void;
@@ -72,19 +73,12 @@ export function ControlledBlueprintDiagram({
         />
         <text
           x={DIAGRAM_CENTER_X}
-          y={DIAGRAM_CENTER_Y - 8}
+          y={DIAGRAM_CENTER_Y}
           textAnchor="middle"
-          className="font-mono text-[11px] font-medium uppercase tracking-wide fill-ink"
+          dominantBaseline="middle"
+          className="font-mono text-[13px] font-semibold tracking-tight fill-ink"
         >
-          A te
-        </text>
-        <text
-          x={DIAGRAM_CENTER_X}
-          y={DIAGRAM_CENTER_Y + 12}
-          textAnchor="middle"
-          className="font-mono text-[13px] font-semibold uppercase tracking-wide fill-ink"
-        >
-          forrásod
+          FlowCore
         </text>
       </g>
     </svg>

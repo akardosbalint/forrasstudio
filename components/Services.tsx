@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
 import { TiltCard } from "@/components/TiltCard";
 
-type IconName = "sales" | "community" | "ai" | "system" | "ops";
+type IconName = "sales" | "content" | "community" | "ai" | "system" | "ops";
 
 function ServiceIcon({ name }: { name: IconName }) {
   const paths: Record<IconName, ReactNode> = {
@@ -11,6 +11,12 @@ function ServiceIcon({ name }: { name: IconName }) {
         <rect x="5" y="7" width="22" height="18" rx="2.5" />
         <path d="M5 13h22" />
         <path d="M11 19h4" />
+      </>
+    ),
+    content: (
+      <>
+        <rect x="7" y="4" width="18" height="24" rx="2.5" />
+        <path d="M11 11h10M11 16h10M11 21h6" />
       </>
     ),
     community: (
@@ -80,18 +86,25 @@ const pillars = [
     eyebrow: "1. pillér",
     title: "Webalkalmazás-fejlesztés",
     description:
-      "Modern, típusbiztos webalkalmazások React/Next.js és TypeScript alapokon, AI-asszisztált fejlesztéssel — időpontfoglalás, fizetési integráció és ügyfél-CRM, a vállalkozásod folyamataira szabva, gyorsabban és olcsóbban, mint egy hagyományos ügynökségnél.",
+      "Modern, típusbiztos webalkalmazások React/Next.js és TypeScript alapokon, AI-asszisztált fejlesztéssel — időpontfoglalás, fizetési integráció, ügyfél-CRM és kvíz-alapú felhasználói utak, a vállalkozásod folyamataira szabva, gyorsabban és olcsóbban, mint egy hagyományos ügynökségnél.",
+  },
+  {
+    icon: "content" as const,
+    eyebrow: "2. pillér",
+    title: "Weboldalak & tartalmi platformok",
+    description:
+      "Gyors, statikusan generált bemutatkozó oldalak és blog / MDX-alapú tartalmi platformok, hírlevél-automatizációval összekötve — a megjelenésedtől a közönségépítésig egy rendszerben.",
   },
   {
     icon: "community" as const,
-    eyebrow: "2. pillér",
+    eyebrow: "3. pillér",
     title: "Közösségi & tagsági platformok",
     description:
-      "Zárt, jogosultságkezelt tagi felületek azoknak, akik saját közösséget vagy tagságot építenek — biztonságos beléptetéssel, szerepkör-alapú hozzáféréssel és tagsági szintekkel.",
+      "Zárt, jogosultságkezelt tagi felületek azoknak, akik saját közösséget vagy tagságot építenek — biztonságos beléptetéssel, szerepkör-alapú hozzáféréssel, tagsági szintekkel, képzési tartalommal, jelvényrendszerrel és szakértői értékelésekkel.",
   },
   {
     icon: "ai" as const,
-    eyebrow: "3. pillér",
+    eyebrow: "4. pillér",
     title: "Automatizáció & AI",
     description:
       "Hírlevél- és e-mail-automatizáció, admin dashboardok, intelligens riportok és AI-alapú funkciók — ugyanazok az eszközök, amikkel mi magunk is dolgozunk — veszik le rólad az ismétlődő adminisztrációt, és jelzik, mikor van szükség rád személyesen.",
@@ -124,11 +137,11 @@ export function Services() {
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-            Három pillér, egy rendszer
+            Négy pillér, egy rendszer
           </h2>
         </Reveal>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {pillars.map((pillar, index) => (
             <Reveal key={pillar.title} delay={index * 100} className="h-full">
               <TiltCard className={cardClasses}>
