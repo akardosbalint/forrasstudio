@@ -32,7 +32,16 @@ export function LoginForm() {
     startTransition(async () => {
       const supabase = getSupabaseBrowserClient();
       const next = searchParams.get("next") || "/crm";
-      const redirectTo = new URL("/auth/callback", window.location.origin);
+      // A NEXT_PUBLIC_APP_URL-t részesítjük előnyben window.location.origin
+      // helyett — utóbbi a böngésző aktuális hostját adná vissza, ami egy
+      // Vercel preview deployment URL-je is lehet; egy ilyen deployment
+      // idővel eltűnik, és a rá mutató magic link "DEPLOYMENT_NOT_FOUND"
+      // 404-et adna. Az env var hiányában (pl. helyi fejlesztésben) marad a
+      // window.location.origin fallback.
+      const redirectTo = new URL(
+        "/auth/callback",
+        process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
+      );
       redirectTo.searchParams.set("next", next);
 
       const { error: signInError } = await supabase.auth.signInWithOtp({
