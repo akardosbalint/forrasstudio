@@ -91,6 +91,8 @@ export type ChangeLeadStageState =
   | { error?: string; warning?: string }
   | undefined;
 
+class StageChangeError extends Error {}
+
 export async function changeLeadStage(
   _prevState: ChangeLeadStageState,
   formData: FormData,
@@ -105,78 +107,106 @@ export async function changeLeadStage(
     return { error: "Hiányzó lead vagy stádium azonosító." };
   }
 
-  const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-  if (!lead) {
-    return { error: "A lead nem található." };
-  }
-
-  // Sales rep csak a saját (vagy gazdátlan) leadjeit módosíthatja, admin bármit.
-  if (
-    profile.role === "SALES_REP" &&
-    lead.ownerId &&
-    lead.ownerId !== profile.id
-  ) {
-    return { error: "Nincs jogosultságod ehhez a leadhez." };
-  }
-
-  const [fromStage, toStage] = await Promise.all([
-    prisma.pipelineStage.findUnique({ where: { id: lead.currentStageId } }),
-    prisma.pipelineStage.findUnique({ where: { id: toStageId } }),
-  ]);
-  if (!fromStage || !toStage) {
+  const toStage = await prisma.pipelineStage.findUnique({ where: { id: toStageId } });
+  if (!toStage) {
     return { error: "A stádium nem található." };
   }
 
-  if (!canTransition(fromStage, toStage, profile.role)) {
+  let fromStageId: string;
+  try {
+    fromStageId = await prisma.$transaction(async (tx) => {
+      // A leadet és a jelenlegi stádiumát a tranzakción belül, frissen
+      // olvassuk — nem a kérés elején (esetleg azóta elavult) állapotot. Ha
+      // egy konkurrens kérés időközben már máshova mozgatta a leadet, ne
+      // egy elavult `fromStage` alapján validáljunk és írjunk felül.
+      const freshLead = await tx.lead.findUnique({ where: { id: leadId } });
+      if (!freshLead) {
+        throw new StageChangeError("A lead nem található.");
+      }
+
+      // Sales rep csak a saját (vagy gazdátlan) leadjeit módosíthatja, admin bármit.
+      if (
+        profile.role === "SALES_REP" &&
+        freshLead.ownerId &&
+        freshLead.ownerId !== profile.id
+      ) {
+        throw new StageChangeError("Nincs jogosultságod ehhez a leadhez.");
+      }
+
+      const fromStage = await tx.pipelineStage.findUnique({
+        where: { id: freshLead.currentStageId },
+      });
+      if (!fromStage) {
+        throw new StageChangeError("A stádium nem található.");
+      }
+
+      if (!canTransition(fromStage, toStage, profile.role)) {
+        throw new StageChangeError(
+          `Nem engedélyezett átmenet: "${fromStage.label}" → "${toStage.label}".`,
+        );
+      }
+
+      // A kérdőív-kiküldés triggerelő stádiumba lépés előfeltételeit itt
+      // validáljuk, mielőtt a leadet ténylegesen átmozgatnánk — így nem
+      // kerülhet olyan állapotba, ami "kiküldve"-t állít, miközben nem
+      // sikerült linket generálni.
+      if (toStage.key === SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING) {
+        if (!freshLead.email) {
+          throw new StageChangeError(
+            "A leadhez nincs email cím rögzítve — a kérdőívet nem lehet kiküldeni. Rögzítsd az email címet, majd próbáld újra.",
+          );
+        }
+        const activeTemplate = await tx.questionnaireTemplate.findFirst({
+          where: { isActive: true },
+        });
+        if (!activeTemplate) {
+          throw new StageChangeError(
+            "Nincs aktív kérdőív-sablon — hozz létre egyet az admin felületen, mielőtt kiküldöd.",
+          );
+        }
+      }
+
+      // Feltételes update: csak akkor írjuk, ha a lead a tranzakció eleje óta
+      // még mindig a frissen ellenőrzött `fromStage`-ben van — konkurrens
+      // módosítás esetén a `count` 0, és nem íródik felül egy időközben
+      // történt (esetleg épp emiatt már érvénytelen) változás.
+      const updated = await tx.lead.updateMany({
+        where: { id: leadId, currentStageId: fromStage.id },
+        data: { currentStageId: toStageId },
+      });
+      if (updated.count === 0) {
+        throw new StageChangeError(
+          "A lead státusza időközben megváltozott — frissítsd az oldalt, és próbáld újra.",
+        );
+      }
+
+      await tx.statusHistory.create({
+        data: {
+          leadId,
+          fromStageId: fromStage.id,
+          toStageId,
+          changedById: profile.id,
+          note: typeof note === "string" && note.trim() ? note.trim() : null,
+        },
+      });
+
+      return fromStage.id;
+    });
+  } catch (error) {
     return {
-      error: `Nem engedélyezett átmenet: "${fromStage.label}" → "${toStage.label}".`,
+      error:
+        error instanceof StageChangeError
+          ? error.message
+          : "Ismeretlen hiba történt a stádiumváltás során.",
     };
   }
-
-  // A kérdőív-kiküldés triggerelő stádiumba lépés előfeltételeit itt
-  // validáljuk, mielőtt a leadet ténylegesen átmozgatnánk — így nem
-  // kerülhet olyan állapotba, ami "kiküldve"-t állít, miközben nem sikerült
-  // linket generálni.
-  if (toStage.key === SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING) {
-    if (!lead.email) {
-      return {
-        error:
-          "A leadhez nincs email cím rögzítve — a kérdőívet nem lehet kiküldeni. Rögzítsd az email címet, majd próbáld újra.",
-      };
-    }
-    const activeTemplate = await prisma.questionnaireTemplate.findFirst({
-      where: { isActive: true },
-    });
-    if (!activeTemplate) {
-      return {
-        error:
-          "Nincs aktív kérdőív-sablon — hozz létre egyet az admin felületen, mielőtt kiküldöd.",
-      };
-    }
-  }
-
-  await prisma.$transaction([
-    prisma.lead.update({
-      where: { id: leadId },
-      data: { currentStageId: toStageId },
-    }),
-    prisma.statusHistory.create({
-      data: {
-        leadId,
-        fromStageId: fromStage.id,
-        toStageId,
-        changedById: profile.id,
-        note: typeof note === "string" && note.trim() ? note.trim() : null,
-      },
-    }),
-  ]);
 
   await writeAuditLog({
     userId: profile.id,
     entityType: "Lead",
     entityId: leadId,
     action: "lead.stage_changed",
-    metadata: { fromStageId: fromStage.id, toStageId },
+    metadata: { fromStageId, toStageId },
   });
 
   let warning: string | undefined;

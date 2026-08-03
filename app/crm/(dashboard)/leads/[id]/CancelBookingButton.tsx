@@ -25,6 +25,11 @@ export function CancelBookingButton({
       <button
         type="submit"
         disabled={isPending}
+        onClick={(event) => {
+          if (!confirm("Biztosan lemondod ezt a foglalást? A lead visszakerül \"Időpontfoglalásra vár\" státuszba, és lemondó email megy ki.")) {
+            event.preventDefault();
+          }
+        }}
         className="rounded-lg border border-red-200 bg-white px-3 py-1 text-xs font-medium text-red-600 disabled:opacity-60"
       >
         {isPending ? "Lemondás..." : "Lemondás"}

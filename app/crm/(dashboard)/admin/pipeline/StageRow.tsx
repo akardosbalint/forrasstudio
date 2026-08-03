@@ -1,22 +1,52 @@
 "use client";
 
 import { useState } from "react";
-import { updateStage, deleteStage } from "./actions";
+import { updateStage, deleteStage, moveStage } from "./actions";
+import { ConfirmSubmitButton } from "../../ConfirmSubmitButton";
 import type { PipelineStage } from "@/generated/prisma/client";
 
 export function StageRow({
   stage,
   leadCount,
+  isFirst,
+  isLast,
 }: {
   stage: PipelineStage;
   leadCount: number;
+  isFirst: boolean;
+  isLast: boolean;
 }) {
   const [label, setLabel] = useState(stage.label);
   const [color, setColor] = useState(stage.color);
-  const [order, setOrder] = useState(stage.order);
 
   return (
     <tr className="border-b border-paper-3 last:border-0">
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-1">
+          <form action={moveStage}>
+            <input type="hidden" name="id" value={stage.id} />
+            <input type="hidden" name="direction" value="up" />
+            <button
+              type="submit"
+              disabled={isFirst}
+              className="rounded border border-paper-3 px-2 py-1 text-xs disabled:opacity-30"
+            >
+              ↑
+            </button>
+          </form>
+          <form action={moveStage}>
+            <input type="hidden" name="id" value={stage.id} />
+            <input type="hidden" name="direction" value="down" />
+            <button
+              type="submit"
+              disabled={isLast}
+              className="rounded border border-paper-3 px-2 py-1 text-xs disabled:opacity-30"
+            >
+              ↓
+            </button>
+          </form>
+        </div>
+      </td>
       <td className="px-4 py-3">
         <form action={updateStage} className="flex items-center gap-2">
           <input type="hidden" name="id" value={stage.id} />
@@ -33,13 +63,6 @@ export function StageRow({
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             className="rounded-lg border border-paper-3 bg-white px-2 py-1 text-sm"
-          />
-          <input
-            type="number"
-            name="order"
-            value={order}
-            onChange={(e) => setOrder(Number(e.target.value))}
-            className="w-16 rounded-lg border border-paper-3 bg-white px-2 py-1 text-sm"
           />
           <button
             type="submit"
@@ -58,9 +81,12 @@ export function StageRow({
         {!stage.isSystem && leadCount === 0 && (
           <form action={deleteStage}>
             <input type="hidden" name="id" value={stage.id} />
-            <button type="submit" className="text-xs font-medium text-red-600">
+            <ConfirmSubmitButton
+              confirmMessage={`Biztosan törlöd a(z) "${stage.label}" stádiumot? Ez nem vonható vissza.`}
+              className="text-xs font-medium text-red-600"
+            >
               Törlés
-            </button>
+            </ConfirmSubmitButton>
           </form>
         )}
       </td>
