@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth/rbac";
 import { prisma } from "@/lib/prisma";
 import { deleteQuestion, moveQuestion } from "../actions";
 import { AddQuestionForm } from "./AddQuestionForm";
+import { ConfirmSubmitButton } from "../../../ConfirmSubmitButton";
 
 const TYPE_LABELS: Record<string, string> = {
   TEXT: "Rövid szöveg",
@@ -87,12 +88,12 @@ export default async function QuestionnaireTemplatePage({
               <form action={deleteQuestion}>
                 <input type="hidden" name="id" value={question.id} />
                 <input type="hidden" name="templateId" value={template.id} />
-                <button
-                  type="submit"
+                <ConfirmSubmitButton
+                  confirmMessage={`Biztosan törlöd ezt a kérdést: "${question.label}"? Ez nem vonható vissza.`}
                   className="rounded border border-red-200 px-2 py-1 text-xs text-red-600"
                 >
                   Törlés
-                </button>
+                </ConfirmSubmitButton>
               </form>
             </div>
           </div>

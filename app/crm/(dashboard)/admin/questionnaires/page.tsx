@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth/rbac";
 import { prisma } from "@/lib/prisma";
 import { CreateTemplateForm } from "./CreateTemplateForm";
 import { setActiveTemplate, deleteTemplate } from "./actions";
+import { ConfirmSubmitButton } from "../../ConfirmSubmitButton";
 
 export default async function QuestionnairesPage() {
   await requireRole("ADMIN");
@@ -69,12 +70,12 @@ export default async function QuestionnairesPage() {
                   {!template.isActive && template._count.responses === 0 && (
                     <form action={deleteTemplate}>
                       <input type="hidden" name="id" value={template.id} />
-                      <button
-                        type="submit"
+                      <ConfirmSubmitButton
+                        confirmMessage={`Biztosan törlöd a(z) "${template.name}" kérdőív-sablont? Ez nem vonható vissza.`}
                         className="text-xs font-medium text-red-600"
                       >
                         Törlés
-                      </button>
+                      </ConfirmSubmitButton>
                     </form>
                   )}
                 </td>
