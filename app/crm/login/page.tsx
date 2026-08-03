@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   title: "Bejelentkezés — FlowCore CRM",
 };
 
+// A middleware (proxy.ts) session-állapot alapján feltételesen átirányít
+// erről az oldalról (lásd updateSupabaseSession) — statikusan/edge-cache-elve
+// kiszolgálva ez a redirect-logika ütközhet a cache-elt HTML-lel, ezért ezt
+// az oldalt mindig dinamikusan, cache nélkül kell renderelni.
+export const dynamic = "force-dynamic";
+
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">
