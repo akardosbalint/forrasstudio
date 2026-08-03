@@ -68,7 +68,7 @@ export function CaseStudies() {
           </p>
         </Reveal>
         <Reveal delay={80}>
-          <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             Rendszerek, amiket megépítettünk és üzemeltetünk
           </h2>
         </Reveal>

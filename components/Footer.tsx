@@ -29,7 +29,10 @@ export function Footer() {
     <footer className="border-t border-white/10 bg-ink-3 text-paper/70">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-12 sm:flex-row sm:items-start sm:justify-between sm:px-8">
         <div>
-          <p className="font-display text-lg font-semibold text-paper">FlowCore</p>
+          <p className="flex items-center gap-2 font-display text-lg font-semibold text-paper">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-spring" />
+            FlowCore
+          </p>
           <p className="mt-2 text-sm">
             Email:{" "}
             <a href="mailto:akardosbalint@gmail.com" className="underline decoration-white/20 hover:text-paper">

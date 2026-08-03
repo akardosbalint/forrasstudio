@@ -8,9 +8,9 @@
   --color-ink: #0a0d14;
   --color-ink-2: #10141d;
   --color-ink-3: #161c28;
-  --color-paper: #eef1f6;
-  --color-paper-2: #e1e6ee;
-  --color-paper-3: #d2dae5;
+  --color-paper: #f1eef9;
+  --color-paper-2: #e5e0f3;
+  --color-paper-3: #d6cded;
   --color-amber: #9a82ee;
   --color-amber-dark: #8467e6;
   --color-spring: #14b8a6;
@@ -39,9 +39,26 @@ html {
 }
 
 body {
-  background: var(--color-paper);
+  background:
+    radial-gradient(900px circle at 12% -10%, color-mix(in srgb, var(--color-amber) 12%, transparent), transparent 55%),
+    radial-gradient(800px circle at 100% 15%, color-mix(in srgb, var(--color-spring) 10%, transparent), transparent 50%),
+    var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/* Reusable colored glow used on card hover states — swaps the flat
+   corporate drop-shadow for a tinted glow that reads as "tech product",
+   not "enterprise SaaS". Pass a --glow-color custom property to tint. */
+.glow-card {
+  --glow-color: var(--color-spring);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glow-card:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--glow-color) 55%, transparent),
+    0 18px 40px -12px color-mix(in srgb, var(--glow-color) 45%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
