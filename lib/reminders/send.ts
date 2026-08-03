@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { renderEmailTemplate } from "@/lib/email/templates";
-import { sendTransactionalEmail } from "@/lib/email/resend";
+import { sendTransactionalEmail } from "@/lib/email/smtp";
 import { writeAuditLog } from "@/lib/audit/log";
 import { isReminderDue } from "@/lib/reminders/rules";
 import { DEFAULT_TIMEZONE } from "@/lib/booking/rules";
@@ -52,8 +52,8 @@ async function sendReminder(
 // a toleranciaablakon belül — így a futási gyakoriságtól függetlenül sem
 // marad ki, sem duplázódik emlékeztető.
 //
-// A `reminderXhSentAt` mezőt csak sikeres küldés esetén állítjuk be — ha a
-// Resend hívás hibázik, a következő (5-20 percenkénti) futás újra
+// A `reminderXhSentAt` mezőt csak sikeres küldés esetén állítjuk be — ha az
+// email küldés hibázik, a következő (5-20 percenkénti) futás újra
 // megpróbálja, amíg a toleranciaablakon belül vagyunk, és minden kísérlet
 // audit logba kerül (sikeres/sikertelen egyaránt).
 export async function sendDueReminders(now: Date = new Date()): Promise<void> {

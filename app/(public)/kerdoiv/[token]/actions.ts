@@ -5,7 +5,7 @@ import { writeAuditLog } from "@/lib/audit/log";
 import { parseAndValidateAnswers } from "@/lib/questionnaire/answers";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 import { renderEmailTemplate } from "@/lib/email/templates";
-import { sendTransactionalEmail } from "@/lib/email/resend";
+import { sendTransactionalEmail } from "@/lib/email/smtp";
 
 export type SubmitQuestionnaireState =
   | { error?: string; success?: boolean }

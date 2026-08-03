@@ -14,8 +14,8 @@ A repo két részből áll:
   API route: `app/api/callback-request/route.ts`.
 - **Supabase (Postgres)** — a visszahívás-kérések tárolása a
   `callback_requests` táblában, séma: `supabase/schema.sql`.
-- **Resend** — azonnali email-értesítés minden új visszahívás-kérésnél,
-  `lib/notifications.ts`.
+- **Google Workspace SMTP** — azonnali email-értesítés minden új
+  visszahívás-kérésnél, `lib/notifications.ts`.
 - **Tailwind CSS v4** — design tokenek a `app/globals.css`-ben (`@theme`).
 - **Python automatizálás (jövőbeli)** — `automation/` mappa, lásd az ottani
   README-t.
@@ -43,20 +43,28 @@ Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
 3. Amíg ezek nincsenek beállítva, az API route 503-at ad vissza, a form
    erre felhasználóbarát hibaüzenetet jelenít meg.
 
-## Email-értesítés beüzemelése (Resend)
+## Email-értesítés beüzemelése (Google Workspace SMTP)
 
-1. Hozz létre egy fiókot a [resend.com](https://resend.com) oldalon, és
-   szerezz be egy API kulcsot az API Keys menüpont alatt.
-2. Igazold a saját küldő domainedet a Resend "Domains" menüpontja alatt
-   (DNS rekordok hozzáadásával) — igazolt domain nélkül csak a
-   `onboarding@resend.dev` teszt-cím használható, éles forgalomra nem
-   alkalmas.
-3. Töltsd ki a `.env.example` alapján: `RESEND_API_KEY`,
-   `NOTIFICATION_EMAIL_FROM` (saját, igazolt domainen lévő cím),
-   `NOTIFICATION_EMAIL_TO` (ide fusson be az értesítés).
+1. A küldő Google Workspace fiókodon (pl. `balint@miepitettuk.hu`)
+   kapcsold be a "2 lépéses ellenőrzést" (Google Fiók → Biztonság), ha
+   még nincs bekapcsolva — ez feltétele az Alkalmazásjelszó
+   létrehozásának.
+2. Ugyanott, **Alkalmazásjelszavak** menüpont alatt hozz létre egy új app
+   jelszót (pl. "MI Építettük CRM" néven) — ez egy 16 karakteres,
+   kizárólag SMTP-hez használható jelszó, nem a normál fiókjelszó.
+3. Töltsd ki a `.env.example` alapján: `SMTP_HOST` (`smtp.gmail.com`),
+   `SMTP_PORT` (`587`), `SMTP_USER` (a küldő postafiók címe),
+   `SMTP_PASSWORD` (az imént létrehozott app jelszó), `NOTIFICATION_EMAIL_TO`
+   (ide fusson be az értesítés).
 4. Amíg ezek nincsenek beállítva, a lead továbbra is elmentődik
    Supabase-be, csak az email-értesítés marad el (a hiba a szerver
    logban jelenik meg, a form beküldőjének nem).
+
+   **Fontos**: a Google Workspace "IP-alapú SMTP relay" szolgáltatása
+   (Admin Console → Gmail → Routing) fix, engedélyezett forrás-IP-khez van
+   kötve, ami Vercel serverless függvényekről (dinamikus IP-k) **nem
+   működik** — ezért hitelesített SMTP-t (app jelszóval) használ a
+   rendszer, ami bármilyen IP-ről működik.
 
 ## GDPR és adatkezelés
 
@@ -148,9 +156,10 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
    Dashboard → Authentication → Logs alatt, vagy a beállított SMTP-n
    keresztül nézhető meg/érkezik meg).
 
-7. Email küldéshez (kérdőív-meghívó) állítsd be a `RESEND_API_KEY` /
-   `NOTIFICATION_EMAIL_FROM` env változókat is (lásd fent, "Email-értesítés
-   beüzemelése"), enélkül a stádiumváltás lefut, de figyelmeztetést kapsz,
+7. Email küldéshez (kérdőív-meghívó) állítsd be az `SMTP_HOST` / `SMTP_PORT`
+   / `SMTP_USER` / `SMTP_PASSWORD` env változókat is (lásd fent,
+   "Email-értesítés beüzemelése"), enélkül a stádiumváltás lefut, de
+   figyelmeztetést kapsz,
    hogy az email küldése nem sikerült.
 
 ### Amit érdemes manuálisan tesztelni (Phase 1)
@@ -172,7 +181,7 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
   státuszba tenni → hibaüzenet, a stádium nem változik.
 - Adj meg email címet a leadhez (jelenleg csak létrehozáskor lehet — lead
   szerkesztés a Phase 6 admin körben bővül), majd váltsd "Kérdőív kitöltés
-  alatt" státuszba → a stádium frissül, és ha be van állítva a Resend, a
+  alatt" státuszba → a stádium frissül, és ha be van állítva az SMTP, a
   megadott email címre megérkezik a kérdőív-meghívó linkkel; ha nincs
   beállítva, sárga figyelmeztetés jelenik meg, de a stádium akkor is
   frissül.
@@ -230,7 +239,7 @@ a CRM lead adatlapon (`Lemondás` gomb) keresztül érhető el.
   jelennek meg, napok szerint csoportosítva.
 - Időpont választása + "Időpont lefoglalása" → a lead automatikusan
   "Discovery call lefoglalva" státuszba kerül, a kiválasztott időpont
-  eltűnik a szabad sávok közül (ütközésvizsgálat), és — ha a Resend be van
+  eltűnik a szabad sávok közül (ütközésvizsgálat), és — ha az SMTP be van
   állítva — az ügyfél és a rep is kap egy visszaigazoló emailt `.ics`
   naptármeghívó csatolással.
 - "Átütemezés" → új időpont választható, a régi foglalás
@@ -493,7 +502,7 @@ igazolására:
   (`booking.confirmation_email_sent`, `booking.cancellation_email_sent`,
   `booking.reminder_24h_sent`/`_1h_sent`). Az emlékeztető emailek emellett
   mostantól csak sikeres küldés esetén jelölődnek "kiküldve"-nek, így egy
-  átmeneti Resend-hiba esetén a következő háttérjob-futás újra
+  átmeneti SMTP-hiba esetén a következő háttérjob-futás újra
   megpróbálja.
 - **Email sablonok HTML-injekció kockázata**: a `{{leadName}}`/
   `{{repName}}` típusú változók korábban escape-elés nélkül kerültek a
