@@ -1,9 +1,9 @@
-# KBCo Stúdió — landing page + belső sales CRM
+# FlowCore — landing page + belső sales CRM
 
 A repo két részből áll:
 
 - **Landing page** (`app/(site)/`) — egyoldalas B2B értékesítési oldal a
-  KBCo Stúdió számára, visszahívás-kérés formmal.
+  FlowCore számára, visszahívás-kérés formmal.
 - **CRM** (`app/crm/`) — belső, bejelentkezés-védett sales CRM: lead/deal
   pipeline, kérdőív-automatizáció, discovery call foglalás, Google Calendar
   integráció, riportok. Lásd lent a "CRM" szekciót.
@@ -189,8 +189,8 @@ elérhető Postgres megteszi:
 
 ```bash
 # Postgres indítása, adatbázis létrehozása, majd:
-DATABASE_URL="postgresql://user:pass@localhost:5432/kbco_crm_dev" npm run prisma:migrate
-DATABASE_URL="postgresql://user:pass@localhost:5432/kbco_crm_dev" npx prisma db seed
+DATABASE_URL="postgresql://user:pass@localhost:5432/flowcore_crm_dev" npm run prisma:migrate
+DATABASE_URL="postgresql://user:pass@localhost:5432/flowcore_crm_dev" npx prisma db seed
 ```
 
 Csak a `/crm/**` (bejelentkezés-védett) oldalak igényelnek valódi Supabase

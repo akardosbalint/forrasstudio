@@ -31,7 +31,7 @@ export function Team() {
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Mi vagyunk a KBCo Stúdió
+            Mi vagyunk a FlowCore
           </h2>
         </Reveal>
         <Reveal delay={160}>

@@ -25,7 +25,7 @@ export function buildIcsEvent(params: {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//KBCo Studio//CRM//HU",
+    "PRODID:-//FlowCore//CRM//HU",
     "CALSCALE:GREGORIAN",
     "METHOD:REQUEST",
     "BEGIN:VEVENT",
