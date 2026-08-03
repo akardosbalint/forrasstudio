@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
 import { TiltCard } from "@/components/TiltCard";
 
-type IconName = "sales" | "content" | "community" | "ai" | "system" | "ops";
+type IconName = "webapp" | "content" | "booking" | "community" | "crm" | "ai" | "system" | "ops";
 
 function ServiceIcon({ name }: { name: IconName }) {
   const paths: Record<IconName, ReactNode> = {
-    sales: (
+    webapp: (
       <>
         <rect x="5" y="7" width="22" height="18" rx="2.5" />
         <path d="M5 13h22" />
@@ -19,12 +19,28 @@ function ServiceIcon({ name }: { name: IconName }) {
         <path d="M11 11h10M11 16h10M11 21h6" />
       </>
     ),
+    booking: (
+      <>
+        <rect x="4" y="6" width="24" height="22" rx="3" />
+        <path d="M4 13h24" />
+        <path d="M10 3v6M22 3v6" />
+        <path d="M11 19l3 3 7-7" />
+      </>
+    ),
     community: (
       <>
         <circle cx="12" cy="12" r="4.5" />
         <circle cx="21" cy="15" r="3.5" />
         <path d="M6 25c0-4 2.7-6.5 6-6.5s6 2.5 6 6.5" />
         <path d="M17.5 25c0-3-1.6-5-4-5.8" />
+      </>
+    ),
+    crm: (
+      <>
+        <rect x="4" y="6" width="24" height="20" rx="3" />
+        <circle cx="11.5" cy="14.5" r="3" />
+        <path d="M7 23c0-2.8 2-4.8 4.5-4.8s4.5 2 4.5 4.8" />
+        <path d="M18.5 12.5h7.5M18.5 17h7.5" />
       </>
     ),
     ai: (
@@ -82,32 +98,46 @@ const cardClasses =
 
 const pillars = [
   {
-    icon: "sales" as const,
+    icon: "webapp" as const,
     eyebrow: "1. pillér",
-    title: "Webalkalmazás-fejlesztés",
+    title: "Weboldal- és webalkalmazás-fejlesztés",
     description:
-      "Modern, típusbiztos webalkalmazások React/Next.js és TypeScript alapokon, AI-asszisztált fejlesztéssel — időpontfoglalás, fizetési integráció, ügyfél-CRM és kvíz-alapú felhasználói utak, a vállalkozásod folyamataira szabva, gyorsabban és olcsóbban, mint egy hagyományos ügynökségnél.",
+      "Egyedi, típusbiztos weboldalak és webalkalmazások React, Next.js és TypeScript alapokon, AI-asszisztált fejlesztéssel — kvíz-alapú felhasználói utakkal és a vállalkozásod folyamataira szabva, gyorsabban és a piaci átlag töredékéért, mint egy hagyományos ügynökségnél.",
   },
   {
     icon: "content" as const,
     eyebrow: "2. pillér",
-    title: "Weboldalak & tartalmi platformok",
+    title: "Tartalmi platformok és blogrendszerek",
     description:
-      "Gyors, statikusan generált bemutatkozó oldalak és blog / MDX-alapú tartalmi platformok, hírlevél-automatizációval összekötve — a megjelenésedtől a közönségépítésig egy rendszerben.",
+      "Gyors, statikusan generált bemutatkozó weboldalak és blog / MDX-alapú tartalomkezelő rendszerek, hírlevél-automatizációval összekötve — a megjelenésedtől a közönségépítésig egy rendszerben.",
+  },
+  {
+    icon: "booking" as const,
+    eyebrow: "3. pillér",
+    title: "Időpontfoglalás és online fizetés",
+    description:
+      "Időpontfoglaló rendszerek és online fizetési integrációk — bankkártyás fizetés, előlegkezelés, automatikus számlázás és emlékeztetők, hogy a foglalástól a kifizetésig semmi ne akadjon el.",
   },
   {
     icon: "community" as const,
-    eyebrow: "3. pillér",
-    title: "Közösségi & tagsági platformok",
+    eyebrow: "4. pillér",
+    title: "Közösségi és tagsági platformok",
     description:
-      "Zárt, jogosultságkezelt tagi felületek azoknak, akik saját közösséget vagy tagságot építenek — biztonságos beléptetéssel, szerepkör-alapú hozzáféréssel, tagsági szintekkel, képzési tartalommal, jelvényrendszerrel és szakértői értékelésekkel.",
+      "Zárt, jogosultságkezelt tagi felületek közösségeknek és online képzéseknek — biztonságos beléptetéssel, tagsági szintekkel, jelvényrendszerrel és szakértői értékelésekkel.",
+  },
+  {
+    icon: "crm" as const,
+    eyebrow: "5. pillér",
+    title: "Ügyfélkezelés és CRM rendszerek",
+    description:
+      "Egyedi CRM rendszerek és admin dashboardok, amik átláthatóvá teszik az ügyfeleidet, a megkereséseidet és a folyamataidat — a te munkafolyamatodra szabva, nem egy általános sablon-CRM.",
   },
   {
     icon: "ai" as const,
-    eyebrow: "4. pillér",
-    title: "Automatizáció & AI",
+    eyebrow: "6. pillér",
+    title: "Automatizáció és AI-integráció",
     description:
-      "Hírlevél- és e-mail-automatizáció, admin dashboardok, intelligens riportok és AI-alapú funkciók — ugyanazok az eszközök, amikkel mi magunk is dolgozunk — veszik le rólad az ismétlődő adminisztrációt, és jelzik, mikor van szükség rád személyesen.",
+      "Hírlevél- és e-mail-automatizáció, intelligens riportok és AI-alapú funkciók — ugyanazok az eszközök, amikkel mi magunk is dolgozunk — veszik le rólad az ismétlődő adminisztrációt.",
   },
 ];
 
@@ -137,13 +167,20 @@ export function Services() {
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-            Négy pillér, egy rendszer
+            Hat pillér, egy rendszer
           </h2>
         </Reveal>
+        <Reveal delay={140}>
+          <p className="mt-3 max-w-2xl leading-relaxed text-ink/70">
+            Weboldaltól és időpontfoglalástól az ügyfél-CRM-en és a zárt közösségi
+            felületeken át az AI-alapú automatizációig — mindent egy csapat tervez,
+            épít és üzemeltet, összehangolt rendszerként.
+          </p>
+        </Reveal>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {pillars.map((pillar, index) => (
-            <Reveal key={pillar.title} delay={index * 100} className="h-full">
+            <Reveal key={pillar.title} delay={index * 80} className="h-full">
               <TiltCard className={cardClasses}>
                 <ServiceIcon name={pillar.icon} />
                 <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-ink/40">
