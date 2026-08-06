@@ -164,6 +164,37 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
    figyelmeztetést kapsz,
    hogy az email küldése nem sikerült.
 
+### Migrációk éles környezetben
+
+**Fontos**: a Vercel build csak `prisma generate`-et futtat (lásd
+`package.json` `postinstall`), `prisma migrate deploy`-t **nem** — új
+Prisma migráció hozzáadása után ezt kézzel kell lefuttatni az éles
+adatbázison, különben a migráció sosem kerül alkalmazásra, hiába van
+commitolva a repóban:
+
+```bash
+DATABASE_URL="<éles Supabase connection string>" npx prisma migrate deploy
+```
+
+Alternatívaként a `prisma/migrations/<mappa>/migration.sql` tartalma
+közvetlenül is lefuttatható a Supabase Dashboard SQL editorában (Settings
+→ Database → SQL Editor) — ez akkor kényelmesebb, ha nincs helyben
+Node/Prisma CLI beállítva. Mindkét esetben a `_prisma_migrations` tábla
+(amit a `migrate deploy` automatikusan vezet) tartja nyilván, mely
+migrációk futottak már le — ha SQL editorral futtatod le kézzel, ne
+felejtsd el `migrate deploy`-jal is jelezni, hogy alkalmazva lett (vagy
+utólag is lefuttathatod a `migrate deploy`-t, ami a már lefutott
+migrációt csak nyilvántartásba veszi, nem futtatja le kétszer).
+
+Ugyanez érvényes a `prisma/seed.ts`-re is: az `emailTemplate.upsert`
+`update: {}`-je szándékosan **soha nem írja felül** a már létező sorokat
+(hogy egy admin által szerkesztett email sablont ne írjon felül egy
+újraseedelés) — ezért egy sablon alapszövegének (pl. márkanév) utólagos
+módosítása a kód-oldali fallback-ben (`lib/email/fallbackTemplates.ts`)
+**nem** kerül át automatikusan a már létrehozott adatbázis-sorokba, csak
+egy dedikált migrációval (lásd pl.
+`prisma/migrations/20260806122320_fix_flowcore_brand_in_email_templates`).
+
 ### Amit érdemes manuálisan tesztelni (Phase 1)
 
 - Bejelentkezés a `FIRST_ADMIN_EMAIL`-lel → `/crm`-en admin menüpont

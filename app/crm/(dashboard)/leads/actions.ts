@@ -133,6 +133,10 @@ export async function updateLeadContact(
     return { error: "Nincs jogosultságod ehhez a leadhez." };
   }
 
+  // Gazdátlan lead (pl. a publikus form által létrehozott) az adatait
+  // kiegészítő repet kapja tulajdonosul — ő az, aki ténylegesen felhívta a
+  // leadet, enélkül a foglalási link a discovery call-hoz később
+  // "nincs hozzárendelt kollégánk" hibával elutasítana.
   await prisma.lead.update({
     where: { id: data.leadId },
     data: {
@@ -141,6 +145,7 @@ export async function updateLeadContact(
       company: data.company || null,
       email: data.email || null,
       message: data.message || null,
+      ownerId: lead.ownerId ?? profile.id,
     },
   });
 
@@ -154,6 +159,7 @@ export async function updateLeadContact(
       phone: data.phone,
       company: data.company || null,
       email: data.email || null,
+      autoAssignedOwner: lead.ownerId === null,
     },
   });
 
@@ -188,8 +194,9 @@ export async function changeLeadStage(
   }
 
   let fromStageId: string;
+  let autoAssignedOwner: boolean;
   try {
-    fromStageId = await prisma.$transaction(async (tx) => {
+    ({ fromStageId, autoAssignedOwner } = await prisma.$transaction(async (tx) => {
       // A leadet és a jelenlegi stádiumát a tranzakción belül, frissen
       // olvassuk — nem a kérés elején (esetleg azóta elavult) állapotot. Ha
       // egy konkurrens kérés időközben már máshova mozgatta a leadet, ne
@@ -244,10 +251,16 @@ export async function changeLeadStage(
       // Feltételes update: csak akkor írjuk, ha a lead a tranzakció eleje óta
       // még mindig a frissen ellenőrzött `fromStage`-ben van — konkurrens
       // módosítás esetén a `count` 0, és nem íródik felül egy időközben
-      // történt (esetleg épp emiatt már érvénytelen) változás.
+      // történt (esetleg épp emiatt már érvénytelen) változás. Gazdátlan
+      // lead itt is a stádiumot mozgató repet kapja tulajdonosul (lásd
+      // updateLeadContact ugyanezzel a logikával) — enélkül a foglalási
+      // link "nincs hozzárendelt kollégánk" hibával elutasítana.
       const updated = await tx.lead.updateMany({
         where: { id: leadId, currentStageId: fromStage.id },
-        data: { currentStageId: toStageId },
+        data: {
+          currentStageId: toStageId,
+          ownerId: freshLead.ownerId ?? profile.id,
+        },
       });
       if (updated.count === 0) {
         throw new StageChangeError(
@@ -265,8 +278,11 @@ export async function changeLeadStage(
         },
       });
 
-      return fromStage.id;
-    });
+      return {
+        fromStageId: fromStage.id,
+        autoAssignedOwner: freshLead.ownerId === null,
+      };
+    }));
   } catch (error) {
     return {
       error:
@@ -281,7 +297,7 @@ export async function changeLeadStage(
     entityType: "Lead",
     entityId: leadId,
     action: "lead.stage_changed",
-    metadata: { fromStageId, toStageId },
+    metadata: { fromStageId, toStageId, autoAssignedOwner },
   });
 
   let warning: string | undefined;
