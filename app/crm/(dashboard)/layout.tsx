@@ -21,6 +21,7 @@ export default async function CrmDashboardLayout({
     { href: "/crm", label: "Áttekintés" },
     { href: "/crm/leads", label: "Leadek" },
     { href: "/crm/settings/calendar", label: "Naptár beállítások" },
+    { href: "/crm/settings/profile", label: "Profil" },
     ...(profile.role === "ADMIN"
       ? [{ href: "/crm/admin", label: "Admin" }]
       : []),
