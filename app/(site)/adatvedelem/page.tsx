@@ -89,12 +89,14 @@ export default function AdatvedelemPage() {
             .
           </li>
           <li>
-            <strong>Resend, Inc.</strong> — a form beküldéséről szóló azonnali
-            email-értesítés kézbesítése a stúdió felé; ehhez a neved és
-            telefonszámod továbbításra kerül a Resend rendszerébe.{" "}
+            <strong>Google LLC (Google Workspace)</strong> — a form
+            beküldéséről szóló azonnali email-értesítés kézbesítése a stúdió
+            felé, a stúdió saját Google Workspace fiókján keresztül; ehhez a
+            neved és telefonszámod továbbításra kerül a Google email
+            rendszerébe.{" "}
             <span className="font-mono text-sm">
-              [TODO: Resend DPA / megfelelő adattovábbítási garanciák
-              ellenőrzése, mivel a Resend Egyesült Államok-beli szolgáltató]
+              [TODO: Google Workspace adatfeldolgozási feltételek (Data
+              Processing Addendum) ellenőrzése]
             </span>
             .
           </li>

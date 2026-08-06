@@ -215,7 +215,7 @@ export async function changeLeadStage(
       const result = await triggerQuestionnaireSend(leadId, profile.id);
       if (!result.emailSent) {
         warning =
-          "A stádium frissült, de a kérdőív-link emailben való kiküldése nem sikerült (Resend nincs beállítva vagy hibát adott — lásd audit log).";
+          "A stádium frissült, de a kérdőív-link emailben való kiküldése nem sikerült (az email küldés nincs beállítva vagy hibát adott — lásd audit log).";
       }
     } catch (error) {
       warning =
@@ -418,7 +418,7 @@ export async function resendQuestionnaireInvite(
     if (!result.emailSent) {
       return {
         warning:
-          "Új link generálva, de az email kiküldése nem sikerült (Resend nincs beállítva vagy hibát adott — lásd audit log).",
+          "Új link generálva, de az email kiküldése nem sikerült (az email küldés nincs beállítva vagy hibát adott — lásd audit log).",
       };
     }
   } catch (error) {
