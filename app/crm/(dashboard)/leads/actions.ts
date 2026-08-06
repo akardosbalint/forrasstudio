@@ -20,6 +20,15 @@ const createLeadSchema = z.object({
   ownerId: z.string().uuid().optional().or(z.literal("")),
 });
 
+const updateLeadContactSchema = z.object({
+  leadId: z.string().uuid(),
+  name: z.string().trim().min(1, "A név megadása kötelező."),
+  phone: z.string().trim().min(1, "A telefonszám megadása kötelező."),
+  company: z.string().trim().optional(),
+  email: z.string().trim().email().optional().or(z.literal("")),
+  message: z.string().trim().optional(),
+});
+
 export type CreateLeadState = { error?: string } | undefined;
 
 export async function createLead(
@@ -85,6 +94,72 @@ export async function createLead(
 
   revalidatePath("/crm/leads");
   redirect(`/crm/leads/${lead.id}`);
+}
+
+export type UpdateLeadContactState = { error?: string } | undefined;
+
+// A publikus visszahívás-form (hero) csak nevet + telefonszámot kér — a
+// telefonhívás alatt a repnek ki kell tudnia egészíteni a lead adatait
+// (cég, email, jegyzet), ezért ez az egyetlen hely, ahol az alap
+// kapcsolattartási mezők utólag szerkeszthetők.
+export async function updateLeadContact(
+  _prevState: UpdateLeadContactState,
+  formData: FormData,
+): Promise<UpdateLeadContactState> {
+  const { profile } = await requireRole("ADMIN", "SALES_REP");
+
+  const parsed = updateLeadContactSchema.safeParse({
+    leadId: formData.get("leadId"),
+    name: formData.get("name"),
+    phone: formData.get("phone"),
+    company: formData.get("company"),
+    email: formData.get("email"),
+    message: formData.get("message"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Érvénytelen adat." };
+  }
+
+  const data = parsed.data;
+
+  const lead = await prisma.lead.findUnique({ where: { id: data.leadId } });
+  if (!lead) return { error: "A lead nem található." };
+  if (
+    profile.role === "SALES_REP" &&
+    lead.ownerId &&
+    lead.ownerId !== profile.id
+  ) {
+    return { error: "Nincs jogosultságod ehhez a leadhez." };
+  }
+
+  await prisma.lead.update({
+    where: { id: data.leadId },
+    data: {
+      name: data.name,
+      phone: data.phone,
+      company: data.company || null,
+      email: data.email || null,
+      message: data.message || null,
+    },
+  });
+
+  await writeAuditLog({
+    userId: profile.id,
+    entityType: "Lead",
+    entityId: data.leadId,
+    action: "lead.contact_updated",
+    metadata: {
+      name: data.name,
+      phone: data.phone,
+      company: data.company || null,
+      email: data.email || null,
+    },
+  });
+
+  revalidatePath(`/crm/leads/${data.leadId}`);
+  revalidatePath("/crm/leads");
+  return undefined;
 }
 
 export type ChangeLeadStageState =
