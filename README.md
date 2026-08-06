@@ -12,8 +12,11 @@ A repo két részből áll:
 
 - **Next.js (App Router)** — frontend és backend egy keretrendszerben.
   API route: `app/api/callback-request/route.ts`.
-- **Supabase (Postgres)** — a visszahívás-kérések tárolása a
-  `callback_requests` táblában, séma: `supabase/schema.sql`.
+- **Prisma + Postgres (CRM adatbázis)** — a visszahívás-kérés beküldése egy
+  Lead-et hoz létre a CRM pipeline-jában, "Visszahívásra vár" stádiumban
+  (ugyanaz az adatbázis és modell, amit a CRM admin felülete is használ) —
+  így a form ténylegesen megjelenik a CRM-ben, nem egy elkülönített táblába
+  íródik.
 - **Google Workspace SMTP** — azonnali email-értesítés minden új
   visszahívás-kérésnél, `lib/notifications.ts`.
 - **Tailwind CSS v4** — design tokenek a `app/globals.css`-ben (`@theme`).
@@ -29,19 +32,17 @@ npm run dev
 
 Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
 
-## Supabase beüzemelése
+## Adatbázis beüzemelése
 
-1. Hozz létre egy Supabase projektet, futtasd le a `supabase/schema.sql`
-   fájlt az SQL editorban.
-   - **Ha már korábban létrehoztad a `callback_requests` táblát** (a
-     `consent` oszlop bevezetése előtt), futtasd le a
-     `supabase/migrations/2026-07-01-add-consent.sql` fájlt is — ez adja
-     hozzá utólag a GDPR-hozzájárulást rögzítő oszlopot és frissíti az
-     insert policy-t.
-2. Töltsd ki a `.env.example` alapján a `.env.local` fájlt
-   (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`).
-3. Amíg ezek nincsenek beállítva, az API route 503-at ad vissza, a form
-   erre felhasználóbarát hibaüzenetet jelenít meg.
+A landing page visszahívás-form és a CRM ugyanazt a Postgres adatbázist és
+Prisma sémát használja (lásd lent, "CRM" szekció) — külön Supabase-tábla
+beüzemelése a formhoz **nem** szükséges. Töltsd ki a `.env.example` alapján
+a `.env.local` fájlt (`DATABASE_URL`, `SUPABASE_URL`,
+`SUPABASE_PUBLISHABLE_KEY` — utóbbi kettő a CRM bejelentkezéshez kell).
+
+> A `supabase/schema.sql` és `supabase/migrations/` egy korábbi, önálló
+> `callback_requests` Supabase-táblát dokumentál — ezt az API route már nem
+> használja, a fájlok csak történeti referenciaként maradtak meg.
 
 ## Email-értesítés beüzemelése (Google Workspace SMTP)
 
@@ -56,8 +57,8 @@ Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
    `SMTP_PORT` (`587`), `SMTP_USER` (a küldő postafiók címe),
    `SMTP_PASSWORD` (az imént létrehozott app jelszó), `NOTIFICATION_EMAIL_TO`
    (ide fusson be az értesítés).
-4. Amíg ezek nincsenek beállítva, a lead továbbra is elmentődik
-   Supabase-be, csak az email-értesítés marad el (a hiba a szerver
+4. Amíg ezek nincsenek beállítva, a lead továbbra is elmentődik a CRM
+   pipeline-jába, csak az email-értesítés marad el (a hiba a szerver
    logban jelenik meg, a form beküldőjének nem).
 
    **Fontos**: a Google Workspace "IP-alapú SMTP relay" szolgáltatása
@@ -75,8 +76,9 @@ Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
   előtt.**
 - A visszahívás-formok (`components/CallbackForm.tsx`) kötelező
   hozzájárulási checkboxot tartalmaznak, ami az `adatvedelem` oldalra
-  linkel; a szerver (`app/api/callback-request/route.ts`) és az adatbázis
-  RLS policy-ja is elutasítja a mentést hozzájárulás nélkül.
+  linkel; a szerver (`app/api/callback-request/route.ts`) elutasítja a
+  mentést hozzájárulás nélkül, és a hozzájárulás tényét az audit logba is
+  rögzíti.
 - `components/CookieConsent.tsx` — süti-tájékoztató sáv, ami elmenti a
   választásod a böngésző helyi tárolójában; a lábléc
   &bdquo;Süti beállítások&rdquo; linkje bármikor újra megnyitja.

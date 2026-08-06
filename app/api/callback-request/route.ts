@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
+import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
+import { writeAuditLog } from "@/lib/audit/log";
 import { sendCallbackNotificationEmail } from "@/lib/notifications";
 
 type CallbackRequestPayload = {
@@ -49,37 +51,63 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = getSupabaseServerClient();
-  if (!supabase) {
-    console.error(
-      "[callback-request] Supabase nincs konfigurálva — lásd .env.example ([TODO: Supabase env változók]).",
-    );
-    return NextResponse.json(
-      {
-        error:
-          "A visszahívás-kérések fogadása jelenleg nincs beüzemelve. Kérjük, próbáld újra később.",
-      },
-      { status: 503 },
-    );
-  }
-
-  const { error } = await supabase.from("callback_requests").insert({
-    name,
-    phone,
-    organization: organization || null,
-    email: email || null,
-    message: message || null,
-    source,
-    consent,
+  // A publikus form beküldése a CRM pipeline-jában, "Visszahívásra vár"
+  // stádiumban induló Lead-et hoz létre — ugyanaz a modell, amit az admin
+  // felület manuális lead-felvétele is használ (lásd
+  // app/crm/(dashboard)/leads/actions.ts createLead), hogy a form
+  // ténylegesen megjelenjen a CRM-ben, ne csak egy elkülönített
+  // (korábban semmi által nem olvasott) Supabase táblába írjon.
+  const initialStage = await prisma.pipelineStage.findUnique({
+    where: { key: SYSTEM_STAGE_KEYS.CALLBACK_PENDING },
   });
 
-  if (error) {
-    console.error("[callback-request] Supabase insert error:", error);
+  if (!initialStage) {
+    console.error(
+      "[callback-request] Pipeline nincs beüzemelve (hiányzó callback_pending stádium) — futtasd le a seed scriptet.",
+    );
     return NextResponse.json(
       { error: "Nem sikerült elmenteni a kérésed. Kérjük, próbáld újra." },
       { status: 500 },
     );
   }
+
+  let leadId: string;
+  try {
+    const lead = await prisma.lead.create({
+      data: {
+        name,
+        phone,
+        company: organization || null,
+        email: email || null,
+        message: message || null,
+        source,
+        currentStageId: initialStage.id,
+      },
+    });
+    leadId = lead.id;
+
+    await prisma.statusHistory.create({
+      data: {
+        leadId: lead.id,
+        toStageId: initialStage.id,
+        note: "Publikus visszahívás-kérés form.",
+      },
+    });
+  } catch (error) {
+    console.error("[callback-request] Lead insert error:", error);
+    return NextResponse.json(
+      { error: "Nem sikerült elmenteni a kérésed. Kérjük, próbáld újra." },
+      { status: 500 },
+    );
+  }
+
+  await writeAuditLog({
+    userId: null,
+    entityType: "Lead",
+    entityId: leadId,
+    action: "lead.created",
+    metadata: { source, consent: true },
+  });
 
   // A lead már elmentve — az email-értesítés esetleges hibája nem hiúsíthatja
   // meg a sikeres választ.
