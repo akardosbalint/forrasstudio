@@ -122,7 +122,7 @@ function ProcessPinned({ dict }: { dict: ProcessDict }) {
       window.removeEventListener("resize", handleResize);
       ctx?.revert();
     };
-  }, []);
+  }, [steps.length]);
 
   return (
     <div ref={wrapperRef} className="relative">

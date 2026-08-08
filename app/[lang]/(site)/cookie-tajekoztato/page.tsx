@@ -1,18 +1,26 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { LegalPageShell, LegalSection } from "@/components/LegalPageShell";
+import { isLocale, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/dictionaries";
 
-export const metadata: Metadata = {
-  title: "Sütikezelési tájékoztató — FlowCore",
-  description: "A FlowCore weboldalán használt sütik és hasonló technológiák.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+  const dict = await getDictionary(lang);
+  return {
+    title: dict.site.legal.cookies.metaTitle,
+    description: dict.site.legal.cookies.metaDescription,
+  };
+}
 
-export default function CookieTajekoztatoPage() {
+function ContentHu({ lang }: { lang: Locale }) {
   return (
-    <LegalPageShell
-      eyebrow="Jogi dokumentum"
-      title="Sütikezelési tájékoztató"
-      updated="2026. július 1."
-    >
+    <>
       <LegalSection title="1. Mi az a süti (cookie)">
         <p>
           A sütik olyan kis szövegfájlok, amelyeket a böngésződ ment el a
@@ -56,9 +64,86 @@ export default function CookieTajekoztatoPage() {
         <p>
           A weboldalon leadott visszahívás-kérésekkel kapcsolatos
           adatkezelésről az{" "}
-          <a href="/adatvedelem">Adatkezelési tájékoztatóban</a> olvashatsz.
+          <a href={`/${lang}/adatvedelem`}>Adatkezelési tájékoztatóban</a> olvashatsz.
         </p>
       </LegalSection>
+    </>
+  );
+}
+
+function ContentEn({ lang }: { lang: Locale }) {
+  return (
+    <>
+      <LegalSection title="1. What is a cookie">
+        <p>
+          Cookies are small text files that your browser saves based on the
+          settings of the websites you visit. This policy covers the cookies
+          and similar technologies (e.g. your browser&apos;s local storage,
+          localStorage) used on the FlowCore website.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="2. Which cookies we currently use">
+        <p>
+          The FlowCore website currently <strong>does not use analytics,
+          marketing, or advertising cookies</strong>.
+        </p>
+        <p>
+          We save a single technical entry in your browser&apos;s local storage
+          (localStorage): whether you accepted or declined the cookie
+          notice. This entry does not track you, does not personally
+          identify you, and we do not share any data from it with third
+          parties.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="3. Future changes">
+        <p>
+          If we introduce analytics or marketing cookies in the future (for
+          example, to measure traffic), we will only do so after obtaining
+          your prior consent, and this policy will be updated with the
+          specific cookie&apos;s name, purpose, and duration.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="4. Changing your consent">
+        <p>
+          You can change your previously given cookie preference at any time
+          by clicking the &ldquo;Cookie settings&rdquo; link in the footer at the
+          bottom of the page, or through your browser&apos;s own cookie/storage
+          settings.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Related document">
+        <p>
+          You can read about the processing of data related to callback
+          requests submitted on the website in the{" "}
+          <a href={`/${lang}/adatvedelem`}>Privacy Policy</a>.
+        </p>
+      </LegalSection>
+    </>
+  );
+}
+
+export default async function CookieTajekoztatoPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+  const dict = await getDictionary(lang);
+
+  return (
+    <LegalPageShell
+      lang={lang}
+      dict={dict}
+      eyebrow={dict.site.legal.eyebrow}
+      title={dict.site.legal.cookies.pageTitle}
+      updatedDate={dict.site.legal.updatedDate}
+    >
+      {lang === "hu" ? <ContentHu lang={lang} /> : <ContentEn lang={lang} />}
     </LegalPageShell>
   );
 }
