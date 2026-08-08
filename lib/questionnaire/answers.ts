@@ -1,4 +1,9 @@
 import type { QuestionnaireQuestion } from "@/generated/prisma/client";
+import type { Locale } from "@/lib/i18n/config";
+import { flows as flowsHu } from "@/dictionaries/flows/hu";
+import { flows as flowsEn } from "@/dictionaries/flows/en";
+
+const flowsByLocale = { hu: flowsHu, en: flowsEn } as const;
 
 export type AnswerValue = string | number | boolean | string[];
 export type Answers = Record<string, AnswerValue>;

@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { getLenisInstance } from "@/lib/lenis";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/dictionaries";
 
-const links = [
-  { href: "#szolgaltatasok", label: "Szolgáltatások" },
-  { href: "#referenciak", label: "Referenciák" },
-  { href: "#csapat", label: "Csapat" },
-];
+type NavProps = {
+  lang: Locale;
+  dict: Dictionary["site"]["nav"];
+  langSwitcherLabels: Dictionary["common"]["languageSwitcher"];
+};
 
-export function Nav() {
+export function Nav({ lang, dict, langSwitcherLabels }: NavProps) {
   const [scrolled, setScrolled] = useState(false);
   const [activeHash, setActiveHash] = useState("");
 
@@ -23,7 +26,7 @@ export function Nav() {
   }, []);
 
   useEffect(() => {
-    const sections = links
+    const sections = dict.links
       .map((link) => document.getElementById(link.href.slice(1)))
       .filter((el): el is HTMLElement => Boolean(el));
 
@@ -41,7 +44,7 @@ export function Nav() {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [dict.links]);
 
   function handleAnchorClick(event: React.MouseEvent<HTMLAnchorElement>, hash: string) {
     const lenis = getLenisInstance();
@@ -57,7 +60,7 @@ export function Nav() {
       }`}
     >
       <nav
-        aria-label="Fő navigáció"
+        aria-label={dict.ariaLabel}
         className={`mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 transition-[padding] duration-300 sm:px-8 ${
           scrolled ? "py-2.5" : "py-3.5"
         }`}
@@ -71,7 +74,7 @@ export function Nav() {
         </a>
 
         <ul className="hidden items-center gap-7 md:flex">
-          {links.map((link) => (
+          {dict.links.map((link) => (
             <li key={link.href}>
               <a
                 href={link.href}
@@ -92,13 +95,16 @@ export function Nav() {
           ))}
         </ul>
 
-        <a
-          href="#cta"
-          onClick={(event) => handleAnchorClick(event, "#cta")}
-          className="btn-shine whitespace-nowrap rounded-md bg-amber px-4 py-2 font-sans text-sm font-semibold text-ink transition-all duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/20 active:scale-95"
-        >
-          Visszahívást kérek
-        </a>
+        <div className="flex items-center gap-4">
+          <LanguageSwitcher lang={lang} labels={langSwitcherLabels} className="hidden sm:inline-flex" />
+          <a
+            href="#cta"
+            onClick={(event) => handleAnchorClick(event, "#cta")}
+            className="btn-shine whitespace-nowrap rounded-md bg-amber px-4 py-2 font-sans text-sm font-semibold text-ink transition-all duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/20 active:scale-95"
+          >
+            {dict.cta}
+          </a>
+        </div>
       </nav>
     </header>
   );
