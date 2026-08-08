@@ -1,40 +1,23 @@
 import { Reveal } from "@/components/Reveal";
+import type { Dictionary } from "@/dictionaries";
 
-const reasons = [
-  {
-    title: "Modern technológiai stack, éles gyakorlatban bevizsgálva",
-    description:
-      "React, Next.js, Astro, Supabase, automatizáció és AI — olyan technológiák, amiket több iparágban, valós forgalmú rendszerekben teszteltünk, nem csak elméletben.",
-  },
-  {
-    title: "Közvetlen kapcsolat a fejlesztőkkel",
-    description:
-      "Hárman vagyunk, nincs közvetítő réteg vagy projektmenedzser-lánc — közvetlenül azzal egyeztetsz, aki a rendszert építi.",
-  },
-  {
-    title: "Felelősségvállalás az élesítés után is",
-    description:
-      "A rendszert nem felejtjük el a leszállítás után sem. Folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább, hosszú távon.",
-  },
-  {
-    title: "Teljes rendszer, egy kézből",
-    description:
-      "A weboldal, a foglalás, a fizetés, a CRM, a beléptetés és az automatizáció egymással összehangolva készül — nem több különálló szállítótól összerakva.",
-  },
-];
+type WhyUsProps = {
+  dict: Dictionary["site"]["whyUs"];
+};
 
-export function WhyUs() {
+export function WhyUs({ dict }: WhyUsProps) {
+  const { reasons } = dict;
   return (
     <section className="bg-paper">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
-            <span className="text-ink/30">{"// "}</span>Miért minket
+            <span className="text-ink/30">{"// "}</span>{dict.eyebrow}
           </p>
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Ami minket megkülönböztet
+            {dict.title}
           </h2>
         </Reveal>
 

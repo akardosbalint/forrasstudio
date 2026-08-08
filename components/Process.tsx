@@ -5,41 +5,12 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Reveal } from "@/components/Reveal";
 import { useScrollJackingEnabled } from "@/lib/useScrollJacking";
+import type { Dictionary } from "@/dictionaries";
 
 gsap.registerPlugin(ScrollTrigger);
 
 type StepIcon = "talk" | "plan" | "build" | "launch";
-
-const steps: { number: string; title: string; description: string; icon: StepIcon }[] = [
-  {
-    number: "01",
-    title: "Egyeztetés",
-    description:
-      "Megismerjük a vállalkozásod vagy szervezeted működését: hogyan érnek el az ügyfeleid, hogyan fizetnek, és hol van most súrlódás.",
-    icon: "talk",
-  },
-  {
-    number: "02",
-    title: "Terv & ajánlat",
-    description:
-      "Összeállítjuk, mely modulok kellenek (foglalás, fizetés, CRM, beléptetés), és pontos, átlátható ajánlatot adunk.",
-    icon: "plan",
-  },
-  {
-    number: "03",
-    title: "Fejlesztés",
-    description:
-      "Megépítjük a rendszert — a modulok egymással összehangolva, a saját folyamataidra szabva.",
-    icon: "build",
-  },
-  {
-    number: "04",
-    title: "Élesítés & support",
-    description:
-      "Élesítjük a rendszert, majd folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük — hosszú távon.",
-    icon: "launch",
-  },
-];
+type ProcessDict = Dictionary["site"]["process"];
 
 function StepIconGraphic({ name }: { name: StepIcon }) {
   const paths: Record<StepIcon, ReactNode> = {
@@ -89,7 +60,8 @@ function StepIconGraphic({ name }: { name: StepIcon }) {
 /** Horizontal scroll-jacking track: the 4 steps slide left as the user
  * scrolls vertically through the pinned section, each icon popping in
  * as its panel nears the center. Desktop pointer + motion allowed only. */
-function ProcessPinned() {
+function ProcessPinned({ dict }: { dict: ProcessDict }) {
+  const { steps } = dict;
   const wrapperRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -158,12 +130,12 @@ function ProcessPinned() {
         <div className="mx-auto flex h-full max-w-6xl flex-col justify-center px-5 sm:px-8">
           <Reveal>
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-              <span className="text-ink/30">{"// "}</span>Hogyan dolgozunk
+              <span className="text-ink/30">{"// "}</span>{dict.eyebrow}
             </p>
           </Reveal>
           <Reveal delay={80}>
             <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-              Négy lépés az egyeztetéstől az üzemeltetésig
+              {dict.title}
             </h2>
           </Reveal>
 
@@ -201,18 +173,19 @@ function ProcessPinned() {
 }
 
 /** Fallback: simple vertical staggered reveal, no horizontal scroll-jacking. */
-function ProcessSimple() {
+function ProcessSimple({ dict }: { dict: ProcessDict }) {
+  const { steps } = dict;
   return (
     <div className="bg-paper-3">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-            <span className="text-ink/30">{"// "}</span>Hogyan dolgozunk
+            <span className="text-ink/30">{"// "}</span>{dict.eyebrow}
           </p>
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Négy lépés az egyeztetéstől az üzemeltetésig
+            {dict.title}
           </h2>
         </Reveal>
 
@@ -245,7 +218,11 @@ function ProcessSimple() {
   );
 }
 
-export function Process() {
+type ProcessProps = {
+  dict: ProcessDict;
+};
+
+export function Process({ dict }: ProcessProps) {
   const jackingEnabled = useScrollJackingEnabled();
-  return <section>{jackingEnabled ? <ProcessPinned /> : <ProcessSimple />}</section>;
+  return <section>{jackingEnabled ? <ProcessPinned dict={dict} /> : <ProcessSimple dict={dict} />}</section>;
 }

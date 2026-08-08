@@ -6,20 +6,39 @@ import { parseAndValidateAnswers } from "@/lib/questionnaire/answers";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 import { renderEmailTemplate } from "@/lib/email/templates";
 import { sendTransactionalEmail } from "@/lib/email/resend";
+import type { Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/dictionaries";
 
 export type SubmitQuestionnaireState =
   | { error?: string; success?: boolean }
   | undefined;
 
-class QuestionnaireSubmitError extends Error {}
+// Ez a flow nem dob típusos hibaosztályt (mint a booking BookingError) —
+// a stádium-eltérés esetét belső kóddal jelezzük, a beküldés hívása pedig
+// ezt a kódot fordítja le a `lang` alapján a `flows.questionnaire.errors`
+// szótárral. A tranzakción belüli hiba emiatt egy stabil kódot hordoz, nem
+// előre lokalizált szöveget — így a fordítás egy helyen (a catch ágban)
+// történik.
+class QuestionnaireSubmitError extends Error {
+  code: string;
+  constructor(code: string, message: string) {
+    super(message);
+    this.code = code;
+  }
+}
 
 export async function submitQuestionnaireResponse(
+  lang: Locale,
   _prevState: SubmitQuestionnaireState,
   formData: FormData,
 ): Promise<SubmitQuestionnaireState> {
+  const dict = await getDictionary(lang);
+  const errors: Record<string, string> = dict.flows.questionnaire.errors;
+  const localize = (code: string) => errors[code] ?? errors.UNKNOWN;
+
   const token = String(formData.get("token") ?? "");
   if (!token) {
-    return { error: "Hiányzó token." };
+    return { error: localize("MISSING_TOKEN") };
   }
 
   const link = await prisma.questionnaireLink.findUnique({
@@ -30,16 +49,16 @@ export async function submitQuestionnaireResponse(
   });
 
   if (!link) {
-    return { error: "Érvénytelen link." };
+    return { error: localize("INVALID_LINK") };
   }
   if (link.expiresAt < new Date()) {
-    return { error: "Ez a link már lejárt." };
+    return { error: localize("EXPIRED") };
   }
   if (link.usedAt) {
-    return { error: "Ezt a kérdőívet már kitöltötted." };
+    return { error: localize("ALREADY_SUBMITTED") };
   }
 
-  const result = parseAndValidateAnswers(link.template.questions, formData);
+  const result = parseAndValidateAnswers(link.template.questions, formData, lang);
   if ("error" in result) {
     return { error: result.error };
   }
@@ -48,9 +67,7 @@ export async function submitQuestionnaireResponse(
     where: { key: SYSTEM_STAGE_KEYS.BOOKING_PENDING },
   });
   if (!bookingPendingStage) {
-    return {
-      error: "A rendszer nincs teljesen beüzemelve (hiányzó pipeline stádium).",
-    };
+    return { error: localize("MISSING_STAGE") };
   }
 
   let lead: { email: string | null; name: string };
@@ -68,10 +85,14 @@ export async function submitQuestionnaireResponse(
         include: { currentStage: true },
       });
       if (!freshLead) {
-        throw new QuestionnaireSubmitError("A lead nem található.");
+        throw new QuestionnaireSubmitError(
+          "LEAD_NOT_FOUND",
+          "A lead nem található.",
+        );
       }
       if (freshLead.currentStage.key !== SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING) {
         throw new QuestionnaireSubmitError(
+          "STAGE_MISMATCH",
           "Ez a kérdőív-link már nem aktuális — a lead státusza időközben megváltozott. Ha kérdésed van, keresd a kapcsolattartódat.",
         );
       }
@@ -86,7 +107,10 @@ export async function submitQuestionnaireResponse(
         data: { usedAt: new Date() },
       });
       if (usedUpdate.count === 0) {
-        throw new QuestionnaireSubmitError("Ezt a kérdőívet már kitöltötted.");
+        throw new QuestionnaireSubmitError(
+          "ALREADY_SUBMITTED",
+          "Ezt a kérdőívet már kitöltötted.",
+        );
       }
 
       await tx.questionnaireResponse.create({
@@ -114,10 +138,9 @@ export async function submitQuestionnaireResponse(
     });
   } catch (error) {
     return {
-      error:
-        error instanceof QuestionnaireSubmitError
-          ? error.message
-          : "Ismeretlen hiba történt a beküldés során. Kérjük, próbáld újra.",
+      error: localize(
+        error instanceof QuestionnaireSubmitError ? error.code : "UNKNOWN",
+      ),
     };
   }
 
@@ -130,8 +153,8 @@ export async function submitQuestionnaireResponse(
   });
 
   if (lead.email) {
-    const bookingUrl = `${(process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "")}/foglalas/${token}`;
-    const email = await renderEmailTemplate("questionnaire_submitted", {
+    const bookingUrl = `${(process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "")}/${lang}/foglalas/${token}`;
+    const email = await renderEmailTemplate("questionnaire_submitted", lang, {
       leadName: lead.name,
       bookingLink: bookingUrl,
     });

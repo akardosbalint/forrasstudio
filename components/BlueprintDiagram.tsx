@@ -1,18 +1,12 @@
-export const DIAGRAM_MODULES = [
-  { label: "Időpontfoglalás", y: 50, color: "var(--color-spring)" },
-  { label: "Fizetés", y: 145, color: "var(--color-brook)" },
-  { label: "Ügyfél-CRM", y: 240, color: "var(--color-spring)" },
-  { label: "Biztonságos beléptetés", y: 335, color: "var(--color-brook)" },
-  { label: "AI-alapú automatizáció", y: 430, color: "var(--color-spring)" },
-];
+import type { Dictionary } from "@/dictionaries";
 
 export const DIAGRAM_CENTER_X = 600;
 export const DIAGRAM_CENTER_Y = 240;
 
-const DIAGRAM_ARIA_LABEL =
-  "Rendszerdiagram: időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés és AI-alapú automatizáció egy közös rendszerbe, 'A te forrásod'-ba folynak össze.";
+type BlueprintDiagramDict = Dictionary["site"]["blueprintDiagram"];
 
 type ControlledBlueprintDiagramProps = {
+  dict: BlueprintDiagramDict;
   registerPath: (el: SVGPathElement | null, index: number) => void;
   registerNode: (el: SVGGElement | null) => void;
 };
@@ -26,17 +20,19 @@ type ControlledBlueprintDiagramProps = {
  * (with the default dashoffset of 0 it just renders as one dash
  * spanning the whole normalized path length, i.e. a solid line). */
 export function ControlledBlueprintDiagram({
+  dict,
   registerPath,
   registerNode,
 }: ControlledBlueprintDiagramProps) {
+  const { modules } = dict;
   return (
     <svg
       viewBox="0 0 680 520"
       role="img"
-      aria-label={DIAGRAM_ARIA_LABEL}
+      aria-label={dict.ariaLabel}
       className="h-auto w-full max-w-xl"
     >
-      {DIAGRAM_MODULES.map((module, index) => (
+      {modules.map((module, index) => (
         <g key={module.label} className="diagram-node">
           <path
             ref={(el) => registerPath(el, index)}
@@ -76,7 +72,7 @@ export function ControlledBlueprintDiagram({
           textAnchor="middle"
           className="font-mono text-[11px] font-medium uppercase tracking-wide fill-ink"
         >
-          A te
+          {dict.centerLine1}
         </text>
         <text
           x={DIAGRAM_CENTER_X}
@@ -84,7 +80,7 @@ export function ControlledBlueprintDiagram({
           textAnchor="middle"
           className="font-mono text-[13px] font-semibold uppercase tracking-wide fill-ink"
         >
-          forrásod
+          {dict.centerLine2}
         </text>
       </g>
     </svg>
