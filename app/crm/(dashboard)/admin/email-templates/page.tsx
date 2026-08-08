@@ -15,10 +15,12 @@ const KEY_LABELS: Record<string, string> = {
 export default async function EmailTemplatesPage() {
   await requireRole("ADMIN");
 
-  const dbTemplates = await prisma.emailTemplate.findMany();
+  const dbTemplates = await prisma.emailTemplate.findMany({
+    where: { locale: "hu" },
+  });
   const dbKeys = new Set(dbTemplates.map((t) => t.key));
   const allKeys = Array.from(
-    new Set([...Object.keys(FALLBACK_EMAIL_TEMPLATES), ...dbKeys]),
+    new Set([...Object.keys(FALLBACK_EMAIL_TEMPLATES.hu), ...dbKeys]),
   );
 
   return (

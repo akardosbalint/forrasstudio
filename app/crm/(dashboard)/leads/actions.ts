@@ -18,6 +18,7 @@ const createLeadSchema = z.object({
   email: z.string().trim().email().optional().or(z.literal("")),
   message: z.string().trim().optional(),
   ownerId: z.string().uuid().optional().or(z.literal("")),
+  locale: z.enum(["hu", "en"]).optional(),
 });
 
 export type CreateLeadState = { error?: string } | undefined;
@@ -35,6 +36,7 @@ export async function createLead(
     email: formData.get("email"),
     message: formData.get("message"),
     ownerId: formData.get("ownerId"),
+    locale: formData.get("locale"),
   });
 
   if (!parsed.success) {
@@ -63,6 +65,7 @@ export async function createLead(
       source: "manual",
       currentStageId: initialStage.id,
       ownerId: data.ownerId || profile.id,
+      locale: data.locale || "hu",
     },
   });
 
@@ -198,6 +201,44 @@ export async function changeLeadStage(
   revalidatePath(`/crm/leads/${leadId}`);
   revalidatePath("/crm/leads");
   return { warning };
+}
+
+export type UpdateLeadLocaleState = { error?: string } | undefined;
+
+// A lead nyelve (hu/en) határozza meg, milyen nyelven mennek ki a
+// kérdőív-/foglalás-linkek és a tranzakciós emailek — lásd
+// lib/questionnaire/dispatch.ts és lib/booking/actions-core.ts. A publikus
+// token-oldalon a látogató ettől függetlenül át tud váltani (az felülírja
+// ezt a mezőt, ha másik nyelvre vált).
+export async function updateLeadLocale(
+  _prevState: UpdateLeadLocaleState,
+  formData: FormData,
+): Promise<UpdateLeadLocaleState> {
+  const { profile } = await requireRole("ADMIN", "SALES_REP");
+
+  const leadId = String(formData.get("leadId") ?? "");
+  const locale = String(formData.get("locale") ?? "");
+  if (!leadId) return { error: "Hiányzó lead azonosító." };
+  if (locale !== "hu" && locale !== "en") {
+    return { error: "Érvénytelen nyelv." };
+  }
+
+  try {
+    await prisma.lead.update({ where: { id: leadId }, data: { locale } });
+  } catch {
+    return { error: "A lead nem található, vagy nem sikerült frissíteni." };
+  }
+
+  await writeAuditLog({
+    userId: profile.id,
+    entityType: "Lead",
+    entityId: leadId,
+    action: "lead.locale_changed",
+    metadata: { locale },
+  });
+
+  revalidatePath(`/crm/leads/${leadId}`);
+  return undefined;
 }
 
 export type AssignLeadOwnerState = { error?: string } | undefined;

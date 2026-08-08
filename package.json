@@ -11,7 +11,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "test": "vitest run",
-    "tasks:run": "tsx scripts/run-scheduled-tasks.ts"
+    "tasks:run": "tsx scripts/run-scheduled-tasks.ts",
+    "backfill:i18n": "tsx scripts/backfill-i18n.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",

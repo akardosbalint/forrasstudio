@@ -71,6 +71,11 @@ model Lead {
   message        String?
   dealValueCents Int?     @map("deal_value_cents") // ajánlat / TCV, fillér-pontosságú egész (forint * 100)
   cashCollectedCents Int? @map("cash_collected_cents")
+  // A lead preferált nyelve (hu/en) — ez határozza meg, hogy a CRM-ből
+  // kiküldött kérdőív-/foglalás-linkek és tranzakciós emailek melyik
+  // nyelven menjenek ki. A publikus token-linkeken a látogató ettől
+  // függetlenül át tud váltani a másik nyelvre (lásd lib/i18n).
+  locale         String   @default("hu")
 
   currentStageId String        @map("current_stage_id") @db.Uuid
   currentStage   PipelineStage @relation(fields: [currentStageId], references: [id])
@@ -139,8 +144,14 @@ model QuestionnaireQuestion {
   template   QuestionnaireTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
   label      String
   helpText   String?      @map("help_text")
+  // Angol fordítás a publikus kérdőív-oldalhoz (lang=en). Ha üres, a
+  // kérdés csak magyarul jelenik meg (fallback a `label`/`helpText`/
+  // `options` mezőkre) — lásd lib/questionnaire.
+  labelEn    String?      @map("label_en")
+  helpTextEn String?      @map("help_text_en")
   type       QuestionType @default(TEXT)
   options    Json? // SELECT/MULTISELECT esetén: string[] a választható opciókhoz
+  optionsEn  Json?        @map("options_en")
   required   Boolean      @default(true)
   order      Int
 
@@ -269,13 +280,17 @@ model Booking {
 // Admin által szerkeszthető email sablonok (kérdőív kiküldés, visszaigazolás, emlékeztető...).
 model EmailTemplate {
   id        String   @id @default(uuid()) @db.Uuid
-  key       String   @unique // pl. "questionnaire_invite", "booking_confirmation_client", "reminder_24h"
+  key       String   // pl. "questionnaire_invite", "booking_confirmation_client", "reminder_24h"
+  // Nyelvenként külön sor (hu/en) ugyanahhoz a key-hez — lásd
+  // lib/email/templates.ts renderEmailTemplate(key, locale, ...).
+  locale    String   @default("hu")
   name      String
   subject   String
   bodyHtml  String   @map("body_html")
   bodyText  String   @map("body_text")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@unique([key, locale])
   @@map("email_templates")
 }
 

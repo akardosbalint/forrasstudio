@@ -2,15 +2,23 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getAvailableSlots } from "@/lib/booking/slots";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
+import { isLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/dictionaries";
 import { SlotPicker } from "./SlotPicker";
 import { BookingControls } from "./BookingControls";
+import { notFound } from "next/navigation";
 
 export default async function BookingPage({
   params,
 }: {
-  params: Promise<{ token: string }>;
+  params: Promise<{ lang: string; token: string }>;
 }) {
-  const { token } = await params;
+  const { lang, token } = await params;
+  if (!isLocale(lang)) {
+    notFound();
+  }
+  const dict = await getDictionary(lang);
+  const t = dict.flows.booking;
 
   const link = await prisma.questionnaireLink.findUnique({
     where: { token },
@@ -33,7 +41,7 @@ export default async function BookingPage({
     return (
       <div className="rounded-xl border border-paper-3 bg-white p-6 text-center">
         <h1 className="mb-2 font-display text-lg font-semibold">
-          Érvénytelen link
+          {t.invalidLink.heading}
         </h1>
       </div>
     );
@@ -45,16 +53,16 @@ export default async function BookingPage({
     return (
       <div className="rounded-xl border border-paper-3 bg-white p-6 text-center">
         <h1 className="mb-2 font-display text-lg font-semibold">
-          Előbb töltsd ki a kérdőívet
+          {t.questionnaireRequired.heading}
         </h1>
         <p className="mb-4 text-sm text-ink/60">
-          Az időpontfoglalás csak a kérdőív beküldése után érhető el.
+          {t.questionnaireRequired.body}
         </p>
         <Link
-          href={`/kerdoiv/${token}`}
+          href={`/${lang}/kerdoiv/${token}`}
           className="text-sm font-medium text-brook underline"
         >
-          Kérdőív kitöltése
+          {t.questionnaireRequired.cta}
         </Link>
       </div>
     );
@@ -64,12 +72,9 @@ export default async function BookingPage({
     return (
       <div className="rounded-xl border border-paper-3 bg-white p-6 text-center">
         <h1 className="mb-2 font-display text-lg font-semibold">
-          Foglalás jelenleg nem elérhető
+          {t.unavailable.heading}
         </h1>
-        <p className="text-sm text-ink/60">
-          A leadhez még nincs hozzárendelt kollégánk — hamarosan felvesszük
-          veled a kapcsolatot.
-        </p>
+        <p className="text-sm text-ink/60">{t.unavailable.body}</p>
       </div>
     );
   }
@@ -87,19 +92,23 @@ export default async function BookingPage({
         <div className="flex flex-col gap-6">
           <div className="rounded-xl border border-paper-3 bg-white p-6">
             <h1 className="mb-2 font-display text-lg font-semibold">
-              Discovery call lefoglalva
+              {t.scheduled.heading}
             </h1>
             <p className="text-sm text-ink/70">
-              {activeBooking.startsAt.toLocaleString("hu-HU", {
-                timeZone: "Europe/Budapest",
-                dateStyle: "full",
-                timeStyle: "short",
-              })}{" "}
+              {activeBooking.startsAt.toLocaleString(
+                lang === "en" ? "en-US" : "hu-HU",
+                {
+                  timeZone: "Europe/Budapest",
+                  dateStyle: "full",
+                  timeStyle: "short",
+                },
+              )}{" "}
               — {lead.owner.name}
             </p>
           </div>
           <BookingControls
             token={token}
+            lang={lang}
             bookingId={activeBooking.id}
             rescheduleSlots={rescheduleSlots.map((d) => d.toISOString())}
           />
@@ -112,11 +121,9 @@ export default async function BookingPage({
     return (
       <div className="rounded-xl border border-paper-3 bg-white p-6 text-center">
         <h1 className="mb-2 font-display text-lg font-semibold">
-          Nincs aktív foglalási teendő
+          {t.noActiveTask.heading}
         </h1>
-        <p className="text-sm text-ink/60">
-          Ha kérdésed van, keresd a kapcsolattartódat.
-        </p>
+        <p className="text-sm text-ink/60">{t.noActiveTask.body}</p>
       </div>
     );
   }
@@ -130,16 +137,14 @@ export default async function BookingPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-xl font-semibold">
-          Discovery call foglalása
-        </h1>
+        <h1 className="font-display text-xl font-semibold">{t.heading}</h1>
         <p className="mt-1 text-sm text-ink/60">
-          Kedves {lead.name}! Válassz egy 90 perces időpontot {lead.owner.name}{" "}
-          kollégánkkal.
+          {t.greeting(lead.name, lead.owner.name)}
         </p>
       </div>
       <SlotPicker
         token={token}
+        lang={lang}
         slots={slots.map((d) => d.toISOString())}
         mode="book"
       />
