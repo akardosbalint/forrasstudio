@@ -87,7 +87,7 @@ export function Hero() {
               className="font-display text-4xl font-bold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.85rem]"
             >
               Amit el tudsz képzelni,{" "}
-              <span className="text-gradient-brand italic">MI megépítjük.</span>
+              <span className="text-gradient-brand">MI megépítjük.</span>
             </h1>
           </div>
 
