@@ -85,6 +85,25 @@ export function NewLeadForm({ profiles }: { profiles: Profile[] }) {
           ))}
         </select>
       </div>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="locale" className="text-sm font-medium">
+          Nyelv
+        </label>
+        <select
+          id="locale"
+          name="locale"
+          defaultValue="hu"
+          className="rounded-lg border border-paper-3 bg-white px-3 py-2 text-sm outline-none focus:border-brook"
+        >
+          <option value="hu">Magyar</option>
+          <option value="en">Angol</option>
+        </select>
+        <p className="text-xs text-ink/50">
+          Ezen a nyelven kapja a lead a kérdőív-/foglalás-linkeket és a
+          tranzakciós emaileket (a foglalás/kérdőív oldalon a látogató ettől
+          függetlenül át tud váltani).
+        </p>
+      </div>
       {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
       <button
         type="submit"

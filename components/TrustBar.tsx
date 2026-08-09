@@ -2,6 +2,11 @@
 
 import { motion, type Variants } from "framer-motion";
 import { EXPO_OUT } from "@/lib/motion";
+import type { Dictionary } from "@/dictionaries";
+
+type TrustBarProps = {
+  dict: Dictionary["site"]["trustBar"];
+};
 
 const references = [
   { name: "ECO Portal", domain: "portal.ecokozosseg.hu", href: "https://portal.ecokozosseg.hu" },
@@ -20,7 +25,7 @@ const itemVariants: Variants = {
   show: { opacity: 1, x: 0, transition: { duration: 0.6, ease: EXPO_OUT } },
 };
 
-export function TrustBar() {
+export function TrustBar({ dict }: TrustBarProps) {
   return (
     <section className="border-y border-paper-3 bg-paper-2">
       <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8">
@@ -31,7 +36,8 @@ export function TrustBar() {
           transition={{ duration: 0.6, ease: EXPO_OUT }}
           className="mb-5 text-center font-mono text-xs uppercase tracking-[0.14em] text-ink/50"
         >
-          <span className="text-ink/30">{"// "}</span>Ezeket a rendszereket MI építettük és üzemeltetjük
+          <span className="text-ink/30">{"// "}</span>
+          {dict.label}
         </motion.p>
         <motion.ul
           variants={listVariants}

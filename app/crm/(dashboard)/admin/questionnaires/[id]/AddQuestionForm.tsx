@@ -49,6 +49,27 @@ export function AddQuestionForm({ templateId }: { templateId: string }) {
           className="rounded-lg border border-paper-3 bg-white px-3 py-2 text-sm outline-none focus:border-brook"
         />
       </div>
+      <div className="flex flex-col gap-1.5 border-t border-dashed border-paper-3 pt-3">
+        <label htmlFor="labelEn" className="text-sm font-medium">
+          Kérdés szövege — angolul (opcionális)
+        </label>
+        <input
+          id="labelEn"
+          name="labelEn"
+          placeholder="Ha üres, a publikus angol kérdőív-oldalon is a magyar szöveg jelenik meg."
+          className="rounded-lg border border-paper-3 bg-white px-3 py-2 text-sm outline-none focus:border-brook"
+        />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="helpTextEn" className="text-sm font-medium">
+          Segítő szöveg — angolul (opcionális)
+        </label>
+        <input
+          id="helpTextEn"
+          name="helpTextEn"
+          className="rounded-lg border border-paper-3 bg-white px-3 py-2 text-sm outline-none focus:border-brook"
+        />
+      </div>
       <div className="flex gap-3">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="type" className="text-sm font-medium">
@@ -74,17 +95,31 @@ export function AddQuestionForm({ templateId }: { templateId: string }) {
         </label>
       </div>
       {needsOptions && (
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="options" className="text-sm font-medium">
-            Opciók (vesszővel elválasztva)
-          </label>
-          <input
-            id="options"
-            name="options"
-            placeholder="Opció 1, Opció 2, Opció 3"
-            className="rounded-lg border border-paper-3 bg-white px-3 py-2 text-sm outline-none focus:border-brook"
-          />
-        </div>
+        <>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="options" className="text-sm font-medium">
+              Opciók (vesszővel elválasztva)
+            </label>
+            <input
+              id="options"
+              name="options"
+              placeholder="Opció 1, Opció 2, Opció 3"
+              className="rounded-lg border border-paper-3 bg-white px-3 py-2 text-sm outline-none focus:border-brook"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="optionsEn" className="text-sm font-medium">
+              Opciók — angolul (opcionális, vesszővel elválasztva, azonos
+              sorrendben)
+            </label>
+            <input
+              id="optionsEn"
+              name="optionsEn"
+              placeholder="Option 1, Option 2, Option 3"
+              className="rounded-lg border border-paper-3 bg-white px-3 py-2 text-sm outline-none focus:border-brook"
+            />
+          </div>
+        </>
       )}
       {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
       <button

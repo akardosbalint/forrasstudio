@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
 import { TiltCard } from "@/components/TiltCard";
+import type { Dictionary } from "@/dictionaries";
+
+type ServicesProps = {
+  dict: Dictionary["site"]["services"];
+};
 
 type IconName = "webapp" | "content" | "booking" | "community" | "crm" | "ai" | "system" | "ops";
 type Accent = "spring" | "amber" | "pink" | "brook";
@@ -114,101 +119,44 @@ function cardClasses(accent: Accent) {
   return `glow-card group h-full rounded-2xl border border-paper-3 bg-white/60 p-6 ${cardAccentClasses[accent]} hover:bg-white/90 sm:p-7`;
 }
 
-const pillars = [
-  {
-    icon: "webapp" as const,
-    accent: "spring" as const,
-    eyebrow: "1. pillér",
-    title: "Weboldal- és webalkalmazás-fejlesztés",
-    description:
-      "Egyedi, típusbiztos weboldalak és webalkalmazások React, Next.js és TypeScript alapokon, AI-asszisztált fejlesztéssel — kvíz-alapú felhasználói utakkal és a vállalkozásod folyamataira szabva, gyorsabban és a piaci átlag töredékéért, mint egy hagyományos ügynökségnél.",
-  },
-  {
-    icon: "content" as const,
-    accent: "amber" as const,
-    eyebrow: "2. pillér",
-    title: "Tartalmi platformok és blogrendszerek",
-    description:
-      "Gyors, statikusan generált bemutatkozó weboldalak és blog / MDX-alapú tartalomkezelő rendszerek, hírlevél-automatizációval összekötve — a megjelenésedtől a közönségépítésig egy rendszerben.",
-  },
-  {
-    icon: "booking" as const,
-    accent: "pink" as const,
-    eyebrow: "3. pillér",
-    title: "Időpontfoglalás és online fizetés",
-    description:
-      "Időpontfoglaló rendszerek és online fizetési integrációk — bankkártyás fizetés, előlegkezelés, automatikus számlázás és emlékeztetők, hogy a foglalástól a kifizetésig semmi ne akadjon el.",
-  },
-  {
-    icon: "community" as const,
-    accent: "brook" as const,
-    eyebrow: "4. pillér",
-    title: "Közösségi és tagsági platformok",
-    description:
-      "Zárt, jogosultságkezelt tagi felületek közösségeknek és online képzéseknek — biztonságos beléptetéssel, tagsági szintekkel, jelvényrendszerrel és szakértői értékelésekkel.",
-  },
-  {
-    icon: "crm" as const,
-    accent: "spring" as const,
-    eyebrow: "5. pillér",
-    title: "Ügyfélkezelés és CRM rendszerek",
-    description:
-      "Egyedi CRM rendszerek és admin dashboardok, amik átláthatóvá teszik az ügyfeleidet, a megkereséseidet és a folyamataidat — a te munkafolyamatodra szabva, nem egy általános sablon-CRM.",
-  },
-  {
-    icon: "ai" as const,
-    accent: "amber" as const,
-    eyebrow: "6. pillér",
-    title: "Automatizáció és AI-integráció",
-    description:
-      "Hírlevél- és e-mail-automatizáció, intelligens riportok és AI-alapú funkciók — ugyanazok az eszközök, amikkel MI magunk is dolgozunk — veszik le rólad az ismétlődő adminisztrációt.",
-  },
+const pillarMeta: { icon: IconName; accent: Accent }[] = [
+  { icon: "webapp", accent: "spring" },
+  { icon: "content", accent: "amber" },
+  { icon: "booking", accent: "pink" },
+  { icon: "community", accent: "brook" },
+  { icon: "crm", accent: "spring" },
+  { icon: "ai", accent: "amber" },
 ];
 
-const capabilities = [
-  {
-    icon: "system" as const,
-    accent: "pink" as const,
-    title: "Teljes rendszer egy kézből",
-    description:
-      "A weboldal, a foglalás, a fizetés, a CRM, a beléptetés és az automatizáció nem külön projektek, hanem egymással összehangolt modulok — egy csapat tervezi és köti össze mindet, a piaci átlag töredékéért, nem több különálló szállító.",
-  },
-  {
-    icon: "ops" as const,
-    accent: "brook" as const,
-    title: "Hosszú távú üzemeltetés & továbbfejlesztés",
-    description:
-      "Az élesítés nem a munka vége. A megépített rendszereket folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább — biztonságosan, megbízhatóan, hosszú távon. Ez nálunk folyamatos felelősségvállalás, nem egyszeri leszállított munka.",
-  },
+const capabilityMeta: { icon: IconName; accent: Accent }[] = [
+  { icon: "system", accent: "pink" },
+  { icon: "ops", accent: "brook" },
 ];
 
-export function Services() {
+export function Services({ dict }: ServicesProps) {
   return (
     <section id="szolgaltatasok" className="scroll-mt-20 bg-paper">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
-            <span className="text-ink/30">{"// "}</span>Szolgáltatások
+            <span className="text-ink/30">{"// "}</span>
+            {dict.eyebrow}
           </p>
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-            Hat pillér, egy rendszer
+            {dict.title}
           </h2>
         </Reveal>
         <Reveal delay={140}>
-          <p className="mt-3 max-w-2xl leading-relaxed text-ink/70">
-            Weboldaltól és időpontfoglalástól az ügyfél-CRM-en és a zárt közösségi
-            felületeken át az AI-alapú automatizációig — mindent egy csapat tervez,
-            épít és üzemeltet, összehangolt rendszerként.
-          </p>
+          <p className="mt-3 max-w-2xl leading-relaxed text-ink/70">{dict.description}</p>
         </Reveal>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {pillars.map((pillar, index) => (
+          {dict.pillars.map((pillar, index) => (
             <Reveal key={pillar.title} delay={index * 80} className="h-full">
-              <TiltCard className={cardClasses(pillar.accent)}>
-                <ServiceIcon name={pillar.icon} accent={pillar.accent} />
+              <TiltCard className={cardClasses(pillarMeta[index].accent)}>
+                <ServiceIcon name={pillarMeta[index].icon} accent={pillarMeta[index].accent} />
                 <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-ink/40">
                   {pillar.eyebrow}
                 </p>
@@ -222,10 +170,10 @@ export function Services() {
         </div>
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          {capabilities.map((capability, index) => (
+          {dict.capabilities.map((capability, index) => (
             <Reveal key={capability.title} delay={index * 100} className="h-full">
-              <TiltCard className={cardClasses(capability.accent)}>
-                <ServiceIcon name={capability.icon} accent={capability.accent} />
+              <TiltCard className={cardClasses(capabilityMeta[index].accent)}>
+                <ServiceIcon name={capabilityMeta[index].icon} accent={capabilityMeta[index].accent} />
                 <h3 className="mt-2 font-display text-xl font-semibold text-ink">
                   {capability.title}
                 </h3>

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 import { writeAuditLog } from "@/lib/audit/log";
 import { sendCallbackNotificationEmail } from "@/lib/notifications";
+import { isLocale } from "@/lib/i18n/config";
 
 type CallbackRequestPayload = {
   name?: unknown;
@@ -12,6 +13,7 @@ type CallbackRequestPayload = {
   message?: unknown;
   source?: unknown;
   consent?: unknown;
+  locale?: unknown;
 };
 
 function asTrimmedString(value: unknown): string {
@@ -23,10 +25,7 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { error: "Érvénytelen kérés formátum." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "INVALID_BODY" }, { status: 400 });
   }
 
   const name = asTrimmedString(body.name);
@@ -36,19 +35,15 @@ export async function POST(request: Request) {
   const message = asTrimmedString(body.message);
   const source = asTrimmedString(body.source) || "unknown";
   const consent = body.consent === true;
+  const localeRaw = asTrimmedString(body.locale);
+  const locale = isLocale(localeRaw) ? localeRaw : "hu";
 
   if (!name || !phone) {
-    return NextResponse.json(
-      { error: "A név és a telefonszám megadása kötelező." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "MISSING_FIELDS" }, { status: 400 });
   }
 
   if (!consent) {
-    return NextResponse.json(
-      { error: "Az adatkezelési tájékoztató elfogadása kötelező." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "CONSENT_REQUIRED" }, { status: 400 });
   }
 
   // A publikus form beküldése a CRM pipeline-jában, "Visszahívásra vár"
@@ -65,10 +60,7 @@ export async function POST(request: Request) {
     console.error(
       "[callback-request] Pipeline nincs beüzemelve (hiányzó callback_pending stádium) — futtasd le a seed scriptet.",
     );
-    return NextResponse.json(
-      { error: "Nem sikerült elmenteni a kérésed. Kérjük, próbáld újra." },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "NOT_CONFIGURED" }, { status: 503 });
   }
 
   let leadId: string;
@@ -82,6 +74,7 @@ export async function POST(request: Request) {
         message: message || null,
         source,
         currentStageId: initialStage.id,
+        locale,
       },
     });
     leadId = lead.id;
@@ -95,10 +88,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("[callback-request] Lead insert error:", error);
-    return NextResponse.json(
-      { error: "Nem sikerült elmenteni a kérésed. Kérjük, próbáld újra." },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "SAVE_FAILED" }, { status: 500 });
   }
 
   await writeAuditLog({

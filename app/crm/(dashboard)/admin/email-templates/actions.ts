@@ -23,9 +23,9 @@ export async function updateEmailTemplate(
   }
 
   await prisma.emailTemplate.upsert({
-    where: { key },
+    where: { key_locale: { key, locale: "hu" } },
     update: { subject, bodyHtml, bodyText },
-    create: { key, name: key, subject, bodyHtml, bodyText },
+    create: { key, locale: "hu", name: key, subject, bodyHtml, bodyText },
   });
 
   await writeAuditLog({
