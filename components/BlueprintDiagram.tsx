@@ -1,17 +1,18 @@
 export const DIAGRAM_MODULES = [
-  { label: "Weboldal", y: 50, color: "var(--color-spring)" },
-  { label: "Időpontfoglalás", y: 126, color: "var(--color-brook)" },
-  { label: "Fizetés", y: 202, color: "var(--color-spring)" },
-  { label: "Ügyfél-CRM", y: 278, color: "var(--color-brook)" },
-  { label: "Biztonságos beléptetés", y: 354, color: "var(--color-spring)" },
-  { label: "AI-alapú automatizáció", y: 430, color: "var(--color-brook)" },
+  { label: "Weboldal, webapplikáció", y: 45, color: "var(--color-spring)" },
+  { label: "Időpontfoglalás", y: 110, color: "var(--color-brook)" },
+  { label: "Fizetés", y: 175, color: "var(--color-spring)" },
+  { label: "Ügyfél-CRM", y: 240, color: "var(--color-brook)" },
+  { label: "Biztonságos beléptetés", y: 305, color: "var(--color-spring)" },
+  { label: "AI-alapú automatizáció", y: 370, color: "var(--color-brook)" },
+  { label: "Egyedi megoldások", y: 435, color: "var(--color-spring)" },
 ];
 
 export const DIAGRAM_CENTER_X = 600;
 export const DIAGRAM_CENTER_Y = 240;
 
 const DIAGRAM_ARIA_LABEL =
-  "Rendszerdiagram: weboldal, időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés és AI-alapú automatizáció egy közös rendszerbe, a MI Építettükbe folynak össze.";
+  "Rendszerdiagram: weboldal, webapplikáció, időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés, AI-alapú automatizáció és egyedi megoldások egy közös rendszerbe, a MI Építettükbe folynak össze.";
 
 type ControlledBlueprintDiagramProps = {
   registerPath: (el: SVGPathElement | null, index: number) => void;
