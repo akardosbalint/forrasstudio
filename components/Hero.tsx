@@ -86,10 +86,8 @@ export function Hero() {
               ref={headlineRef}
               className="font-display text-4xl font-bold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.85rem]"
             >
-              Amit el tudsz képzelni —{" "}
-              <span className="text-gradient-brand italic">
-                MI megépítjük: gyorsabban, biztonságosabban, kedvezőbb áron.
-              </span>
+              Amit el tudsz képzelni,{" "}
+              <span className="text-gradient-brand italic">MI megépítjük.</span>
             </h1>
           </div>
 
@@ -97,19 +95,9 @@ export function Hero() {
             <p>{BODY_TEXT_1}</p>
             <p>{BODY_TEXT_2}</p>
           </div>
-
-          <div
-            ref={formRef}
-            className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors duration-300 hover:border-spring/40 sm:p-6"
-          >
-            <p className="mb-4 font-sans text-sm font-medium text-paper/90">
-              Kérj visszahívást — 2 mező, egy munkanapon belül jelentkezünk.
-            </p>
-            <CallbackForm variant="mini" source="hero-mini" />
-          </div>
         </div>
 
-        <div className="flex justify-center lg:justify-end">
+        <div className="flex justify-center lg:-mt-6 lg:justify-end lg:self-start">
           <ControlledBlueprintDiagram
             registerPath={(el, index) => {
               pathRefs.current[index] = el;
@@ -118,6 +106,16 @@ export function Hero() {
               nodeRef.current = el;
             }}
           />
+        </div>
+
+        <div
+          ref={formRef}
+          className="rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors duration-300 hover:border-spring/40 sm:p-6 lg:col-span-2"
+        >
+          <p className="mb-4 font-sans text-sm font-medium text-paper/90">
+            Kérj visszahívást — 2 mező, egy munkanapon belül jelentkezünk.
+          </p>
+          <CallbackForm variant="mini" source="hero-mini" />
         </div>
       </Spotlight>
     </section>

@@ -18,10 +18,7 @@ export default function ImpresszumPage() {
           <li>Cégjegyzékszám: <span className="font-mono text-sm">[TODO: cégjegyzékszám]</span></li>
           <li>Adószám: <span className="font-mono text-sm">[TODO: adószám]</span></li>
           <li>
-            Email: <a href="mailto:akardosbalint@gmail.com">akardosbalint@gmail.com</a>
-          </li>
-          <li>
-            Telefon: <a href="tel:[TODO: telefonszám]">[TODO: telefonszám]</a>
+            Email: <a href="mailto:balint@miepitettuk.hu">balint@miepitettuk.hu</a>
           </li>
         </ul>
       </LegalSection>

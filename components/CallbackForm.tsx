@@ -86,7 +86,11 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
 
   return (
     <form onSubmit={handleSubmit} className={className} noValidate>
-      <div className={variant === "mini" ? "flex flex-col gap-3 sm:flex-row" : "grid gap-4 sm:grid-cols-2"}>
+      <div
+        className={
+          variant === "mini" ? "flex flex-col gap-3 sm:flex-row sm:items-end" : "grid gap-4 sm:grid-cols-2"
+        }
+      >
         <div className="flex flex-1 flex-col gap-1.5">
           <label htmlFor={`${formId}-name`} className={labelClasses}>
             Név
@@ -132,6 +136,16 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
             className={inputClasses}
           />
         </div>
+
+        {variant === "mini" && (
+          <MagneticButton
+            type="submit"
+            disabled={state === "submitting"}
+            className="btn-shine bg-gradient-brand whitespace-nowrap rounded-full px-6 py-3 font-sans font-semibold text-white transition-shadow duration-200 hover:shadow-lg hover:shadow-amber/30 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+          >
+            {state === "submitting" ? "Küldés…" : "Hívjatok vissza"}
+          </MagneticButton>
+        )}
 
         {variant === "full" && (
           <>
@@ -188,13 +202,15 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
         </label>
       </div>
 
-      <MagneticButton
-        type="submit"
-        disabled={state === "submitting"}
-        className="btn-shine bg-gradient-brand mt-4 w-full whitespace-nowrap rounded-full px-6 py-3 font-sans font-semibold text-white transition-shadow duration-200 hover:shadow-lg hover:shadow-amber/30 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
-      >
-        {state === "submitting" ? "Küldés…" : "Hívjatok vissza"}
-      </MagneticButton>
+      {variant === "full" && (
+        <MagneticButton
+          type="submit"
+          disabled={state === "submitting"}
+          className="btn-shine bg-gradient-brand mt-4 w-full whitespace-nowrap rounded-full px-6 py-3 font-sans font-semibold text-white transition-shadow duration-200 hover:shadow-lg hover:shadow-amber/30 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
+        >
+          {state === "submitting" ? "Küldés…" : "Hívjatok vissza"}
+        </MagneticButton>
+      )}
 
       {state === "error" && (
         <p role="alert" className="pop-in mt-3 text-sm text-red-400">

@@ -33,14 +33,8 @@ export function Footer() {
           <Wordmark className="text-lg" toneClassName="text-paper" />
           <p className="mt-2 text-sm">
             Email:{" "}
-            <a href="mailto:akardosbalint@gmail.com" className="underline decoration-white/20 hover:text-paper">
-              akardosbalint@gmail.com
-            </a>
-          </p>
-          <p className="mt-1 text-sm">
-            Telefon:{" "}
-            <a href="tel:[TODO: telefonszám]" className="underline decoration-white/20 hover:text-paper">
-              [TODO: telefonszám]
+            <a href="mailto:balint@miepitettuk.hu" className="underline decoration-white/20 hover:text-paper">
+              balint@miepitettuk.hu
             </a>
           </p>
         </div>
