@@ -125,6 +125,9 @@ function ProcessPinned({ dict }: { dict: ProcessDict }) {
       window.removeEventListener("resize", handleResize);
       ctx?.revert();
     };
+    // dict is fixed for the lifetime of this component (server-provided,
+    // locale doesn't change without a full navigation/remount).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

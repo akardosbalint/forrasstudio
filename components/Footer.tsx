@@ -40,8 +40,8 @@ export function Footer({ lang, dict, languageSwitcherLabels, cookieSettingsLabel
           </p>
           <p className="mt-1 text-sm">
             {dict.phoneLabel}{" "}
-            <a href="tel:[TODO: telefonszám]" className="underline decoration-white/20 hover:text-paper">
-              [TODO: telefonszám]
+            <a href={`tel:${dict.phoneTodo}`} className="underline decoration-white/20 hover:text-paper">
+              {dict.phoneTodo}
             </a>
           </p>
           <LanguageSwitcher lang={lang} labels={languageSwitcherLabels} className="mt-4" />

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LegalPageShell, LegalSection } from "@/components/LegalPageShell";
 import { isLocale, type Locale } from "@/lib/i18n/config";
@@ -54,12 +55,12 @@ export default async function AdatvedelemPage({
       updated={content.updated}
       updatedLabel={dict.site.legalShell.updatedLabel}
     >
-      {lang === "hu" ? <AdatvedelemHu /> : <AdatvedelemEn />}
+      {lang === "hu" ? <AdatvedelemHu lang={lang} /> : <AdatvedelemEn lang={lang} />}
     </LegalPageShell>
   );
 }
 
-function AdatvedelemHu() {
+function AdatvedelemHu({ lang }: { lang: Locale }) {
   return (
     <>
       <LegalSection title="1. Az adatkezelő">
@@ -79,7 +80,7 @@ function AdatvedelemHu() {
           </li>
         </ul>
         <p>
-          A teljes cégadatokat lásd az <a href="/hu/impresszum">Impresszum</a> oldalon.
+          A teljes cégadatokat lásd az <Link href={`/${lang}/impresszum`}>Impresszum</Link> oldalon.
         </p>
       </LegalSection>
 
@@ -210,7 +211,7 @@ function AdatvedelemHu() {
   );
 }
 
-function AdatvedelemEn() {
+function AdatvedelemEn({ lang }: { lang: Locale }) {
   return (
     <>
       <LegalSection title="1. The data controller">
@@ -233,7 +234,7 @@ function AdatvedelemEn() {
           </li>
         </ul>
         <p>
-          For full company details, see the <a href="/en/impresszum">Imprint</a> page.
+          For full company details, see the <Link href={`/${lang}/impresszum`}>Imprint</Link> page.
         </p>
       </LegalSection>
 
@@ -294,15 +295,15 @@ function AdatvedelemEn() {
           <li>
             <strong>Google LLC (Google Workspace)</strong> — delivery of the
             instant email notification about form submissions to the studio,
-            via the studio's own Google Workspace account; this transfers
-            your name and phone number into Google's email system.{" "}
+            via the studio&rsquo;s own Google Workspace account; this transfers
+            your name and phone number into Google&rsquo;s email system.{" "}
             <span className="font-mono text-sm">
               [TODO: verify Google Workspace Data Processing Addendum]
             </span>
             .
           </li>
           <li>
-            <strong>Vercel Inc.</strong> — the website's hosting provider
+            <strong>Vercel Inc.</strong> — the website&rsquo;s hosting provider
             (technical operation).
           </li>
         </ul>

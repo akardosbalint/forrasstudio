@@ -195,6 +195,7 @@ export const site = {
   footer: {
     emailLabel: "Email:",
     phoneLabel: "Telefon:",
+    phoneTodo: "[TODO: telefonszám]",
     legalNavAriaLabel: "Jogi dokumentumok",
     legalLinks: [
       { href: "/adatvedelem", label: "Adatkezelési tájékoztató" },

@@ -97,7 +97,7 @@ function ImpresszumHu({ lang }: { lang: Locale }) {
           A weboldalon található tartalmak tájékoztató jellegűek, nem
           minősülnek szerződéses ajánlattételnek. A referenciaként bemutatott
           projektek adatait lásd a{" "}
-          <Link href="/hu/#referenciak">Referenciák</Link> szekcióban.
+          <Link href={`/${lang}/#referenciak`}>Referenciák</Link> szekcióban.
         </p>
       </LegalSection>
     </>
@@ -110,7 +110,7 @@ function ImpresszumEn({ lang }: { lang: Locale }) {
       <LegalSection title="Provider details">
         <ul>
           <li>Brand name: MI Építettük</li>
-          <li>Provider's legal name: MI Építettük Kft.</li>
+          <li>Provider&rsquo;s legal name: MI Építettük Kft.</li>
           <li>Registered address: 1027 Budapest, Bem József utca 6. fsz. 3., Hungary</li>
           <li>
             Company registration number:{" "}
@@ -136,7 +136,7 @@ function ImpresszumEn({ lang }: { lang: Locale }) {
       </LegalSection>
 
       <LegalSection title="Domain">
-        <p>The website's permanent domain is: miepitettuk.hu.</p>
+        <p>The website&rsquo;s permanent domain is: miepitettuk.hu.</p>
       </LegalSection>
 
       <LegalSection title="Legal notice">
