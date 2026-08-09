@@ -81,7 +81,7 @@ export function Hero() {
             {EYEBROW_TEXT}
           </p>
 
-          <div className="mt-5 overflow-hidden">
+          <div className="-mx-2 mt-5 overflow-hidden px-2">
             <h1
               ref={headlineRef}
               className="font-display text-4xl font-bold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.85rem]"
