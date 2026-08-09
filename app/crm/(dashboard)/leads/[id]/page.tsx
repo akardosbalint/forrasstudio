@@ -42,6 +42,7 @@ export default async function LeadDetailPage({
           company={lead.company}
           email={lead.email}
           message={lead.message}
+          locale={lead.locale}
         />
       </section>
 

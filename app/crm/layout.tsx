@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 
+// A CRM saját root layoutja. A publikus front-end ([lang] szegmens) és a CRM
+// szándékosan két külön "root layout" alá tartozik (lásd Next.js "multiple
+// root layouts" mintát) — a CRM mindig magyar marad, nincs [lang] prefixe és
+// nem osztozik a publikus oldal nyelvváltós logikáján.
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin", "latin-ext"],
@@ -21,12 +25,11 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MI Építettük — AI-alapú szoftverfejlesztés, töredék áron",
-  description:
-    "A MI Építettük a fejlesztés új generációja: modern technológiákkal és AI-alapú eszközökkel épít megbízható, biztonságos digitális rendszereket vállalkozásoknak és közösségeknek — weboldalak, webalkalmazások, tartalmi platformok, időpontfoglalás, online fizetés, ügyfél-CRM, zárt közösségi platformok és AI-alapú automatizáció, a hagyományos ügynökségek árának töredékéért.",
+  title: "MI Építettük CRM",
+  description: "MI Építettük belső CRM felület.",
 };
 
-export default function RootLayout({
+export default function CrmRootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -37,9 +40,6 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">
-        <noscript>
-          <style>{`.reveal { opacity: 1 !important; transform: none !important; }`}</style>
-        </noscript>
         {children}
       </body>
     </html>

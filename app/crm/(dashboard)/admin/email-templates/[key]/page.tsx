@@ -21,8 +21,10 @@ export default async function EditEmailTemplatePage({
   await requireRole("ADMIN");
   const { key } = await params;
 
-  const dbTemplate = await prisma.emailTemplate.findUnique({ where: { key } });
-  const fallback = FALLBACK_EMAIL_TEMPLATES[key];
+  const dbTemplate = await prisma.emailTemplate.findUnique({
+    where: { key_locale: { key, locale: "hu" } },
+  });
+  const fallback = FALLBACK_EMAIL_TEMPLATES.hu[key];
   const source = dbTemplate ?? fallback;
 
   if (!source) notFound();

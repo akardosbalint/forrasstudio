@@ -10,19 +10,57 @@ import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 import { getGoogleBusyIntervals } from "@/lib/google/freebusy";
 import { createGoogleCalendarEvent, deleteGoogleCalendarEvent } from "@/lib/google/events";
 import { isBookingOverlapConstraintError } from "@/lib/prisma/errors";
+import type { Locale } from "@/lib/i18n/config";
 
-export class BookingError extends Error {}
+// A hibaüzenetek (`message`) mindig magyarul vannak — ezeket a CRM (app/crm)
+// változatlanul, közvetlenül megjeleníti. A publikus, tokenes flow
+// (app/[lang]/(public)/**) NEM ezt a szöveget mutatja a látogatónak, hanem
+// a stabil `code`-ot fordítja le a saját (hu/en) szótárával — lásd az ottani
+// actions.ts fájlokat.
+export class BookingError extends Error {
+  code: string;
+  constructor(code: string, message: string) {
+    super(message);
+    this.code = code;
+  }
+}
 
-function formatSlot(date: Date): string {
-  return date.toLocaleString("hu-HU", {
+function formatSlot(date: Date, locale: Locale): string {
+  return date.toLocaleString(locale === "en" ? "en-US" : "hu-HU", {
     timeZone: DEFAULT_TIMEZONE,
     dateStyle: "full",
     timeStyle: "short",
   });
 }
 
+function callDescription(locale: Locale): string {
+  return locale === "en"
+    ? "MI Építettük discovery call (90 minutes)."
+    : "MI Építettük discovery call (90 perc).";
+}
+
 function toBase64(text: string): string {
   return Buffer.from(text, "utf-8").toString("base64");
+}
+
+// Ha a hívó (publikus flow) explicit locale-t ad át, és az eltér a lead
+// jelenleg tárolt nyelvétől, frissítjük — ez teszi lehetővé, hogy a
+// látogató a saját token-linkjén váltott nyelve legyen a mérvadó a
+// következő (pl. emlékeztető) emailekhez is. A CRM-ből induló hívások nem
+// adnak át explicit locale-t, így nem írják felül a lead nyelvét.
+async function resolveLocale(
+  leadId: string,
+  currentLocale: string,
+  explicitLocale: Locale | undefined,
+): Promise<Locale> {
+  if (!explicitLocale || explicitLocale === currentLocale) {
+    return (currentLocale === "en" ? "en" : "hu") as Locale;
+  }
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: { locale: explicitLocale },
+  });
+  return explicitLocale;
 }
 
 type EmailOutcome = { sent: boolean; error?: string | null };
@@ -36,14 +74,15 @@ async function sendBookingConfirmationEmails(params: {
   endsAt: Date;
   bookingId: string;
   manageLink: string;
+  locale: Locale;
 }): Promise<{ client: EmailOutcome | null; rep: EmailOutcome }> {
-  const startsAtFormatted = formatSlot(params.startsAt);
+  const startsAtFormatted = formatSlot(params.startsAt, params.locale);
   const ics = buildIcsEvent({
     uid: `booking-${params.bookingId}@miepitettuk-crm`,
     startsAt: params.startsAt,
     endsAt: params.endsAt,
     summary: `Discovery Call — ${params.leadName}`,
-    description: "MI Építettük discovery call (90 perc).",
+    description: callDescription(params.locale),
     organizerEmail: params.repEmail,
     attendeeEmails: params.leadEmail
       ? [params.repEmail, params.leadEmail]
@@ -55,12 +94,16 @@ async function sendBookingConfirmationEmails(params: {
 
   let client: EmailOutcome | null = null;
   if (params.leadEmail) {
-    const clientEmail = await renderEmailTemplate("booking_confirmation_client", {
-      leadName: params.leadName,
-      repName: params.repName,
-      startsAtFormatted,
-      manageLink: params.manageLink,
-    });
+    const clientEmail = await renderEmailTemplate(
+      "booking_confirmation_client",
+      params.locale,
+      {
+        leadName: params.leadName,
+        repName: params.repName,
+        startsAtFormatted,
+        manageLink: params.manageLink,
+      },
+    );
     const clientResult = await sendTransactionalEmail({
       to: params.leadEmail,
       subject: clientEmail.subject,
@@ -71,10 +114,12 @@ async function sendBookingConfirmationEmails(params: {
     client = { sent: clientResult.ok, error: clientResult.error };
   }
 
-  const repEmail = await renderEmailTemplate("booking_confirmation_rep", {
+  // A sales rep mindig a belső (magyar) sablont kapja, függetlenül a lead
+  // nyelvétől — a CRM csapat magyarul dolgozik.
+  const repEmail = await renderEmailTemplate("booking_confirmation_rep", "hu", {
     leadName: params.leadName,
     repName: params.repName,
-    startsAtFormatted,
+    startsAtFormatted: formatSlot(params.startsAt, "hu"),
   });
   const repResult = await sendTransactionalEmail({
     to: params.repEmail,
@@ -96,6 +141,7 @@ export async function createBookingCore(params: {
   startsAt: Date;
   actingUserId: string | null;
   manageLinkBase: string;
+  locale?: Locale;
 }) {
   const lead = await prisma.lead.findUnique({
     where: { id: params.leadId },
@@ -105,21 +151,28 @@ export async function createBookingCore(params: {
       questionnaireResponses: { orderBy: { submittedAt: "desc" }, take: 1 },
     },
   });
-  if (!lead) throw new BookingError("A lead nem található.");
+  if (!lead) throw new BookingError("LEAD_NOT_FOUND", "A lead nem található.");
   if (!lead.owner) {
     throw new BookingError(
+      "NO_OWNER",
       "A leadhez nincs hozzárendelt sales rep — nem foglalható discovery call.",
     );
   }
   if (lead.currentStage.key !== SYSTEM_STAGE_KEYS.BOOKING_PENDING) {
     throw new BookingError(
+      "WRONG_STAGE",
       "Ehhez a leadhez jelenleg nem lehet discovery call-t foglalni.",
     );
   }
   const submission = lead.questionnaireResponses[0];
   if (!submission) {
-    throw new BookingError("A kérdőív beküldése hiányzik.");
+    throw new BookingError(
+      "MISSING_QUESTIONNAIRE",
+      "A kérdőív beküldése hiányzik.",
+    );
   }
+
+  const locale = await resolveLocale(lead.id, lead.locale, params.locale);
 
   const endsAt = new Date(params.startsAt.getTime() + 90 * 60_000);
 
@@ -139,6 +192,7 @@ export async function createBookingCore(params: {
     })
   ) {
     throw new BookingError(
+      "SLOT_UNAVAILABLE",
       "Ez az időpont már nem választható (foglalt, lejárt, vagy nem teljesíti a szabályokat). Kérjük válassz másikat.",
     );
   }
@@ -147,7 +201,7 @@ export async function createBookingCore(params: {
     where: { key: SYSTEM_STAGE_KEYS.CALL_SCHEDULED },
   });
   if (!callScheduledStage) {
-    throw new BookingError("Hiányzó pipeline stádium.");
+    throw new BookingError("MISSING_STAGE", "Hiányzó pipeline stádium.");
   }
 
   // Az `isBookableSlot` fenti ellenőrzése nem atomi (read-then-write) —
@@ -186,6 +240,7 @@ export async function createBookingCore(params: {
   } catch (error) {
     if (isBookingOverlapConstraintError(error)) {
       throw new BookingError(
+        "SLOT_TAKEN_RACE",
         "Ezt az időpontot közben valaki más lefoglalta. Kérjük válassz másikat.",
       );
     }
@@ -203,7 +258,7 @@ export async function createBookingCore(params: {
   const googleEventId = await createGoogleCalendarEvent({
     repId: lead.owner.id,
     summary: `Discovery Call — ${lead.name}`,
-    description: "MI Építettük discovery call (90 perc).",
+    description: callDescription(locale),
     startsAt: params.startsAt,
     endsAt,
     attendeeEmails: lead.email ? [lead.email] : [],
@@ -224,6 +279,7 @@ export async function createBookingCore(params: {
     endsAt,
     bookingId: booking.id,
     manageLink: params.manageLinkBase,
+    locale,
   });
   await writeAuditLog({
     userId: params.actingUserId,
@@ -245,22 +301,29 @@ export async function cancelBookingCore(params: {
   bookingId: string;
   actingUserId: string | null;
   manageLinkBase: string;
+  locale?: Locale;
 }) {
   const booking = await prisma.booking.findUnique({
     where: { id: params.bookingId },
     include: { lead: true, rep: true },
   });
-  if (!booking) throw new BookingError("A foglalás nem található.");
+  if (!booking) throw new BookingError("BOOKING_NOT_FOUND", "A foglalás nem található.");
   if (booking.status !== "CONFIRMED") {
-    throw new BookingError("Ez a foglalás már nem aktív.");
+    throw new BookingError("BOOKING_NOT_ACTIVE", "Ez a foglalás már nem aktív.");
   }
 
   const bookingPendingStage = await prisma.pipelineStage.findUnique({
     where: { key: SYSTEM_STAGE_KEYS.BOOKING_PENDING },
   });
   if (!bookingPendingStage) {
-    throw new BookingError("Hiányzó pipeline stádium.");
+    throw new BookingError("MISSING_STAGE", "Hiányzó pipeline stádium.");
   }
+
+  const locale = await resolveLocale(
+    booking.leadId,
+    booking.lead.locale,
+    params.locale,
+  );
 
   await prisma.$transaction([
     prisma.booking.update({
@@ -294,9 +357,9 @@ export async function cancelBookingCore(params: {
     await deleteGoogleCalendarEvent(booking.repId, booking.googleEventId);
   }
 
-  const startsAtFormatted = formatSlot(booking.startsAt);
+  const startsAtFormatted = formatSlot(booking.startsAt, locale);
   if (booking.lead.email) {
-    const email = await renderEmailTemplate("booking_cancelled", {
+    const email = await renderEmailTemplate("booking_cancelled", locale, {
       startsAtFormatted,
       manageLink: params.manageLinkBase,
     });
@@ -321,24 +384,33 @@ export async function rescheduleBookingCore(params: {
   newStartsAt: Date;
   actingUserId: string | null;
   manageLinkBase: string;
+  locale?: Locale;
 }) {
   const oldBooking = await prisma.booking.findUnique({
     where: { id: params.bookingId },
     include: { lead: { include: { owner: true } } },
   });
-  if (!oldBooking) throw new BookingError("A foglalás nem található.");
+  if (!oldBooking) throw new BookingError("BOOKING_NOT_FOUND", "A foglalás nem található.");
   if (oldBooking.status !== "CONFIRMED") {
-    throw new BookingError("Ez a foglalás már nem aktív.");
+    throw new BookingError("BOOKING_NOT_ACTIVE", "Ez a foglalás már nem aktív.");
   }
   if (!oldBooking.lead.owner) {
-    throw new BookingError("A leadhez nincs hozzárendelt sales rep.");
+    throw new BookingError("NO_OWNER", "A leadhez nincs hozzárendelt sales rep.");
   }
 
   const submission = await prisma.questionnaireResponse.findFirst({
     where: { leadId: oldBooking.leadId },
     orderBy: { submittedAt: "desc" },
   });
-  if (!submission) throw new BookingError("A kérdőív beküldése hiányzik.");
+  if (!submission) {
+    throw new BookingError("MISSING_QUESTIONNAIRE", "A kérdőív beküldése hiányzik.");
+  }
+
+  const locale = await resolveLocale(
+    oldBooking.leadId,
+    oldBooking.lead.locale,
+    params.locale,
+  );
 
   const newEndsAt = new Date(params.newStartsAt.getTime() + 90 * 60_000);
 
@@ -366,6 +438,7 @@ export async function rescheduleBookingCore(params: {
     })
   ) {
     throw new BookingError(
+      "SLOT_UNAVAILABLE",
       "Ez az időpont már nem választható. Kérjük válassz másikat.",
     );
   }
@@ -392,6 +465,7 @@ export async function rescheduleBookingCore(params: {
   } catch (error) {
     if (isBookingOverlapConstraintError(error)) {
       throw new BookingError(
+        "SLOT_TAKEN_RACE",
         "Ezt az időpontot közben valaki más lefoglalta. Kérjük válassz másikat.",
       );
     }
@@ -416,7 +490,7 @@ export async function rescheduleBookingCore(params: {
   const googleEventId = await createGoogleCalendarEvent({
     repId: oldBooking.lead.owner.id,
     summary: `Discovery Call — ${oldBooking.lead.name}`,
-    description: "MI Építettük discovery call (90 perc).",
+    description: callDescription(locale),
     startsAt: params.newStartsAt,
     endsAt: newEndsAt,
     attendeeEmails: oldBooking.lead.email ? [oldBooking.lead.email] : [],
@@ -437,6 +511,7 @@ export async function rescheduleBookingCore(params: {
     endsAt: newEndsAt,
     bookingId: newBooking.id,
     manageLink: params.manageLinkBase,
+    locale,
   });
   await writeAuditLog({
     userId: params.actingUserId,
