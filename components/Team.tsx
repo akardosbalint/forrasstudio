@@ -30,22 +30,21 @@ export function Team() {
               />
               <div>
                 <p className="font-display text-lg leading-relaxed text-ink sm:text-xl">
-                  „Szia, Kardos Bálint vagyok. A pályám 8 éve, webfejlesztéssel és
+                  „Szia, engem Bálintnak hívnak. A pályám 8 éve, webfejlesztéssel és
                   keresőoptimalizálással indult a Hong Kong University of Technology-n, aztán
-                  évekig a marketing felé sodródtam. Idén év elején tértem vissza igazán a
-                  fejlesztéshez: baráti megbízásokból kezdtem webalkalmazásokat építeni, és
-                  hamar rájöttem, hogy ezzel foglalkozom a legtöbbet mindenek közül — így lett
-                  ez a fő projektem.
+                  évekig a marketing felé vitt az élet. Ez idő alatt is sok weboldalt építettem,
+                  de a fejlesztéshez 2025-ben tértem vissza valójában. Először baráti
+                  megbízásokból kezdtem webalkalmazásokat építeni, aztán hamar rájöttem, hogy ez
+                  a típusú alkotás tölt fel a legjobban — így lett ez a fő projektem.
                 </p>
                 <p className="mt-3 leading-relaxed text-ink/80">
-                  Ez a háttér nálam nem hátrány, hanem előny: értem a marketing és a konverzió
-                  oldalát is, nem csak a kódot — és a legújabb AI-eszközökkel gyorsabban,
-                  megbízhatóbban építem meg neked, amire szükséged van, a piaci árak
-                  töredékéért. Nincs közvetítő réteg: az első egyeztetéstől az üzemeltetésig
-                  végig velem beszélsz.”
+                  Múltamból adódóan értem az üzlet, a marketing és a konverzió oldalát is, nem
+                  csak a kódot — és a legújabb AI-eszközökkel gyorsabban, megbízhatóbban építem
+                  meg neked, amire szükséged van, a piaci árak töredékéért. Nincs közvetítő
+                  réteg: az első egyeztetéstől az üzemeltetésig végig én vagyok az embered.”
                 </p>
                 <p className="mt-4 font-display text-base font-semibold text-ink">Kardos Bálint</p>
-                <p className="text-sm text-ink/60">Alapító & vezető fejlesztő</p>
+                <p className="text-sm text-ink/60">Vezető fejlesztő</p>
               </div>
             </div>
           </MagneticCard>
