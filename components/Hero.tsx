@@ -71,7 +71,7 @@ export function Hero({ lang, dict, diagramDict, formDict }: HeroProps) {
 
   return (
     <section id="top" className="grid-pattern relative scroll-mt-20 overflow-hidden bg-ink text-paper">
-      <Spotlight className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
+      <Spotlight className="mx-auto grid max-w-6xl gap-x-12 gap-y-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:py-24">
         <div>
           <p
             ref={eyebrowRef}
@@ -94,16 +94,6 @@ export function Hero({ lang, dict, diagramDict, formDict }: HeroProps) {
           <p ref={bodyRef} className="mt-6 max-w-xl text-lg leading-relaxed text-paper/75">
             {dict.body}
           </p>
-
-          <div
-            ref={formRef}
-            className="mt-10 rounded-xl border border-white/10 bg-white/5 p-5 transition-colors duration-300 hover:border-white/20 sm:p-6"
-          >
-            <p className="mb-4 font-sans text-sm font-medium text-paper/90">
-              {dict.formIntro}
-            </p>
-            <CallbackForm variant="mini" source="hero-mini" lang={lang} dict={formDict} />
-          </div>
         </div>
 
         <div className="flex justify-center lg:justify-end">
@@ -116,6 +106,16 @@ export function Hero({ lang, dict, diagramDict, formDict }: HeroProps) {
               nodeRef.current = el;
             }}
           />
+        </div>
+
+        <div
+          ref={formRef}
+          className="rounded-xl border border-white/10 bg-white/5 p-5 transition-colors duration-300 hover:border-white/20 sm:p-6 lg:col-span-2"
+        >
+          <p className="mb-4 font-sans text-sm font-medium text-paper/90">
+            {dict.formIntro}
+          </p>
+          <CallbackForm variant="mini" source="hero-mini" lang={lang} dict={formDict} />
         </div>
       </Spotlight>
     </section>

@@ -94,9 +94,93 @@ export function CallbackForm({ variant, source, lang, dict, className }: Callbac
     );
   }
 
+  const consentCheckbox = (
+    <>
+      <input
+        id={`${formId}-consent`}
+        name="consent"
+        type="checkbox"
+        required
+        className="mt-0.5 h-4 w-4 flex-shrink-0 accent-amber"
+      />
+      <label htmlFor={`${formId}-consent`} className="text-sm text-paper/70">
+        {dict.consent.prefix}
+        <a
+          href={`/${lang}/adatvedelem`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline decoration-paper/30 hover:text-paper hover:decoration-spring"
+        >
+          {dict.consent.linkText}
+        </a>
+        {dict.consent.suffix}
+      </label>
+    </>
+  );
+
+  const submitButton = (
+    <MagneticButton
+      type="submit"
+      disabled={state === "submitting"}
+      className="btn-shine w-full whitespace-nowrap rounded-md bg-amber px-6 py-3 font-sans font-semibold text-ink transition-colors duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none lg:w-auto"
+    >
+      {state === "submitting" ? dict.submitting : dict.submit}
+    </MagneticButton>
+  );
+
+  if (variant === "mini") {
+    return (
+      <form onSubmit={handleSubmit} className={className} noValidate>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
+          <div className="flex flex-1 flex-col gap-1.5">
+            <label htmlFor={`${formId}-name`} className="sr-only">
+              {dict.labels.name}
+            </label>
+            <input
+              id={`${formId}-name`}
+              name="name"
+              type="text"
+              autoComplete="name"
+              required
+              placeholder={dict.placeholders.name}
+              className={inputClasses}
+            />
+          </div>
+
+          <div className="flex flex-1 flex-col gap-1.5">
+            <label htmlFor={`${formId}-phone`} className="sr-only">
+              {dict.labels.phone}
+            </label>
+            <input
+              id={`${formId}-phone`}
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              required
+              placeholder={dict.placeholders.phone}
+              className={inputClasses}
+            />
+          </div>
+
+          <div className="flex items-start gap-2.5 lg:w-96 lg:flex-shrink-0">
+            {consentCheckbox}
+          </div>
+
+          <div className="lg:flex-shrink-0">{submitButton}</div>
+        </div>
+
+        {state === "error" && (
+          <p role="alert" className="pop-in mt-3 text-sm text-amber">
+            {errorMessage}
+          </p>
+        )}
+      </form>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className={className} noValidate>
-      <div className={variant === "mini" ? "flex flex-col gap-3 sm:flex-row" : "grid gap-4 sm:grid-cols-2"}>
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-1 flex-col gap-1.5">
           <label htmlFor={`${formId}-name`} className={labelClasses}>
             {dict.labels.name}
@@ -112,21 +196,19 @@ export function CallbackForm({ variant, source, lang, dict, className }: Callbac
           />
         </div>
 
-        {variant === "full" && (
-          <div className="flex flex-1 flex-col gap-1.5">
-            <label htmlFor={`${formId}-organization`} className={labelClasses}>
-              {dict.labels.organization} <span className="normal-case text-paper/40">{dict.optionalLabel}</span>
-            </label>
-            <input
-              id={`${formId}-organization`}
-              name="organization"
-              type="text"
-              autoComplete="organization"
-              placeholder={dict.placeholders.organization}
-              className={inputClasses}
-            />
-          </div>
-        )}
+        <div className="flex flex-1 flex-col gap-1.5">
+          <label htmlFor={`${formId}-organization`} className={labelClasses}>
+            {dict.labels.organization} <span className="normal-case text-paper/40">{dict.optionalLabel}</span>
+          </label>
+          <input
+            id={`${formId}-organization`}
+            name="organization"
+            type="text"
+            autoComplete="organization"
+            placeholder={dict.placeholders.organization}
+            className={inputClasses}
+          />
+        </div>
 
         <div className="flex flex-1 flex-col gap-1.5">
           <label htmlFor={`${formId}-phone`} className={labelClasses}>
@@ -143,67 +225,37 @@ export function CallbackForm({ variant, source, lang, dict, className }: Callbac
           />
         </div>
 
-        {variant === "full" && (
-          <>
-            <div className="flex flex-1 flex-col gap-1.5">
-              <label htmlFor={`${formId}-email`} className={labelClasses}>
-                {dict.labels.email} <span className="normal-case text-paper/40">{dict.optionalLabel}</span>
-              </label>
-              <input
-                id={`${formId}-email`}
-                name="email"
-                type="email"
-                autoComplete="email"
-                placeholder={dict.placeholders.email}
-                className={inputClasses}
-              />
-            </div>
+        <div className="flex flex-1 flex-col gap-1.5">
+          <label htmlFor={`${formId}-email`} className={labelClasses}>
+            {dict.labels.email} <span className="normal-case text-paper/40">{dict.optionalLabel}</span>
+          </label>
+          <input
+            id={`${formId}-email`}
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder={dict.placeholders.email}
+            className={inputClasses}
+          />
+        </div>
 
-            <div className="flex flex-col gap-1.5 sm:col-span-2">
-              <label htmlFor={`${formId}-message`} className={labelClasses}>
-                {dict.labels.message} <span className="normal-case text-paper/40">{dict.optionalLabel}</span>
-              </label>
-              <textarea
-                id={`${formId}-message`}
-                name="message"
-                rows={3}
-                placeholder={dict.placeholders.message}
-                className={inputClasses}
-              />
-            </div>
-          </>
-        )}
+        <div className="flex flex-col gap-1.5 sm:col-span-2">
+          <label htmlFor={`${formId}-message`} className={labelClasses}>
+            {dict.labels.message} <span className="normal-case text-paper/40">{dict.optionalLabel}</span>
+          </label>
+          <textarea
+            id={`${formId}-message`}
+            name="message"
+            rows={3}
+            placeholder={dict.placeholders.message}
+            className={inputClasses}
+          />
+        </div>
       </div>
 
-      <div className="mt-4 flex items-start gap-2.5">
-        <input
-          id={`${formId}-consent`}
-          name="consent"
-          type="checkbox"
-          required
-          className="mt-0.5 h-4 w-4 flex-shrink-0 accent-amber"
-        />
-        <label htmlFor={`${formId}-consent`} className="text-sm text-paper/70">
-          {dict.consent.prefix}
-          <a
-            href={`/${lang}/adatvedelem`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline decoration-paper/30 hover:text-paper hover:decoration-spring"
-          >
-            {dict.consent.linkText}
-          </a>
-          {dict.consent.suffix}
-        </label>
-      </div>
+      <div className="mt-4 flex items-start gap-2.5">{consentCheckbox}</div>
 
-      <MagneticButton
-        type="submit"
-        disabled={state === "submitting"}
-        className="btn-shine mt-4 w-full whitespace-nowrap rounded-md bg-amber px-6 py-3 font-sans font-semibold text-ink transition-colors duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
-      >
-        {state === "submitting" ? dict.submitting : dict.submit}
-      </MagneticButton>
+      <div className="mt-4">{submitButton}</div>
 
       {state === "error" && (
         <p role="alert" className="pop-in mt-3 text-sm text-amber">
