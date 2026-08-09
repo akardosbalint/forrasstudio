@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateEmailTemplate, type FormState } from "../actions";
+import { FormMessage } from "../../../FormMessage";
 
 export function EditTemplateForm({
   templateKey,
@@ -60,9 +61,9 @@ export function EditTemplateForm({
           className="rounded-lg border border-paper-3 bg-white px-3 py-2 font-mono text-xs outline-none focus:border-brook"
         />
       </div>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
       {state?.success && (
-        <p className="text-sm text-green-700">Mentve.</p>
+        <FormMessage type="success">Mentve.</FormMessage>
       )}
       <button
         type="submit"

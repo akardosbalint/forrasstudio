@@ -2,24 +2,6 @@ import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
 import { MagneticCard } from "@/components/MagneticCard";
 
-const team = [
-  {
-    name: "Kardos Bálint",
-    role: "Alapító & vezető fejlesztő",
-    photo: "/team/kardos-balint.jpg",
-  },
-  {
-    name: "Kányási Soma",
-    role: "Technológiai tanácsadó",
-    photo: "/team/kanyasi-soma.jpg",
-  },
-  {
-    name: "Csábi Eszter",
-    role: "Minőségbiztosítási tanácsadó",
-    photo: "/team/csabi-eszter.jpg",
-  },
-];
-
 export function Team() {
   return (
     <section id="csapat" className="scroll-mt-20 bg-paper-3">
@@ -30,39 +12,44 @@ export function Team() {
           </p>
         </Reveal>
         <Reveal delay={80}>
-          <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Mi vagyunk a FlowCore
+          <h2 className="text-gradient-brand mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            Mi építettük
           </h2>
         </Reveal>
-        <Reveal delay={160}>
-          <p className="mt-3 max-w-2xl leading-relaxed text-ink/70">
-            Hárman vagyunk. Nincs közvetítő réteg — a projekt teljes ideje alatt
-            közvetlenül velünk egyeztetsz.
-          </p>
-        </Reveal>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {team.map((member, index) => (
-            <Reveal key={member.name} delay={index * 100} className="h-full">
-              <MagneticCard className="h-full">
-                <div className="group h-full rounded-xl border border-paper-2 bg-white/50 p-6 text-center transition-all duration-300 hover:border-brook/40 hover:bg-white/80 hover:shadow-2xl hover:shadow-brook/20">
-                  <Image
-                    src={member.photo}
-                    alt={`${member.name} portréja`}
-                    width={480}
-                    height={480}
-                    unoptimized
-                    className="mx-auto h-44 w-44 rounded-full border-2 border-paper-2 object-cover transition-all duration-300 group-hover:scale-105 group-hover:border-spring/50 sm:h-48 sm:w-48"
-                  />
-                  <h3 className="mt-4 font-display text-lg font-semibold text-ink">
-                    {member.name}
-                  </h3>
-                  <p className="mt-1 text-sm text-ink/60">{member.role}</p>
-                </div>
-              </MagneticCard>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal delay={160} className="mt-12">
+          <MagneticCard>
+            <div className="glow-card group grid gap-8 rounded-2xl border border-paper-2 bg-white/60 p-8 [--glow-color:var(--color-brook)] hover:border-brook/50 hover:bg-white/90 sm:grid-cols-[auto_1fr] sm:items-center sm:p-10">
+              <Image
+                src="/team/kardos-balint.jpg"
+                alt="Kardos Bálint portréja"
+                width={480}
+                height={480}
+                unoptimized
+                className="mx-auto h-32 w-32 flex-shrink-0 rounded-full border-2 border-paper-2 object-cover transition-all duration-300 group-hover:scale-105 group-hover:border-spring/50 sm:h-40 sm:w-40"
+              />
+              <div>
+                <p className="font-display text-lg leading-relaxed text-ink sm:text-xl">
+                  „Szia, Kardos Bálint vagyok. A pályám 8 éve, webfejlesztéssel és
+                  keresőoptimalizálással indult a Hong Kong University of Technology-n, aztán
+                  évekig a marketing felé sodródtam. Idén év elején tértem vissza igazán a
+                  fejlesztéshez: baráti megbízásokból kezdtem webalkalmazásokat építeni, és
+                  hamar rájöttem, hogy ezzel foglalkozom a legtöbbet mindenek közül — így lett
+                  ez a fő projektem.
+                </p>
+                <p className="mt-3 leading-relaxed text-ink/80">
+                  Ez a háttér nálam nem hátrány, hanem előny: értem a marketing és a konverzió
+                  oldalát is, nem csak a kódot — és a legújabb AI-eszközökkel gyorsabban,
+                  megbízhatóbban építem meg neked, amire szükséged van, a piaci árak
+                  töredékéért. Nincs közvetítő réteg: az első egyeztetéstől az üzemeltetésig
+                  végig velem beszélsz.”
+                </p>
+                <p className="mt-4 font-display text-base font-semibold text-ink">Kardos Bálint</p>
+                <p className="text-sm text-ink/60">Alapító & vezető fejlesztő</p>
+              </div>
+            </div>
+          </MagneticCard>
+        </Reveal>
       </div>
     </section>
   );

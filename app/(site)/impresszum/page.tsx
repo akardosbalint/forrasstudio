@@ -3,8 +3,8 @@ import Link from "next/link";
 import { LegalPageShell, LegalSection } from "@/components/LegalPageShell";
 
 export const metadata: Metadata = {
-  title: "Impresszum — FlowCore",
-  description: "A FlowCore weboldal üzemeltetőjének adatai.",
+  title: "Impresszum — MI Építettük",
+  description: "A MI Építettük weboldal üzemeltetőjének adatai.",
 };
 
 export default function ImpresszumPage() {
@@ -12,8 +12,8 @@ export default function ImpresszumPage() {
     <LegalPageShell eyebrow="Jogi dokumentum" title="Impresszum" updated="2026. július 1.">
       <LegalSection title="Szolgáltató adatai">
         <ul>
-          <li>Márkanév: FlowCore</li>
-          <li>Szolgáltató neve: FlowCore Technologies Kft.</li>
+          <li>Márkanév: MI Építettük</li>
+          <li>Szolgáltató neve: MI Építettük Kft.</li>
           <li>Székhely: 1027 Budapest, Bem József utca 6. fsz. 3.</li>
           <li>Cégjegyzékszám: <span className="font-mono text-sm">[TODO: cégjegyzékszám]</span></li>
           <li>Adószám: <span className="font-mono text-sm">[TODO: adószám]</span></li>
@@ -37,7 +37,7 @@ export default function ImpresszumPage() {
 
       <LegalSection title="Domain">
         <p>
-          A weboldal végleges domainje: flowcore.hu.
+          A weboldal végleges domainje: miepitettuk.hu.
         </p>
       </LegalSection>
 

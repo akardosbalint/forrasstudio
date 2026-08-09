@@ -55,14 +55,14 @@ export function CookieConsent() {
           <button
             type="button"
             onClick={() => choose("rejected")}
-            className="rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-paper/80 transition-all duration-200 hover:border-paper/40 hover:text-paper active:scale-95"
+            className="rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-paper/80 transition-all duration-200 hover:border-paper/40 hover:text-paper active:scale-95"
           >
             Csak a szükséges
           </button>
           <button
             type="button"
             onClick={() => choose("accepted")}
-            className="btn-shine rounded-md bg-amber px-4 py-2 text-sm font-semibold text-ink transition-all duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/25 active:scale-95"
+            className="btn-shine bg-gradient-brand rounded-full px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:shadow-lg hover:shadow-amber/25 active:scale-95"
           >
             Mind elfogadom
           </button>

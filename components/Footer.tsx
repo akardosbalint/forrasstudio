@@ -1,4 +1,5 @@
 import { CookieSettingsButton } from "@/components/CookieSettingsButton";
+import { Wordmark } from "@/components/Wordmark";
 
 const legalLinks = [
   { label: "Adatkezelési tájékoztató", href: "/adatvedelem" },
@@ -29,7 +30,7 @@ export function Footer() {
     <footer className="border-t border-white/10 bg-ink-3 text-paper/70">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-12 sm:flex-row sm:items-start sm:justify-between sm:px-8">
         <div>
-          <p className="font-display text-lg font-semibold text-paper">FlowCore</p>
+          <Wordmark className="text-lg" toneClassName="text-paper" />
           <p className="mt-2 text-sm">
             Email:{" "}
             <a href="mailto:akardosbalint@gmail.com" className="underline decoration-white/20 hover:text-paper">
@@ -62,7 +63,7 @@ export function Footer() {
 
       <div className="border-t border-white/5 px-5 py-5 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-xs text-paper/40 sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} FlowCore. Minden jog fenntartva.</p>
+          <p>© {new Date().getFullYear()} MI Építettük. Minden jog fenntartva.</p>
           <nav aria-label="Jogi dokumentumok" className="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
             {legalLinks.map((link) => (
               <a key={link.href} href={link.href} className="underline decoration-white/20 hover:text-paper">

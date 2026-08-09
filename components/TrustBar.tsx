@@ -31,14 +31,14 @@ export function TrustBar() {
           transition={{ duration: 0.6, ease: EXPO_OUT }}
           className="mb-5 text-center font-mono text-xs uppercase tracking-[0.14em] text-ink/50"
         >
-          <span className="text-ink/30">{"// "}</span>Ezeket a rendszereket mi építettük és üzemeltetjük
+          <span className="text-ink/30">{"// "}</span>Ezeket a rendszereket MI építettük és üzemeltetjük
         </motion.p>
         <motion.ul
           variants={listVariants}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4"
+          className="flex flex-wrap items-center justify-center gap-3"
         >
           {references.map((ref) => (
             <motion.li key={ref.domain} variants={itemVariants}>
@@ -46,8 +46,12 @@ export function TrustBar() {
                 href={ref.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-sans text-sm font-medium text-ink/70 underline decoration-ink/20 decoration-1 underline-offset-4 transition-all duration-200 hover:text-ink hover:decoration-spring"
+                className="group inline-flex items-center gap-2 rounded-full border border-paper-3 bg-white/60 px-3.5 py-1.5 font-mono text-xs text-ink/70 transition-all duration-200 hover:border-spring/60 hover:bg-white/90 hover:text-ink"
               >
+                <span
+                  aria-hidden="true"
+                  className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-spring transition-transform duration-200 group-hover:scale-125"
+                />
                 {ref.domain}
               </a>
             </motion.li>

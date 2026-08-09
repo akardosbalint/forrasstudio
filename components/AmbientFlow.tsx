@@ -24,7 +24,7 @@ export function AmbientFlow() {
       <path
         d="M-20,210 C200,250 320,170 500,210 S700,250 820,200"
         fill="none"
-        stroke="var(--color-brook)"
+        stroke="var(--color-pink)"
         strokeWidth="1.5"
         strokeLinecap="round"
         className="ambient-flow-path"

@@ -3,7 +3,7 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import { writeAuditLog } from "@/lib/audit/log";
 import { renderEmailTemplate } from "@/lib/email/templates";
-import { sendTransactionalEmail } from "@/lib/email/resend";
+import { sendTransactionalEmail } from "@/lib/email/smtp";
 import {
   generateQuestionnaireToken,
   questionnaireLinkExpiry,

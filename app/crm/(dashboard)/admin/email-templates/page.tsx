@@ -35,7 +35,7 @@ export default async function EmailTemplatesPage() {
           </thead>
           <tbody>
             {allKeys.map((key) => (
-              <tr key={key} className="border-b border-paper-3 last:border-0">
+              <tr key={key} className="border-b border-paper-3 last:border-0 hover:bg-paper-2/40">
                 <td className="px-4 py-3">
                   <p className="font-medium">{KEY_LABELS[key] ?? key}</p>
                   <p className="text-xs text-ink/40">{key}</p>

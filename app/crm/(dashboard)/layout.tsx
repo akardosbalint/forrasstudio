@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { verifySession } from "@/lib/auth/rbac";
+import { Wordmark } from "@/components/Wordmark";
+import { CrmNav } from "./CrmNav";
 import { SignOutButton } from "./SignOutButton";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -19,6 +21,7 @@ export default async function CrmDashboardLayout({
     { href: "/crm", label: "Áttekintés" },
     { href: "/crm/leads", label: "Leadek" },
     { href: "/crm/settings/calendar", label: "Naptár beállítások" },
+    { href: "/crm/settings/profile", label: "Profil" },
     ...(profile.role === "ADMIN"
       ? [{ href: "/crm/admin", label: "Admin" }]
       : []),
@@ -29,20 +32,11 @@ export default async function CrmDashboardLayout({
       <header className="border-b border-paper-3 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-6">
-            <Link href="/crm" className="font-display text-lg font-semibold">
-              FlowCore CRM
+            <Link href="/crm" className="flex items-center gap-1.5">
+              <Wordmark toneClassName="text-ink" />
+              <span className="text-ink/40">CRM</span>
             </Link>
-            <nav className="flex items-center gap-4 text-sm">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-ink/70 transition-colors hover:text-ink"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+            <CrmNav items={navItems} />
           </div>
           <div className="flex items-center gap-3 text-sm">
             <span className="text-ink/60">

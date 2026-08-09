@@ -29,6 +29,7 @@ export default async function PipelinePage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-paper-3 text-left text-ink/50">
+              <th className="px-4 py-3 font-medium">Sorrend</th>
               <th className="px-4 py-3 font-medium">Stádium</th>
               <th className="px-4 py-3 font-medium">Típus</th>
               <th className="px-4 py-3 font-medium">Leadek</th>
@@ -36,11 +37,13 @@ export default async function PipelinePage() {
             </tr>
           </thead>
           <tbody>
-            {stages.map((stage) => (
+            {stages.map((stage, index) => (
               <StageRow
                 key={stage.id}
                 stage={stage}
                 leadCount={stage._count.leads}
+                isFirst={index === 0}
+                isLast={index === stages.length - 1}
               />
             ))}
           </tbody>

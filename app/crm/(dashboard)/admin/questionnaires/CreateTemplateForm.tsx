@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createTemplate, type FormState } from "./actions";
+import { FormMessage } from "../../FormMessage";
 
 export function CreateTemplateForm() {
   const [state, formAction, isPending] = useActionState<FormState, FormData>(
@@ -29,7 +30,7 @@ export function CreateTemplateForm() {
       >
         {isPending ? "Létrehozás..." : "Létrehozás"}
       </button>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
     </form>
   );
 }

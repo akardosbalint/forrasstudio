@@ -1,9 +1,9 @@
-# FlowCore — landing page + belső sales CRM
+# MI Építettük — landing page + belső sales CRM
 
 A repo két részből áll:
 
 - **Landing page** (`app/(site)/`) — egyoldalas B2B értékesítési oldal a
-  FlowCore számára, visszahívás-kérés formmal.
+  MI Építettük számára, visszahívás-kérés formmal.
 - **CRM** (`app/crm/`) — belső, bejelentkezés-védett sales CRM: lead/deal
   pipeline, kérdőív-automatizáció, discovery call foglalás, Google Calendar
   integráció, riportok. Lásd lent a "CRM" szekciót.
@@ -12,10 +12,13 @@ A repo két részből áll:
 
 - **Next.js (App Router)** — frontend és backend egy keretrendszerben.
   API route: `app/api/callback-request/route.ts`.
-- **Supabase (Postgres)** — a visszahívás-kérések tárolása a
-  `callback_requests` táblában, séma: `supabase/schema.sql`.
-- **Resend** — azonnali email-értesítés minden új visszahívás-kérésnél,
-  `lib/notifications.ts`.
+- **Prisma + Postgres (CRM adatbázis)** — a visszahívás-kérés beküldése egy
+  Lead-et hoz létre a CRM pipeline-jában, "Visszahívásra vár" stádiumban
+  (ugyanaz az adatbázis és modell, amit a CRM admin felülete is használ) —
+  így a form ténylegesen megjelenik a CRM-ben, nem egy elkülönített táblába
+  íródik.
+- **Google Workspace SMTP** — azonnali email-értesítés minden új
+  visszahívás-kérésnél, `lib/notifications.ts`.
 - **Tailwind CSS v4** — design tokenek a `app/globals.css`-ben (`@theme`).
 - **Python automatizálás (jövőbeli)** — `automation/` mappa, lásd az ottani
   README-t.
@@ -29,34 +32,40 @@ npm run dev
 
 Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
 
-## Supabase beüzemelése
+## Adatbázis beüzemelése
 
-1. Hozz létre egy Supabase projektet, futtasd le a `supabase/schema.sql`
-   fájlt az SQL editorban.
-   - **Ha már korábban létrehoztad a `callback_requests` táblát** (a
-     `consent` oszlop bevezetése előtt), futtasd le a
-     `supabase/migrations/2026-07-01-add-consent.sql` fájlt is — ez adja
-     hozzá utólag a GDPR-hozzájárulást rögzítő oszlopot és frissíti az
-     insert policy-t.
-2. Töltsd ki a `.env.example` alapján a `.env.local` fájlt
-   (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`).
-3. Amíg ezek nincsenek beállítva, az API route 503-at ad vissza, a form
-   erre felhasználóbarát hibaüzenetet jelenít meg.
+A landing page visszahívás-form és a CRM ugyanazt a Postgres adatbázist és
+Prisma sémát használja (lásd lent, "CRM" szekció) — külön Supabase-tábla
+beüzemelése a formhoz **nem** szükséges. Töltsd ki a `.env.example` alapján
+a `.env.local` fájlt (`DATABASE_URL`, `SUPABASE_URL`,
+`SUPABASE_PUBLISHABLE_KEY` — utóbbi kettő a CRM bejelentkezéshez kell).
 
-## Email-értesítés beüzemelése (Resend)
+> A `supabase/schema.sql` és `supabase/migrations/` egy korábbi, önálló
+> `callback_requests` Supabase-táblát dokumentál — ezt az API route már nem
+> használja, a fájlok csak történeti referenciaként maradtak meg.
 
-1. Hozz létre egy fiókot a [resend.com](https://resend.com) oldalon, és
-   szerezz be egy API kulcsot az API Keys menüpont alatt.
-2. Igazold a saját küldő domainedet a Resend "Domains" menüpontja alatt
-   (DNS rekordok hozzáadásával) — igazolt domain nélkül csak a
-   `onboarding@resend.dev` teszt-cím használható, éles forgalomra nem
-   alkalmas.
-3. Töltsd ki a `.env.example` alapján: `RESEND_API_KEY`,
-   `NOTIFICATION_EMAIL_FROM` (saját, igazolt domainen lévő cím),
-   `NOTIFICATION_EMAIL_TO` (ide fusson be az értesítés).
-4. Amíg ezek nincsenek beállítva, a lead továbbra is elmentődik
-   Supabase-be, csak az email-értesítés marad el (a hiba a szerver
+## Email-értesítés beüzemelése (Google Workspace SMTP)
+
+1. A küldő Google Workspace fiókodon (pl. `balint@miepitettuk.hu`)
+   kapcsold be a "2 lépéses ellenőrzést" (Google Fiók → Biztonság), ha
+   még nincs bekapcsolva — ez feltétele az Alkalmazásjelszó
+   létrehozásának.
+2. Ugyanott, **Alkalmazásjelszavak** menüpont alatt hozz létre egy új app
+   jelszót (pl. "MI Építettük CRM" néven) — ez egy 16 karakteres,
+   kizárólag SMTP-hez használható jelszó, nem a normál fiókjelszó.
+3. Töltsd ki a `.env.example` alapján: `SMTP_HOST` (`smtp.gmail.com`),
+   `SMTP_PORT` (`587`), `SMTP_USER` (a küldő postafiók címe),
+   `SMTP_PASSWORD` (az imént létrehozott app jelszó), `NOTIFICATION_EMAIL_TO`
+   (ide fusson be az értesítés).
+4. Amíg ezek nincsenek beállítva, a lead továbbra is elmentődik a CRM
+   pipeline-jába, csak az email-értesítés marad el (a hiba a szerver
    logban jelenik meg, a form beküldőjének nem).
+
+   **Fontos**: a Google Workspace "IP-alapú SMTP relay" szolgáltatása
+   (Admin Console → Gmail → Routing) fix, engedélyezett forrás-IP-khez van
+   kötve, ami Vercel serverless függvényekről (dinamikus IP-k) **nem
+   működik** — ezért hitelesített SMTP-t (app jelszóval) használ a
+   rendszer, ami bármilyen IP-ről működik.
 
 ## GDPR és adatkezelés
 
@@ -67,8 +76,9 @@ Nyisd meg a [http://localhost:3000](http://localhost:3000) címet.
   előtt.**
 - A visszahívás-formok (`components/CallbackForm.tsx`) kötelező
   hozzájárulási checkboxot tartalmaznak, ami az `adatvedelem` oldalra
-  linkel; a szerver (`app/api/callback-request/route.ts`) és az adatbázis
-  RLS policy-ja is elutasítja a mentést hozzájárulás nélkül.
+  linkel; a szerver (`app/api/callback-request/route.ts`) elutasítja a
+  mentést hozzájárulás nélkül, és a hozzájárulás tényét az audit logba is
+  rögzíti.
 - `components/CookieConsent.tsx` — süti-tájékoztató sáv, ami elmenti a
   választásod a böngésző helyi tárolójában; a lábléc
   &bdquo;Süti beállítások&rdquo; linkje bármikor újra megnyitja.
@@ -91,12 +101,21 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
     a `prisma.config.ts`-ben és a `DATABASE_URL` env változóban él. A
     generált kliens az (gitignore-olt) `generated/prisma/` mappába kerül,
     `npm install` után automatikusan (`postinstall` script).
-- **Auth: Supabase Auth** (email/jelszó + később Google SSO) a NextAuth.js
-  helyett — a projekt már Supabase-re épül, a Supabase Auth managed
-  jelszó-hash-elést, munkamenet-JWT-t, rate limitinget (a login endpoint a
-  Supabase saját, hoszingolt Auth API-ja, amit a böngésző hív közvetlenül —
-  ezért nincs saját login API route-unk rate limitelni) és email-alapú
-  jelszó-visszaállítást ad készen.
+- **Auth: Supabase Auth, magic link (jelszó nélkül)** a NextAuth.js helyett
+  — a projekt már Supabase-re épül, a Supabase Auth managed munkamenet-JWT-t
+  és rate limitinget ad készen (a login endpoint a Supabase saját,
+  hosztolt Auth API-ja, amit a böngésző hív közvetlenül — ezért nincs saját
+  login API route-unk rate limitelni). Nincs jelszó: a `/crm/login` oldal
+  (`LoginForm.tsx`) `supabase.auth.signInWithOtp({ shouldCreateUser: false
+  })`-t hív, ami egyszer-használatos, rövid élettartamú bejelentkező linket
+  küld emailben — és **kizárólag** olyan email címre, ami már létezik a
+  Supabase Auth-ban (a `shouldCreateUser: false` miatt ismeretlen címre nem
+  küld linket, és nem is hoz létre új usert). A linkre kattintás az
+  `app/auth/callback/route.ts` route handlerre irányít, ami a PKCE
+  `code`-ot valódi munkamenetre váltja, majd a `/crm`-re (vagy a `next`
+  paraméterben kért oldalra) irányít. Új user tehát csak manuálisan, a
+  Supabase Auth Dashboardból hozható létre (lásd lent a "Beüzemelés"
+  résznél) — jelenleg csak egy: `balint@miepitettuk.hu`.
 - **Jogosultságkezelés**: `Profile` tábla (Prisma) 1:1-ben a Supabase Auth
   felhasználóval, `role` mezővel (`ADMIN` / `SALES_REP` / `VIEWER`).
   `lib/auth/rbac.ts` a Data Access Layer: minden CRM oldal/server action
@@ -120,15 +139,61 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
    npx prisma db seed
    ```
 4. Hozz létre egy usert a Supabase Auth-ban (Dashboard → Authentication →
-   Users → Add user), a `FIRST_ADMIN_EMAIL`-ben megadott email címmel —
-   első bejelentkezéskor a rendszer automatikusan admin `Profile` sort hoz
-   létre neki.
-5. `npm run dev`, majd `/crm/login`.
+   Users → Add user), a `FIRST_ADMIN_EMAIL`-ben megadott email címmel
+   (jelenleg: `balint@miepitettuk.hu`) — jelszó nem kell hozzá (magic link
+   auth), de az "Auto Confirm User" opciót jelöld be, hogy a cím azonnal
+   megerősítettnek számítson. Első bejelentkezéskor a rendszer
+   automatikusan admin `Profile` sort hoz létre neki. Mivel a login
+   `shouldCreateUser: false`-szal hív `signInWithOtp`-t, más email címre
+   nem is küldhető bejelentkező link, amíg ott nincs Dashboardból
+   létrehozott user — ez tartja egyelőre egyetlen userre zárva a rendszert.
+5. Supabase Dashboard → Authentication → URL Configuration: a `Site URL`
+   legyen a `NEXT_PUBLIC_APP_URL` (pl. `http://localhost:3000` fejlesztésben,
+   `https://miepitettuk.hu` élesben), és vedd fel a `Redirect URLs` közé az
+   `<NEXT_PUBLIC_APP_URL>/auth/callback` címet — enélkül a Supabase a magic
+   link kattintás után nem a `/auth/callback` route handlerre, hanem a Site
+   URL-re irányít, és a bejelentkezés nem fejeződik be.
+6. `npm run dev`, majd `/crm/login` — add meg az email címet, a Supabase
+   elküldi a bejelentkező linket (helyi fejlesztésben a Supabase projekt
+   Dashboard → Authentication → Logs alatt, vagy a beállított SMTP-n
+   keresztül nézhető meg/érkezik meg).
 
-6. Email küldéshez (kérdőív-meghívó) állítsd be a `RESEND_API_KEY` /
-   `NOTIFICATION_EMAIL_FROM` env változókat is (lásd fent, "Email-értesítés
-   beüzemelése"), enélkül a stádiumváltás lefut, de figyelmeztetést kapsz,
+7. Email küldéshez (kérdőív-meghívó) állítsd be az `SMTP_HOST` / `SMTP_PORT`
+   / `SMTP_USER` / `SMTP_PASSWORD` env változókat is (lásd fent,
+   "Email-értesítés beüzemelése"), enélkül a stádiumváltás lefut, de
+   figyelmeztetést kapsz,
    hogy az email küldése nem sikerült.
+
+### Migrációk éles környezetben
+
+**Fontos**: a Vercel build csak `prisma generate`-et futtat (lásd
+`package.json` `postinstall`), `prisma migrate deploy`-t **nem** — új
+Prisma migráció hozzáadása után ezt kézzel kell lefuttatni az éles
+adatbázison, különben a migráció sosem kerül alkalmazásra, hiába van
+commitolva a repóban:
+
+```bash
+DATABASE_URL="<éles Supabase connection string>" npx prisma migrate deploy
+```
+
+Alternatívaként a `prisma/migrations/<mappa>/migration.sql` tartalma
+közvetlenül is lefuttatható a Supabase Dashboard SQL editorában (Settings
+→ Database → SQL Editor) — ez akkor kényelmesebb, ha nincs helyben
+Node/Prisma CLI beállítva. Mindkét esetben a `_prisma_migrations` tábla
+(amit a `migrate deploy` automatikusan vezet) tartja nyilván, mely
+migrációk futottak már le — ha SQL editorral futtatod le kézzel, ne
+felejtsd el `migrate deploy`-jal is jelezni, hogy alkalmazva lett (vagy
+utólag is lefuttathatod a `migrate deploy`-t, ami a már lefutott
+migrációt csak nyilvántartásba veszi, nem futtatja le kétszer).
+
+Ugyanez érvényes a `prisma/seed.ts`-re is: az `emailTemplate.upsert`
+`update: {}`-je szándékosan **soha nem írja felül** a már létező sorokat
+(hogy egy admin által szerkesztett email sablont ne írjon felül egy
+újraseedelés) — ezért egy sablon alapszövegének (pl. márkanév) utólagos
+módosítása a kód-oldali fallback-ben (`lib/email/fallbackTemplates.ts`)
+**nem** kerül át automatikusan a már létrehozott adatbázis-sorokba, csak
+egy dedikált migrációval (lásd pl.
+`prisma/migrations/20260806122320_fix_flowcore_brand_in_email_templates`).
 
 ### Amit érdemes manuálisan tesztelni (Phase 1)
 
@@ -149,7 +214,7 @@ ez a szakasz a **Phase 1** állapotát dokumentálja.
   státuszba tenni → hibaüzenet, a stádium nem változik.
 - Adj meg email címet a leadhez (jelenleg csak létrehozáskor lehet — lead
   szerkesztés a Phase 6 admin körben bővül), majd váltsd "Kérdőív kitöltés
-  alatt" státuszba → a stádium frissül, és ha be van állítva a Resend, a
+  alatt" státuszba → a stádium frissül, és ha be van állítva az SMTP, a
   megadott email címre megérkezik a kérdőív-meghívó linkkel; ha nincs
   beállítva, sárga figyelmeztetés jelenik meg, de a stádium akkor is
   frissül.
@@ -189,8 +254,8 @@ elérhető Postgres megteszi:
 
 ```bash
 # Postgres indítása, adatbázis létrehozása, majd:
-DATABASE_URL="postgresql://user:pass@localhost:5432/flowcore_crm_dev" npm run prisma:migrate
-DATABASE_URL="postgresql://user:pass@localhost:5432/flowcore_crm_dev" npx prisma db seed
+DATABASE_URL="postgresql://user:pass@localhost:5432/mi_epitettuk_crm_dev" npm run prisma:migrate
+DATABASE_URL="postgresql://user:pass@localhost:5432/mi_epitettuk_crm_dev" npx prisma db seed
 ```
 
 Csak a `/crm/**` (bejelentkezés-védett) oldalak igényelnek valódi Supabase
@@ -207,7 +272,7 @@ a CRM lead adatlapon (`Lemondás` gomb) keresztül érhető el.
   jelennek meg, napok szerint csoportosítva.
 - Időpont választása + "Időpont lefoglalása" → a lead automatikusan
   "Discovery call lefoglalva" státuszba kerül, a kiválasztott időpont
-  eltűnik a szabad sávok közül (ütközésvizsgálat), és — ha a Resend be van
+  eltűnik a szabad sávok közül (ütközésvizsgálat), és — ha az SMTP be van
   állítva — az ügyfél és a rep is kap egy visszaigazoló emailt `.ics`
   naptármeghívó csatolással.
 - "Átütemezés" → új időpont választható, a régi foglalás
@@ -470,7 +535,7 @@ igazolására:
   (`booking.confirmation_email_sent`, `booking.cancellation_email_sent`,
   `booking.reminder_24h_sent`/`_1h_sent`). Az emlékeztető emailek emellett
   mostantól csak sikeres küldés esetén jelölődnek "kiküldve"-nek, így egy
-  átmeneti Resend-hiba esetén a következő háttérjob-futás újra
+  átmeneti SMTP-hiba esetén a következő háttérjob-futás újra
   megpróbálja.
 - **Email sablonok HTML-injekció kockázata**: a `{{leadName}}`/
   `{{repName}}` típusú változók korábban escape-elés nélkül kerültek a

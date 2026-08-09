@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createLead, type CreateLeadState } from "../actions";
+import { FormMessage } from "../../FormMessage";
 import type { Profile } from "@/generated/prisma/client";
 
 export function NewLeadForm({ profiles }: { profiles: Profile[] }) {
@@ -84,11 +85,11 @@ export function NewLeadForm({ profiles }: { profiles: Profile[] }) {
           ))}
         </select>
       </div>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <FormMessage type="error">{state.error}</FormMessage>}
       <button
         type="submit"
         disabled={isPending}
-        className="mt-2 self-start rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-60"
+        className="bg-gradient-brand mt-2 self-start rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
       >
         {isPending ? "Mentés..." : "Lead létrehozása"}
       </button>

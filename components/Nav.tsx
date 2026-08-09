@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getLenisInstance } from "@/lib/lenis";
+import { Wordmark } from "@/components/Wordmark";
 
 const links = [
   { href: "#szolgaltatasok", label: "Szolgáltatások" },
@@ -65,9 +66,9 @@ export function Nav() {
         <a
           href="#top"
           onClick={(event) => handleAnchorClick(event, "#top")}
-          className="font-display text-lg font-semibold tracking-tight text-paper transition-transform duration-300 hover:scale-[1.02]"
+          className="group text-lg transition-transform duration-300 hover:scale-[1.02]"
         >
-          FlowCore
+          <Wordmark toneClassName="text-paper" />
         </a>
 
         <ul className="hidden items-center gap-7 md:flex">
@@ -95,7 +96,7 @@ export function Nav() {
         <a
           href="#cta"
           onClick={(event) => handleAnchorClick(event, "#cta")}
-          className="btn-shine whitespace-nowrap rounded-md bg-amber px-4 py-2 font-sans text-sm font-semibold text-ink transition-all duration-200 hover:bg-amber-dark hover:shadow-lg hover:shadow-amber/20 active:scale-95"
+          className="btn-shine bg-gradient-brand whitespace-nowrap rounded-full px-4 py-2 font-sans text-sm font-semibold text-white transition-all duration-200 hover:shadow-lg hover:shadow-amber/40 active:scale-95"
         >
           Visszahívást kérek
         </a>
