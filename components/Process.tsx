@@ -5,41 +5,14 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Reveal } from "@/components/Reveal";
 import { useScrollJackingEnabled } from "@/lib/useScrollJacking";
+import type { Dictionary } from "@/dictionaries";
 
 gsap.registerPlugin(ScrollTrigger);
 
 type StepIcon = "talk" | "plan" | "build" | "launch";
+type ProcessDict = Dictionary["site"]["process"];
 
-const steps: { number: string; title: string; description: string; icon: StepIcon }[] = [
-  {
-    number: "01",
-    title: "Egyeztetés",
-    description:
-      "Megismerjük a vállalkozásod vagy szervezeted működését: hogyan érnek el az ügyfeleid, hogyan fizetnek, és hol van most súrlódás.",
-    icon: "talk",
-  },
-  {
-    number: "02",
-    title: "Terv & ajánlat",
-    description:
-      "Összeállítjuk, mely modulok kellenek (foglalás, fizetés, CRM, beléptetés), és pontos, átlátható ajánlatot adunk.",
-    icon: "plan",
-  },
-  {
-    number: "03",
-    title: "Fejlesztés",
-    description:
-      "Megépítjük a rendszert — AI-asszisztált fejlesztéssel, a modulok egymással összehangolva, gyorsabban és olcsóbban, mint egy hagyományos csapatnál.",
-    icon: "build",
-  },
-  {
-    number: "04",
-    title: "Élesítés & support",
-    description:
-      "Élesítjük a rendszert, majd folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük — hosszú távon.",
-    icon: "launch",
-  },
-];
+const stepIcons: StepIcon[] = ["talk", "plan", "build", "launch"];
 
 function StepIconGraphic({ name }: { name: StepIcon }) {
   const paths: Record<StepIcon, ReactNode> = {
@@ -91,7 +64,7 @@ function StepIconGraphic({ name }: { name: StepIcon }) {
 /** Horizontal scroll-jacking track: the 4 steps slide left as the user
  * scrolls vertically through the pinned section, each icon popping in
  * as its panel nears the center. Desktop pointer + motion allowed only. */
-function ProcessPinned() {
+function ProcessPinned({ dict }: { dict: ProcessDict }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -129,7 +102,7 @@ function ProcessPinned() {
 
         iconRefs.current.forEach((el, i) => {
           if (!el) return;
-          const center = (i + 0.5) / steps.length;
+          const center = (i + 0.5) / dict.steps.length;
           tl.to(
             el,
             { scale: 1, opacity: 1, duration: 0.1, ease: "back.out(2)" },
@@ -160,18 +133,19 @@ function ProcessPinned() {
         <div className="mx-auto flex h-full max-w-6xl flex-col justify-center px-5 sm:px-8">
           <Reveal>
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-              <span className="text-ink/30">{"// "}</span>Hogyan dolgozunk
+              <span className="text-ink/30">{"// "}</span>
+              {dict.eyebrow}
             </p>
           </Reveal>
           <Reveal delay={80}>
             <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-              Négy lépés az egyeztetéstől az üzemeltetésig
+              {dict.title}
             </h2>
           </Reveal>
 
           <div className="mt-14 overflow-hidden">
             <div ref={trackRef} className="flex gap-16 will-change-transform lg:gap-24">
-              {steps.map((step, index) => (
+              {dict.steps.map((step, index) => (
                 <div
                   key={step.number}
                   className="w-[80vw] flex-shrink-0 sm:w-[55vw] lg:w-[32vw]"
@@ -181,7 +155,7 @@ function ProcessPinned() {
                       iconRefs.current[index] = el;
                     }}
                   >
-                    <StepIconGraphic name={step.icon} />
+                    <StepIconGraphic name={stepIcons[index]} />
                   </div>
                   <span className="mt-4 block font-mono text-sm text-amber-dark">
                     {step.number}
@@ -203,33 +177,34 @@ function ProcessPinned() {
 }
 
 /** Fallback: simple vertical staggered reveal, no horizontal scroll-jacking. */
-function ProcessSimple() {
+function ProcessSimple({ dict }: { dict: ProcessDict }) {
   return (
     <div className="bg-paper-3">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-            <span className="text-ink/30">{"// "}</span>Hogyan dolgozunk
+            <span className="text-ink/30">{"// "}</span>
+            {dict.eyebrow}
           </p>
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-            Négy lépés az egyeztetéstől az üzemeltetésig
+            {dict.title}
           </h2>
         </Reveal>
 
         <ol className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-          {steps.map((step, index) => (
+          {dict.steps.map((step, index) => (
             <li key={step.number} className="relative">
               <Reveal delay={index * 100}>
                 <div className="group transition-transform duration-300 hover:-translate-y-1">
-                  {index < steps.length - 1 && (
+                  {index < dict.steps.length - 1 && (
                     <span
                       aria-hidden="true"
                       className="absolute left-0 top-6 hidden h-px w-full translate-x-1/2 bg-gradient-to-r from-amber/50 via-pink/40 to-transparent lg:block"
                     />
                   )}
-                  <StepIconGraphic name={step.icon} />
+                  <StepIconGraphic name={stepIcons[index]} />
                   <span className="mt-3 block font-mono text-sm text-amber-dark transition-colors duration-300 group-hover:text-amber">
                     {step.number}
                   </span>
@@ -247,7 +222,11 @@ function ProcessSimple() {
   );
 }
 
-export function Process() {
+export function Process({ dict }: { dict: ProcessDict }) {
   const jackingEnabled = useScrollJackingEnabled();
-  return <section>{jackingEnabled ? <ProcessPinned /> : <ProcessSimple />}</section>;
+  return (
+    <section>
+      {jackingEnabled ? <ProcessPinned dict={dict} /> : <ProcessSimple dict={dict} />}
+    </section>
+  );
 }

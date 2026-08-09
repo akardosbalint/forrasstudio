@@ -7,13 +7,44 @@ import {
 } from "./actions";
 import { questionFieldName } from "@/lib/questionnaire/answers";
 import type { QuestionnaireQuestion } from "@/generated/prisma/client";
+import type { Locale } from "@/lib/i18n/config";
+import type { QuestionnaireDict } from "@/dictionaries/flows/types";
 
 function parseOptions(options: unknown): string[] {
   if (!Array.isArray(options)) return [];
   return options.filter((o): o is string => typeof o === "string");
 }
 
-function QuestionField({ question }: { question: QuestionnaireQuestion }) {
+function questionLabel(question: QuestionnaireQuestion, lang: Locale): string {
+  return lang === "en" ? question.labelEn ?? question.label : question.label;
+}
+
+function questionHelpText(
+  question: QuestionnaireQuestion,
+  lang: Locale,
+): string | null {
+  return lang === "en"
+    ? question.helpTextEn ?? question.helpText
+    : question.helpText;
+}
+
+function questionOptions(question: QuestionnaireQuestion, lang: Locale): string[] {
+  const raw =
+    lang === "en"
+      ? (question.optionsEn as string[] | null) ?? (question.options as string[])
+      : question.options;
+  return parseOptions(raw);
+}
+
+function QuestionField({
+  question,
+  lang,
+  dict,
+}: {
+  question: QuestionnaireQuestion;
+  lang: Locale;
+  dict: QuestionnaireDict;
+}) {
   const name = questionFieldName(question.id);
   const baseInputClass =
     "rounded-lg border border-paper-3 bg-white px-3 py-2 text-sm outline-none focus:border-brook w-full";
@@ -53,11 +84,11 @@ function QuestionField({ question }: { question: QuestionnaireQuestion }) {
       return (
         <label className="flex items-center gap-2 text-sm">
           <input id={name} name={name} type="checkbox" />
-          Igen
+          {dict.form.booleanYes}
         </label>
       );
     case "SELECT": {
-      const options = parseOptions(question.options);
+      const options = questionOptions(question, lang);
       return (
         <select
           id={name}
@@ -67,7 +98,7 @@ function QuestionField({ question }: { question: QuestionnaireQuestion }) {
           className={baseInputClass}
         >
           <option value="" disabled>
-            Válassz...
+            {dict.form.selectPlaceholder}
           </option>
           {options.map((option) => (
             <option key={option} value={option}>
@@ -78,7 +109,7 @@ function QuestionField({ question }: { question: QuestionnaireQuestion }) {
       );
     }
     case "MULTISELECT": {
-      const options = parseOptions(question.options);
+      const options = questionOptions(question, lang);
       return (
         <div className="flex flex-col gap-1.5">
           {options.map((option) => (
@@ -106,10 +137,14 @@ function QuestionField({ question }: { question: QuestionnaireQuestion }) {
 
 export function QuestionnaireForm({
   token,
+  lang,
   questions,
+  dict,
 }: {
   token: string;
+  lang: Locale;
   questions: QuestionnaireQuestion[];
+  dict: QuestionnaireDict;
 }) {
   const [state, formAction, isPending] = useActionState<
     SubmitQuestionnaireState,
@@ -120,12 +155,9 @@ export function QuestionnaireForm({
     return (
       <div className="rounded-xl border border-paper-3 bg-white p-6 text-center">
         <h2 className="mb-2 font-display text-lg font-semibold">
-          Köszönjük a kitöltést!
+          {dict.success.heading}
         </h2>
-        <p className="text-sm text-ink/70">
-          Hamarosan emailben kapsz egy linket, amin lefoglalhatod a 90 perces
-          discovery call időpontját.
-        </p>
+        <p className="text-sm text-ink/70">{dict.success.body}</p>
       </div>
     );
   }
@@ -133,25 +165,30 @@ export function QuestionnaireForm({
   return (
     <form action={formAction} className="flex flex-col gap-6">
       <input type="hidden" name="token" value={token} />
-      {questions.map((question) => (
-        <div key={question.id} className="flex flex-col gap-1.5">
-          <label htmlFor={questionFieldName(question.id)} className="text-sm font-medium">
-            {question.label}
-            {question.required && <span className="text-red-500"> *</span>}
-          </label>
-          {question.helpText && (
-            <p className="text-xs text-ink/50">{question.helpText}</p>
-          )}
-          <QuestionField question={question} />
-        </div>
-      ))}
+      <input type="hidden" name="lang" value={lang} />
+      {questions.map((question) => {
+        const helpText = questionHelpText(question, lang);
+        return (
+          <div key={question.id} className="flex flex-col gap-1.5">
+            <label
+              htmlFor={questionFieldName(question.id)}
+              className="text-sm font-medium"
+            >
+              {questionLabel(question, lang)}
+              {question.required && <span className="text-red-500"> *</span>}
+            </label>
+            {helpText && <p className="text-xs text-ink/50">{helpText}</p>}
+            <QuestionField question={question} lang={lang} dict={dict} />
+          </div>
+        );
+      })}
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
       <button
         type="submit"
         disabled={isPending}
         className="self-start rounded-lg bg-ink px-5 py-2.5 text-sm font-medium text-paper disabled:opacity-60"
       >
-        {isPending ? "Küldés..." : "Kérdőív beküldése"}
+        {isPending ? dict.form.submitting : dict.form.submit}
       </button>
     </form>
   );

@@ -6,20 +6,39 @@ import { parseAndValidateAnswers } from "@/lib/questionnaire/answers";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 import { renderEmailTemplate } from "@/lib/email/templates";
 import { sendTransactionalEmail } from "@/lib/email/smtp";
+import { isLocale, defaultLocale, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/dictionaries";
 
 export type SubmitQuestionnaireState =
   | { error?: string; success?: boolean }
   | undefined;
 
-class QuestionnaireSubmitError extends Error {}
+// A `message` (második paraméter) csak hibakeresési/log célt szolgál —
+// a látogatónak megjelenő szöveg mindig a `code`-on keresztül, a `flows`
+// szótárból származik (lásd lent).
+class QuestionnaireSubmitError extends Error {
+  code: string;
+  constructor(code: string, message: string) {
+    super(message);
+    this.code = code;
+  }
+}
 
 export async function submitQuestionnaireResponse(
   _prevState: SubmitQuestionnaireState,
   formData: FormData,
 ): Promise<SubmitQuestionnaireState> {
+  // A `lang` a form egy rejtett mezőjeként érkezik (lásd QuestionnaireForm.tsx)
+  // — ugyanaz a minta, mint a `token` mezőé, mivel a `useActionState`
+  // action-je fix (prevState, formData) szignatúrájú.
+  const langRaw = String(formData.get("lang") ?? "");
+  const lang: Locale = isLocale(langRaw) ? langRaw : defaultLocale;
+  const dict = await getDictionary(lang);
+  const errors = dict.flows.questionnaire.errors;
+
   const token = String(formData.get("token") ?? "");
   if (!token) {
-    return { error: "Hiányzó token." };
+    return { error: errors.MISSING_TOKEN };
   }
 
   const link = await prisma.questionnaireLink.findUnique({
@@ -30,16 +49,16 @@ export async function submitQuestionnaireResponse(
   });
 
   if (!link) {
-    return { error: "Érvénytelen link." };
+    return { error: errors.INVALID_LINK };
   }
   if (link.expiresAt < new Date()) {
-    return { error: "Ez a link már lejárt." };
+    return { error: errors.LINK_EXPIRED };
   }
   if (link.usedAt) {
-    return { error: "Ezt a kérdőívet már kitöltötted." };
+    return { error: errors.ALREADY_SUBMITTED };
   }
 
-  const result = parseAndValidateAnswers(link.template.questions, formData);
+  const result = parseAndValidateAnswers(link.template.questions, formData, lang);
   if ("error" in result) {
     return { error: result.error };
   }
@@ -48,9 +67,7 @@ export async function submitQuestionnaireResponse(
     where: { key: SYSTEM_STAGE_KEYS.BOOKING_PENDING },
   });
   if (!bookingPendingStage) {
-    return {
-      error: "A rendszer nincs teljesen beüzemelve (hiányzó pipeline stádium).",
-    };
+    return { error: errors.MISSING_STAGE };
   }
 
   let lead: { email: string | null; name: string };
@@ -68,10 +85,11 @@ export async function submitQuestionnaireResponse(
         include: { currentStage: true },
       });
       if (!freshLead) {
-        throw new QuestionnaireSubmitError("A lead nem található.");
+        throw new QuestionnaireSubmitError("LEAD_NOT_FOUND", "A lead nem található.");
       }
       if (freshLead.currentStage.key !== SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING) {
         throw new QuestionnaireSubmitError(
+          "STAGE_CHANGED",
           "Ez a kérdőív-link már nem aktuális — a lead státusza időközben megváltozott. Ha kérdésed van, keresd a kapcsolattartódat.",
         );
       }
@@ -86,7 +104,10 @@ export async function submitQuestionnaireResponse(
         data: { usedAt: new Date() },
       });
       if (usedUpdate.count === 0) {
-        throw new QuestionnaireSubmitError("Ezt a kérdőívet már kitöltötted.");
+        throw new QuestionnaireSubmitError(
+          "ALREADY_SUBMITTED",
+          "Ezt a kérdőívet már kitöltötted.",
+        );
       }
 
       await tx.questionnaireResponse.create({
@@ -113,11 +134,10 @@ export async function submitQuestionnaireResponse(
       return { email: freshLead.email, name: freshLead.name };
     });
   } catch (error) {
+    const code =
+      error instanceof QuestionnaireSubmitError ? error.code : "UNKNOWN";
     return {
-      error:
-        error instanceof QuestionnaireSubmitError
-          ? error.message
-          : "Ismeretlen hiba történt a beküldés során. Kérjük, próbáld újra.",
+      error: errors[code as keyof typeof errors] ?? errors.UNKNOWN,
     };
   }
 
@@ -130,8 +150,8 @@ export async function submitQuestionnaireResponse(
   });
 
   if (lead.email) {
-    const bookingUrl = `${(process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "")}/foglalas/${token}`;
-    const email = await renderEmailTemplate("questionnaire_submitted", {
+    const bookingUrl = `${(process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "")}/${lang}/foglalas/${token}`;
+    const email = await renderEmailTemplate("questionnaire_submitted", lang, {
       leadName: lead.name,
       bookingLink: bookingUrl,
     });

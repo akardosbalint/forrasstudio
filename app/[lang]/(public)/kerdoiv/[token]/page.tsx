@@ -1,12 +1,17 @@
 import { prisma } from "@/lib/prisma";
+import { isLocale, defaultLocale, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/dictionaries";
 import { QuestionnaireForm } from "./QuestionnaireForm";
 
 export default async function QuestionnairePage({
   params,
 }: {
-  params: Promise<{ token: string }>;
+  params: Promise<{ lang: string; token: string }>;
 }) {
-  const { token } = await params;
+  const { lang: rawLang, token } = await params;
+  const lang: Locale = isLocale(rawLang) ? rawLang : defaultLocale;
+  const dict = await getDictionary(lang);
+  const t = dict.flows.questionnaire;
 
   const link = await prisma.questionnaireLink.findUnique({
     where: { token },
@@ -20,12 +25,9 @@ export default async function QuestionnairePage({
     return (
       <div className="rounded-xl border border-paper-3 bg-white p-6 text-center">
         <h1 className="mb-2 font-display text-lg font-semibold">
-          Érvénytelen link
+          {t.invalidLink.heading}
         </h1>
-        <p className="text-sm text-ink/60">
-          Ez a kérdőív-link nem létezik. Ha hibát találtál, keresd a
-          kapcsolattartódat.
-        </p>
+        <p className="text-sm text-ink/60">{t.invalidLink.body}</p>
       </div>
     );
   }
@@ -34,11 +36,9 @@ export default async function QuestionnairePage({
     return (
       <div className="rounded-xl border border-paper-3 bg-white p-6 text-center">
         <h1 className="mb-2 font-display text-lg font-semibold">
-          Ezt a kérdőívet már kitöltötted
+          {t.alreadySubmitted.heading}
         </h1>
-        <p className="text-sm text-ink/60">
-          A foglalási linket emailben küldtük ki a kitöltés után.
-        </p>
+        <p className="text-sm text-ink/60">{t.alreadySubmitted.body}</p>
       </div>
     );
   }
@@ -47,11 +47,9 @@ export default async function QuestionnairePage({
     return (
       <div className="rounded-xl border border-paper-3 bg-white p-6 text-center">
         <h1 className="mb-2 font-display text-lg font-semibold">
-          Ez a link már lejárt
+          {t.expiredLink.heading}
         </h1>
-        <p className="text-sm text-ink/60">
-          Keresd a kapcsolattartódat egy új link kiküldéséhez.
-        </p>
+        <p className="text-sm text-ink/60">{t.expiredLink.body}</p>
       </div>
     );
   }
@@ -59,15 +57,17 @@ export default async function QuestionnairePage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-xl font-semibold">
-          Rendszertervezési kérdőív
-        </h1>
+        <h1 className="font-display text-xl font-semibold">{t.form.heading}</h1>
         <p className="mt-1 text-sm text-ink/60">
-          Kedves {link.lead.name}! A discovery call előkészítéséhez kérjük,
-          töltsd ki az alábbi kérdéseket.
+          {t.form.greeting.replace("{{leadName}}", link.lead.name)}
         </p>
       </div>
-      <QuestionnaireForm token={token} questions={link.template.questions} />
+      <QuestionnaireForm
+        token={token}
+        lang={lang}
+        questions={link.template.questions}
+        dict={t}
+      />
     </div>
   );
 }

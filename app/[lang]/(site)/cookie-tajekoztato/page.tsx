@@ -1,18 +1,65 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { LegalPageShell, LegalSection } from "@/components/LegalPageShell";
+import { isLocale, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/dictionaries";
 
-export const metadata: Metadata = {
-  title: "Sütikezelési tájékoztató — MI Építettük",
-  description: "A MI Építettük weboldalán használt sütik és hasonló technológiák.",
+const metaByLocale: Record<Locale, { title: string; description: string }> = {
+  hu: {
+    title: "Sütikezelési tájékoztató — MI Építettük",
+    description: "A MI Építettük weboldalán használt sütik és hasonló technológiák.",
+  },
+  en: {
+    title: "Cookie Policy — MI Építettük",
+    description: "The cookies and similar technologies used on the MI Építettük website.",
+  },
 };
 
-export default function CookieTajekoztatoPage() {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const meta = metaByLocale[isLocale(lang) ? lang : "hu"];
+  return meta;
+}
+
+const contentByLocale: Record<Locale, { title: string; updated: string }> = {
+  hu: { title: "Sütikezelési tájékoztató", updated: "2026. július 1." },
+  en: { title: "Cookie Policy", updated: "July 1, 2026" },
+};
+
+export default async function CookieTajekoztatoPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+  const dict = await getDictionary(lang);
+  const content = contentByLocale[lang];
+
   return (
     <LegalPageShell
-      eyebrow="Jogi dokumentum"
-      title="Sütikezelési tájékoztató"
-      updated="2026. július 1."
+      lang={lang}
+      navDict={dict.site.nav}
+      footerDict={dict.site.footer}
+      languageSwitcherLabels={dict.common.languageSwitcher}
+      cookieSettingsLabel={dict.site.cookieSettingsButton.label}
+      eyebrow={dict.site.legalShell.eyebrow}
+      title={content.title}
+      updated={content.updated}
+      updatedLabel={dict.site.legalShell.updatedLabel}
     >
+      {lang === "hu" ? <CookieHu /> : <CookieEn />}
+    </LegalPageShell>
+  );
+}
+
+function CookieHu() {
+  return (
+    <>
       <LegalSection title="1. Mi az a süti (cookie)">
         <p>
           A sütik olyan kis szövegfájlok, amelyeket a böngésződ ment el a
@@ -56,9 +103,64 @@ export default function CookieTajekoztatoPage() {
         <p>
           A weboldalon leadott visszahívás-kérésekkel kapcsolatos
           adatkezelésről az{" "}
-          <a href="/adatvedelem">Adatkezelési tájékoztatóban</a> olvashatsz.
+          <a href="/hu/adatvedelem">Adatkezelési tájékoztatóban</a> olvashatsz.
         </p>
       </LegalSection>
-    </LegalPageShell>
+    </>
+  );
+}
+
+function CookieEn() {
+  return (
+    <>
+      <LegalSection title="1. What is a cookie">
+        <p>
+          Cookies are small text files that your browser saves based on the
+          settings of the websites you visit. This policy covers the cookies
+          and similar technologies (e.g. your browser's local storage,
+          localStorage) used on the MI Építettük website.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="2. Which cookies we currently use">
+        <p>
+          The MI Építettük website currently <strong>does not use analytics,
+          marketing, or advertising cookies</strong>.
+        </p>
+        <p>
+          We save a single technical entry in your browser's local storage
+          (localStorage): whether you accepted or rejected the cookie
+          notice. This entry does not track you, does not personally
+          identify you, and we do not share any data from it with third
+          parties.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="3. Future changes">
+        <p>
+          If we introduce analytics or marketing cookies in the future (for
+          example, to measure traffic), we will only do so after obtaining
+          your prior consent, and this policy will be updated with the
+          name, purpose, and duration of each cookie.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="4. Changing your consent">
+        <p>
+          You can change your previously given cookie preference at any time
+          by clicking the “Cookie settings” link in the footer at the bottom
+          of the page, or through your browser's own cookie/storage
+          settings.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Related document">
+        <p>
+          For information about the processing of data submitted through
+          callback requests on the website, see the{" "}
+          <a href="/en/adatvedelem">Privacy Policy</a>.
+        </p>
+      </LegalSection>
+    </>
   );
 }

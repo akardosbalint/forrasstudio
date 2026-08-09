@@ -5,15 +5,15 @@ import gsap from "gsap";
 import { CallbackForm } from "@/components/CallbackForm";
 import { ControlledBlueprintDiagram } from "@/components/BlueprintDiagram";
 import { Spotlight } from "@/components/Spotlight";
+import type { Dictionary } from "@/dictionaries";
+import type { Locale } from "@/lib/i18n/config";
 
-const EYEBROW_TEXT =
-  "Weboldalak, webalkalmazások, közösségi platformok és AI-alapú automatizáció";
-
-const BODY_TEXT_1 =
-  "A legmodernebb AI-eszközöket emberi szakértelemmel párosítva építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért.";
-
-const BODY_TEXT_2 =
-  "Célunk, hogy elérhetővé tegyük a kompromisszum-mentes egyedi szoftverfejlesztést mindenki számára: az egyszerűbb weboldalaktól és időpontfoglalástól, a fizetésen és az ügyfél-CRM-en át a zárt közösségi felületekig és a hírlevél-automatizációig.";
+type HeroProps = {
+  lang: Locale;
+  dict: Dictionary["site"]["hero"];
+  callbackFormDict: Dictionary["site"]["callbackForm"];
+  diagramDict: Dictionary["site"]["blueprintDiagram"];
+};
 
 /** Plays automatically on load — no scroll required. The streams draw
  * in staggered, the source node converges, the headline unmasks from
@@ -27,7 +27,7 @@ const BODY_TEXT_2 =
  * hero. useLayoutEffect (not useEffect) applies the hidden state
  * before the browser paints, so motion-enabled visitors don't see a
  * flash of the fully-revealed hero followed by it snapping hidden. */
-export function Hero() {
+export function Hero({ lang, dict, callbackFormDict, diagramDict }: HeroProps) {
   const eyebrowRef = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -78,7 +78,7 @@ export function Hero() {
             className="font-mono text-xs uppercase tracking-[0.18em] text-spring"
           >
             <span className="text-paper/30">{"// "}</span>
-            {EYEBROW_TEXT}
+            {dict.eyebrow}
           </p>
 
           <div className="mt-5 overflow-hidden">
@@ -86,31 +86,28 @@ export function Hero() {
               ref={headlineRef}
               className="font-display text-4xl font-bold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.85rem]"
             >
-              Amit el tudsz képzelni —{" "}
-              <span className="text-gradient-brand italic">
-                MI megépítjük: gyorsabban, biztonságosabban, kedvezőbb áron.
-              </span>
+              {dict.headline.prefix}
+              <span className="text-gradient-brand italic">{dict.headline.highlight}</span>
             </h1>
           </div>
 
           <div ref={bodyRef} className="mt-6 max-w-xl space-y-4 text-lg leading-relaxed text-paper/75">
-            <p>{BODY_TEXT_1}</p>
-            <p>{BODY_TEXT_2}</p>
+            <p>{dict.body1}</p>
+            <p>{dict.body2}</p>
           </div>
 
           <div
             ref={formRef}
             className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors duration-300 hover:border-spring/40 sm:p-6"
           >
-            <p className="mb-4 font-sans text-sm font-medium text-paper/90">
-              Kérj visszahívást — 2 mező, egy munkanapon belül jelentkezünk.
-            </p>
-            <CallbackForm variant="mini" source="hero-mini" />
+            <p className="mb-4 font-sans text-sm font-medium text-paper/90">{dict.formNote}</p>
+            <CallbackForm variant="mini" source="hero-mini" lang={lang} dict={callbackFormDict} />
           </div>
         </div>
 
         <div className="flex justify-center lg:justify-end">
           <ControlledBlueprintDiagram
+            dict={diagramDict}
             registerPath={(el, index) => {
               pathRefs.current[index] = el;
             }}

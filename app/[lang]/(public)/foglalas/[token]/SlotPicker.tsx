@@ -2,6 +2,8 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import type { Locale } from "@/lib/i18n/config";
+import type { BookingSlotPickerDict } from "@/dictionaries/flows/types";
 import {
   createBookingPublic,
   rescheduleBookingPublic,
@@ -9,16 +11,20 @@ import {
 
 export function SlotPicker({
   token,
+  lang,
   slots,
   mode,
   bookingId,
   onSuccess,
+  dict,
 }: {
   token: string;
+  lang: Locale;
   slots: string[];
   mode: "book" | "reschedule";
   bookingId?: string;
   onSuccess?: () => void;
+  dict: BookingSlotPickerDict;
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState<string | null>(null);
@@ -29,7 +35,7 @@ export function SlotPicker({
     const groups = new Map<string, string[]>();
     for (const iso of slots) {
       const date = new Date(iso);
-      const dayKey = date.toLocaleDateString("hu-HU", {
+      const dayKey = date.toLocaleDateString(lang === "en" ? "en-US" : "hu-HU", {
         timeZone: "Europe/Budapest",
         weekday: "long",
         year: "numeric",
@@ -41,7 +47,7 @@ export function SlotPicker({
       groups.set(dayKey, list);
     }
     return Array.from(groups.entries());
-  }, [slots]);
+  }, [slots, lang]);
 
   function handleConfirm() {
     if (!selected) return;
@@ -49,8 +55,8 @@ export function SlotPicker({
     startTransition(async () => {
       const result =
         mode === "reschedule" && bookingId
-          ? await rescheduleBookingPublic(token, bookingId, selected)
-          : await createBookingPublic(token, selected);
+          ? await rescheduleBookingPublic(lang, token, bookingId, selected)
+          : await createBookingPublic(lang, token, selected);
 
       if (result?.error) {
         setError(result.error);
@@ -62,11 +68,7 @@ export function SlotPicker({
   }
 
   if (slots.length === 0) {
-    return (
-      <p className="text-sm text-ink/60">
-        Jelenleg nincs elérhető időpont — keresd a kapcsolattartódat.
-      </p>
-    );
+    return <p className="text-sm text-ink/60">{dict.empty}</p>;
   }
 
   return (
@@ -87,11 +89,14 @@ export function SlotPicker({
                       : "border-paper-3 bg-white text-ink hover:border-ink/40"
                   }`}
                 >
-                  {new Date(iso).toLocaleTimeString("hu-HU", {
-                    timeZone: "Europe/Budapest",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {new Date(iso).toLocaleTimeString(
+                    lang === "en" ? "en-US" : "hu-HU",
+                    {
+                      timeZone: "Europe/Budapest",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    },
+                  )}
                 </button>
               ))}
             </div>
@@ -106,10 +111,10 @@ export function SlotPicker({
         className="self-start rounded-lg bg-ink px-5 py-2.5 text-sm font-medium text-paper disabled:opacity-60"
       >
         {isPending
-          ? "Foglalás..."
+          ? dict.confirmPending
           : mode === "reschedule"
-            ? "Átütemezés megerősítése"
-            : "Időpont lefoglalása"}
+            ? dict.confirmReschedule
+            : dict.confirmBooking}
       </button>
     </div>
   );
