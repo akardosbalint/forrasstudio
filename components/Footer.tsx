@@ -19,14 +19,8 @@ export function Footer({ lang, dict, cookieSettingsDict, langSwitcherLabels }: F
           <p className="font-display text-lg font-semibold text-paper">{dict.brand}</p>
           <p className="mt-2 text-sm">
             {dict.emailLabel}{" "}
-            <a href="mailto:akardosbalint@gmail.com" className="underline decoration-white/20 hover:text-paper">
-              akardosbalint@gmail.com
-            </a>
-          </p>
-          <p className="mt-1 text-sm">
-            {dict.phoneLabel}{" "}
-            <a href={`tel:${dict.phoneValue}`} className="underline decoration-white/20 hover:text-paper">
-              {dict.phoneValue}
+            <a href="mailto:balint@miepitettuk.hu" className="underline decoration-white/20 hover:text-paper">
+              balint@miepitettuk.hu
             </a>
           </p>
         </div>

@@ -207,8 +207,6 @@ export const site = {
   footer: {
     brand: "FlowCore",
     emailLabel: "Email:",
-    phoneLabel: "Telefon:",
-    phoneValue: "[TODO: telefonszám]",
     socials: [
       {
         label: "Facebook [TODO: link]",
