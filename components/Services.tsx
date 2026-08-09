@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
 import { TiltCard } from "@/components/TiltCard";
+import type { Dictionary } from "@/dictionaries";
 
 type IconName = "sales" | "community" | "ai" | "system" | "ops";
 
@@ -72,57 +73,23 @@ function ServiceIcon({ name }: { name: IconName }) {
 const cardClasses =
   "group h-full rounded-xl border border-paper-3 bg-white/50 p-6 transition-[border-color,background-color,box-shadow] duration-300 hover:border-spring/50 hover:bg-white/80 hover:shadow-2xl hover:shadow-spring/20 sm:p-7";
 
-const pillars = [
-  {
-    icon: "sales" as const,
-    eyebrow: "1. pillér",
-    title: "Webalkalmazás-fejlesztés",
-    description:
-      "Modern, típusbiztos webalkalmazások React/Next.js és TypeScript alapokon — időpontfoglalás, fizetési integráció és ügyfél-CRM, a vállalkozásod folyamataira szabva.",
-  },
-  {
-    icon: "community" as const,
-    eyebrow: "2. pillér",
-    title: "Közösségi & tagsági platformok",
-    description:
-      "Zárt, jogosultságkezelt tagi felületek azoknak, akik saját közösséget vagy tagságot építenek — biztonságos beléptetéssel, szerepkör-alapú hozzáféréssel és tagsági szintekkel.",
-  },
-  {
-    icon: "ai" as const,
-    eyebrow: "3. pillér",
-    title: "Automatizáció & AI",
-    description:
-      "Hírlevél- és e-mail-automatizáció, admin dashboardok, intelligens riportok és AI-alapú funkciók veszik le rólad az ismétlődő adminisztrációt — és jelzik, mikor van szükség rád személyesen.",
-  },
-];
+type ServicesProps = {
+  dict: Dictionary["site"]["services"];
+};
 
-const capabilities = [
-  {
-    icon: "system" as const,
-    title: "Teljes rendszer egy kézből",
-    description:
-      "A weboldal, a foglalás, a fizetés, a CRM, a beléptetés és az automatizáció nem külön projektek, hanem egymással összehangolt modulok — egy csapat tervezi és köti össze mindet, nem több különálló szállító.",
-  },
-  {
-    icon: "ops" as const,
-    title: "Hosszú távú üzemeltetés & továbbfejlesztés",
-    description:
-      "Az élesítés nem a munka vége. A megépített rendszereket folyamatosan üzemeltetjük, karbantartjuk és fejlesztjük tovább — ez nálunk folyamatos felelősségvállalás, nem egyszeri leszállított munka.",
-  },
-];
-
-export function Services() {
+export function Services({ dict }: ServicesProps) {
+  const { pillars, capabilities } = dict;
   return (
     <section id="szolgaltatasok" className="scroll-mt-20 bg-paper">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">
-            <span className="text-ink/30">{"// "}</span>Szolgáltatások
+            <span className="text-ink/30">{"// "}</span>{dict.eyebrow}
           </p>
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Három pillér, egy rendszer
+            {dict.title}
           </h2>
         </Reveal>
 

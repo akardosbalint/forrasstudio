@@ -21,10 +21,7 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { error: "Érvénytelen kérés formátum." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "INVALID_BODY" }, { status: 400 });
   }
 
   const name = asTrimmedString(body.name);
@@ -36,17 +33,11 @@ export async function POST(request: Request) {
   const consent = body.consent === true;
 
   if (!name || !phone) {
-    return NextResponse.json(
-      { error: "A név és a telefonszám megadása kötelező." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "MISSING_FIELDS" }, { status: 400 });
   }
 
   if (!consent) {
-    return NextResponse.json(
-      { error: "Az adatkezelési tájékoztató elfogadása kötelező." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "CONSENT_REQUIRED" }, { status: 400 });
   }
 
   const supabase = getSupabaseServerClient();
@@ -54,13 +45,7 @@ export async function POST(request: Request) {
     console.error(
       "[callback-request] Supabase nincs konfigurálva — lásd .env.example ([TODO: Supabase env változók]).",
     );
-    return NextResponse.json(
-      {
-        error:
-          "A visszahívás-kérések fogadása jelenleg nincs beüzemelve. Kérjük, próbáld újra később.",
-      },
-      { status: 503 },
-    );
+    return NextResponse.json({ error: "NOT_CONFIGURED" }, { status: 503 });
   }
 
   const { error } = await supabase.from("callback_requests").insert({
@@ -75,10 +60,7 @@ export async function POST(request: Request) {
 
   if (error) {
     console.error("[callback-request] Supabase insert error:", error);
-    return NextResponse.json(
-      { error: "Nem sikerült elmenteni a kérésed. Kérjük, próbáld újra." },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "SAVE_FAILED" }, { status: 500 });
   }
 
   // A lead már elmentve — az email-értesítés esetleges hibája nem hiúsíthatja

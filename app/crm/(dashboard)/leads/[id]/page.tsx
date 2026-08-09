@@ -4,6 +4,7 @@ import { getLeadDetail, listPipelineStages } from "@/lib/leads/queries";
 import { StageChangeForm } from "./StageChangeForm";
 import { CancelBookingButton } from "./CancelBookingButton";
 import { FinancialsForm } from "./FinancialsForm";
+import { LeadLocaleForm } from "./LeadLocaleForm";
 import { ResendQuestionnaireButton } from "./ResendQuestionnaireButton";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 
@@ -49,6 +50,13 @@ export default async function LeadDetailPage({
             <ResendQuestionnaireButton leadId={lead.id} />
           </div>
         )}
+      </section>
+
+      <section className="rounded-xl border border-paper-3 bg-white p-5">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          Nyelv
+        </h2>
+        <LeadLocaleForm leadId={lead.id} locale={lead.locale} />
       </section>
 
       <section className="rounded-xl border border-paper-3 bg-white p-5">

@@ -1,54 +1,41 @@
 import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
 import { MagneticCard } from "@/components/MagneticCard";
+import type { Dictionary } from "@/dictionaries";
 
-const team = [
-  {
-    name: "Kardos Bálint",
-    role: "Alapító & vezető fejlesztő",
-    photo: "/team/kardos-balint.jpg",
-  },
-  {
-    name: "Kányási Soma",
-    role: "Technológiai tanácsadó",
-    photo: "/team/kanyasi-soma.jpg",
-  },
-  {
-    name: "Csábi Eszter",
-    role: "Minőségbiztosítási tanácsadó",
-    photo: "/team/csabi-eszter.jpg",
-  },
-];
+type TeamProps = {
+  dict: Dictionary["site"]["team"];
+};
 
-export function Team() {
+export function Team({ dict }: TeamProps) {
+  const { members, portraitAltTemplate } = dict;
   return (
     <section id="csapat" className="scroll-mt-20 bg-paper-3">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-            <span className="text-ink/30">{"// "}</span>Csapat
+            <span className="text-ink/30">{"// "}</span>{dict.eyebrow}
           </p>
         </Reveal>
         <Reveal delay={80}>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Mi vagyunk a FlowCore
+            {dict.title}
           </h2>
         </Reveal>
         <Reveal delay={160}>
           <p className="mt-3 max-w-2xl leading-relaxed text-ink/70">
-            Hárman vagyunk. Nincs közvetítő réteg — a projekt teljes ideje alatt
-            közvetlenül velünk egyeztetsz.
+            {dict.intro}
           </p>
         </Reveal>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {team.map((member, index) => (
+          {members.map((member, index) => (
             <Reveal key={member.name} delay={index * 100} className="h-full">
               <MagneticCard className="h-full">
                 <div className="group h-full rounded-xl border border-paper-2 bg-white/50 p-6 text-center transition-all duration-300 hover:border-brook/40 hover:bg-white/80 hover:shadow-2xl hover:shadow-brook/20">
                   <Image
                     src={member.photo}
-                    alt={`${member.name} portréja`}
+                    alt={portraitAltTemplate.replace("{name}", member.name)}
                     width={480}
                     height={480}
                     unoptimized

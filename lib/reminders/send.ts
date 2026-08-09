@@ -4,22 +4,30 @@ import { sendTransactionalEmail } from "@/lib/email/resend";
 import { writeAuditLog } from "@/lib/audit/log";
 import { isReminderDue } from "@/lib/reminders/rules";
 import { DEFAULT_TIMEZONE } from "@/lib/booking/rules";
+import type { Locale } from "@/lib/i18n/config";
 
 const DEFAULT_WINDOW_MINUTES = 20;
 
-function formatSlot(date: Date): string {
-  return date.toLocaleString("hu-HU", {
+function formatSlot(date: Date, locale: Locale): string {
+  return date.toLocaleString(locale === "en" ? "en-US" : "hu-HU", {
     timeZone: DEFAULT_TIMEZONE,
     dateStyle: "full",
     timeStyle: "short",
   });
 }
 
+function hoursLabel(hoursBefore: 24 | 1, locale: Locale): string {
+  if (locale === "en") {
+    return hoursBefore === 24 ? "24 hours" : "1 hour";
+  }
+  return hoursBefore === 24 ? "24 óra" : "1 óra";
+}
+
 async function sendReminder(
   booking: {
     id: string;
     startsAt: Date;
-    lead: { name: string; email: string | null };
+    lead: { name: string; email: string | null; locale: string };
     rep: { name: string };
   },
   hoursBefore: 24 | 1,
@@ -29,11 +37,13 @@ async function sendReminder(
     return { sent: false, error: "A leadhez nincs email cím rögzítve." };
   }
 
-  const email = await renderEmailTemplate("booking_reminder", {
+  const locale: Locale = booking.lead.locale === "en" ? "en" : "hu";
+
+  const email = await renderEmailTemplate("booking_reminder", locale, {
     leadName: booking.lead.name,
     repName: booking.rep.name,
-    startsAtFormatted: formatSlot(booking.startsAt),
-    hoursLabel: hoursBefore === 24 ? "24 óra" : "1 óra",
+    startsAtFormatted: formatSlot(booking.startsAt, locale),
+    hoursLabel: hoursLabel(hoursBefore, locale),
     manageLink,
   });
 
@@ -71,7 +81,8 @@ export async function sendDueReminders(now: Date = new Date()): Promise<void> {
   });
 
   for (const booking of upcomingBookings) {
-    const manageLinkBase = `${appUrl}/foglalas/`;
+    const locale: Locale = booking.lead.locale === "en" ? "en" : "hu";
+    const manageLinkBase = `${appUrl}/${locale}/foglalas/`;
     const link = await prisma.questionnaireLink.findFirst({
       where: { leadId: booking.leadId },
       orderBy: { createdAt: "desc" },
