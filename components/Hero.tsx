@@ -12,9 +12,6 @@ const EYEBROW_TEXT =
 const BODY_TEXT_1 =
   "A legmodernebb AI-eszközöket emberi szakértelemmel párosítva építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért.";
 
-const BODY_TEXT_2 =
-  "Célunk, hogy elérhetővé tegyük a kompromisszum-mentes egyedi szoftverfejlesztést mindenki számára: az egyszerűbb weboldalaktól és időpontfoglalástól, a fizetésen és az ügyfél-CRM-en át a zárt közösségi felületekig és a hírlevél-automatizációig.";
-
 /** Plays automatically on load — no scroll required. The streams draw
  * in staggered, the source node converges, the headline unmasks from
  * behind an overflow-hidden reveal, then the form settles in.
@@ -93,7 +90,6 @@ export function Hero() {
 
           <div ref={bodyRef} className="mt-6 max-w-xl space-y-4 text-lg leading-relaxed text-paper/75">
             <p>{BODY_TEXT_1}</p>
-            <p>{BODY_TEXT_2}</p>
           </div>
         </div>
 
