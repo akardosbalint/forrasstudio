@@ -12,7 +12,7 @@ type LegalPageShellProps = {
 export function LegalPageShell({ eyebrow, title, updated, children }: LegalPageShellProps) {
   return (
     <>
-      <Nav />
+      <Nav legal />
       <main className="flex-1 bg-paper">
         <div className="mx-auto max-w-3xl px-5 py-16 sm:px-8 sm:py-20">
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-spring">

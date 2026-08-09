@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { getLenisInstance } from "@/lib/lenis";
 import { Wordmark } from "@/components/Wordmark";
 
@@ -10,7 +11,15 @@ const links = [
   { href: "#csapat", label: "Csapat" },
 ];
 
-export function Nav() {
+type NavProps = {
+  /** Legal subpages (Adatvédelem, Impresszum, ...) don't have the
+   * homepage's anchor targets (#szolgaltatasok, #referenciak, #cta, ...),
+   * so the section links and CTA would silently do nothing there. In
+   * that context the nav instead shows a single "back to homepage" link. */
+  legal?: boolean;
+};
+
+export function Nav({ legal = false }: NavProps) {
   const [scrolled, setScrolled] = useState(false);
   const [activeHash, setActiveHash] = useState("");
 
@@ -63,43 +72,60 @@ export function Nav() {
           scrolled ? "py-2.5" : "py-3.5"
         }`}
       >
-        <a
-          href="#top"
-          onClick={(event) => handleAnchorClick(event, "#top")}
-          className="group text-lg transition-transform duration-300 hover:scale-[1.02]"
-        >
-          <Wordmark toneClassName="text-paper" />
-        </a>
+        {legal ? (
+          <Link href="/" className="group text-lg transition-transform duration-300 hover:scale-[1.02]">
+            <Wordmark toneClassName="text-paper" />
+          </Link>
+        ) : (
+          <a
+            href="#top"
+            onClick={(event) => handleAnchorClick(event, "#top")}
+            className="group text-lg transition-transform duration-300 hover:scale-[1.02]"
+          >
+            <Wordmark toneClassName="text-paper" />
+          </a>
+        )}
 
-        <ul className="hidden items-center gap-7 md:flex">
-          {links.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                onClick={(event) => handleAnchorClick(event, link.href)}
-                className={`relative font-sans text-sm transition-colors duration-200 ${
-                  activeHash === link.href ? "text-paper" : "text-paper/70 hover:text-paper"
-                }`}
-              >
-                {link.label}
-                <span
-                  aria-hidden="true"
-                  className={`absolute -bottom-1 left-0 h-px bg-spring transition-all duration-300 ${
-                    activeHash === link.href ? "w-full" : "w-0"
+        {!legal && (
+          <ul className="hidden items-center gap-7 md:flex">
+            {links.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  onClick={(event) => handleAnchorClick(event, link.href)}
+                  className={`relative font-sans text-sm transition-colors duration-200 ${
+                    activeHash === link.href ? "text-paper" : "text-paper/70 hover:text-paper"
                   }`}
-                />
-              </a>
-            </li>
-          ))}
-        </ul>
+                >
+                  {link.label}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute -bottom-1 left-0 h-px bg-spring transition-all duration-300 ${
+                      activeHash === link.href ? "w-full" : "w-0"
+                    }`}
+                  />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
 
-        <a
-          href="#cta"
-          onClick={(event) => handleAnchorClick(event, "#cta")}
-          className="btn-shine bg-gradient-brand whitespace-nowrap rounded-full px-4 py-2 font-sans text-sm font-semibold text-white transition-all duration-200 hover:shadow-lg hover:shadow-amber/40 active:scale-95"
-        >
-          Visszahívást kérek
-        </a>
+        {legal ? (
+          <Link
+            href="/"
+            className="btn-shine bg-gradient-brand whitespace-nowrap rounded-full px-4 py-2 font-sans text-sm font-semibold text-white transition-all duration-200 hover:shadow-lg hover:shadow-amber/40 active:scale-95"
+          >
+            Vissza a Főoldalra
+          </Link>
+        ) : (
+          <a
+            href="#cta"
+            onClick={(event) => handleAnchorClick(event, "#cta")}
+            className="btn-shine bg-gradient-brand whitespace-nowrap rounded-full px-4 py-2 font-sans text-sm font-semibold text-white transition-all duration-200 hover:shadow-lg hover:shadow-amber/40 active:scale-95"
+          >
+            Visszahívást kérek
+          </a>
+        )}
       </nav>
     </header>
   );
