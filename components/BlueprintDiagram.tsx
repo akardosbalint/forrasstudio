@@ -1,19 +1,21 @@
-export const DIAGRAM_MODULES = [
-  { label: "Weboldal", y: 50, color: "var(--color-spring)" },
-  { label: "Időpontfoglalás", y: 126, color: "var(--color-brook)" },
-  { label: "Fizetés", y: 202, color: "var(--color-spring)" },
-  { label: "Ügyfél-CRM", y: 278, color: "var(--color-brook)" },
-  { label: "Biztonságos beléptetés", y: 354, color: "var(--color-spring)" },
-  { label: "AI-alapú automatizáció", y: 430, color: "var(--color-brook)" },
+import type { Dictionary } from "@/dictionaries";
+
+const DIAGRAM_POSITIONS = [
+  { y: 50, color: "var(--color-spring)" },
+  { y: 126, color: "var(--color-brook)" },
+  { y: 202, color: "var(--color-spring)" },
+  { y: 278, color: "var(--color-brook)" },
+  { y: 354, color: "var(--color-spring)" },
+  { y: 430, color: "var(--color-brook)" },
 ];
+
+export const DIAGRAM_MODULES = DIAGRAM_POSITIONS;
 
 export const DIAGRAM_CENTER_X = 600;
 export const DIAGRAM_CENTER_Y = 240;
 
-const DIAGRAM_ARIA_LABEL =
-  "Rendszerdiagram: weboldal, időpontfoglalás, fizetés, ügyfél-CRM, biztonságos beléptetés és AI-alapú automatizáció egy közös rendszerbe, a MI Építettükbe folynak össze.";
-
 type ControlledBlueprintDiagramProps = {
+  dict: Dictionary["site"]["blueprintDiagram"];
   registerPath: (el: SVGPathElement | null, index: number) => void;
   registerNode: (el: SVGGElement | null) => void;
 };
@@ -27,6 +29,7 @@ type ControlledBlueprintDiagramProps = {
  * (with the default dashoffset of 0 it just renders as one dash
  * spanning the whole normalized path length, i.e. a solid line). */
 export function ControlledBlueprintDiagram({
+  dict,
   registerPath,
   registerNode,
 }: ControlledBlueprintDiagramProps) {
@@ -34,11 +37,11 @@ export function ControlledBlueprintDiagram({
     <svg
       viewBox="0 0 680 520"
       role="img"
-      aria-label={DIAGRAM_ARIA_LABEL}
+      aria-label={dict.ariaLabel}
       className="h-auto w-full max-w-xl"
     >
-      {DIAGRAM_MODULES.map((module, index) => (
-        <g key={module.label} className="diagram-node">
+      {DIAGRAM_POSITIONS.map((module, index) => (
+        <g key={dict.moduleLabels[index]} className="diagram-node">
           <path
             ref={(el) => registerPath(el, index)}
             d={`M246,${module.y} C400,${module.y} 460,${DIAGRAM_CENTER_Y} ${DIAGRAM_CENTER_X - 56},${DIAGRAM_CENTER_Y}`}
@@ -57,7 +60,7 @@ export function ControlledBlueprintDiagram({
             dominantBaseline="middle"
             className="font-mono text-[12px] fill-paper/80"
           >
-            {module.label}
+            {dict.moduleLabels[index]}
           </text>
         </g>
       ))}

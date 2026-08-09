@@ -1,19 +1,25 @@
 import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
 import { MagneticCard } from "@/components/MagneticCard";
+import type { Dictionary } from "@/dictionaries";
 
-export function Team() {
+type TeamProps = {
+  dict: Dictionary["site"]["team"];
+};
+
+export function Team({ dict }: TeamProps) {
   return (
     <section id="csapat" className="scroll-mt-20 bg-paper-3">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-            <span className="text-ink/30">{"// "}</span>Csapat
+            <span className="text-ink/30">{"// "}</span>
+            {dict.eyebrow}
           </p>
         </Reveal>
         <Reveal delay={80}>
           <h2 className="text-gradient-brand mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Mi építettük
+            {dict.title}
           </h2>
         </Reveal>
 
@@ -22,7 +28,7 @@ export function Team() {
             <div className="glow-card group grid gap-8 rounded-2xl border border-paper-2 bg-white/60 p-8 [--glow-color:var(--color-brook)] hover:border-brook/50 hover:bg-white/90 sm:grid-cols-[auto_1fr] sm:items-center sm:p-10">
               <Image
                 src="/team/kardos-balint.jpg"
-                alt="Kardos Bálint portréja"
+                alt={dict.imageAlt}
                 width={480}
                 height={480}
                 unoptimized
@@ -30,22 +36,11 @@ export function Team() {
               />
               <div>
                 <p className="font-display text-lg leading-relaxed text-ink sm:text-xl">
-                  „Szia, Kardos Bálint vagyok. A pályám 8 éve, webfejlesztéssel és
-                  keresőoptimalizálással indult a Hong Kong University of Technology-n, aztán
-                  évekig a marketing felé sodródtam. Idén év elején tértem vissza igazán a
-                  fejlesztéshez: baráti megbízásokból kezdtem webalkalmazásokat építeni, és
-                  hamar rájöttem, hogy ezzel foglalkozom a legtöbbet mindenek közül — így lett
-                  ez a fő projektem.
+                  {dict.paragraph1}
                 </p>
-                <p className="mt-3 leading-relaxed text-ink/80">
-                  Ez a háttér nálam nem hátrány, hanem előny: értem a marketing és a konverzió
-                  oldalát is, nem csak a kódot — és a legújabb AI-eszközökkel gyorsabban,
-                  megbízhatóbban építem meg neked, amire szükséged van, a piaci árak
-                  töredékéért. Nincs közvetítő réteg: az első egyeztetéstől az üzemeltetésig
-                  végig velem beszélsz.”
-                </p>
-                <p className="mt-4 font-display text-base font-semibold text-ink">Kardos Bálint</p>
-                <p className="text-sm text-ink/60">Alapító & vezető fejlesztő</p>
+                <p className="mt-3 leading-relaxed text-ink/80">{dict.paragraph2}</p>
+                <p className="mt-4 font-display text-base font-semibold text-ink">{dict.name}</p>
+                <p className="text-sm text-ink/60">{dict.role}</p>
               </div>
             </div>
           </MagneticCard>
