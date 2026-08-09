@@ -2,16 +2,34 @@
 
 import { useId, useState, type FormEvent } from "react";
 import { MagneticButton } from "@/components/MagneticButton";
+import type { Dictionary } from "@/dictionaries";
+import type { Locale } from "@/lib/i18n/config";
 
 type CallbackFormProps = {
   variant: "mini" | "full";
   source: string;
+  lang: Locale;
+  dict: Dictionary["site"]["callbackForm"];
   className?: string;
 };
 
 type SubmitState = "idle" | "submitting" | "success" | "error";
 
-export function CallbackForm({ variant, source, className }: CallbackFormProps) {
+const KNOWN_ERROR_CODES = [
+  "INVALID_BODY",
+  "MISSING_FIELDS",
+  "CONSENT_REQUIRED",
+  "NOT_CONFIGURED",
+  "SAVE_FAILED",
+] as const;
+
+type KnownErrorCode = (typeof KNOWN_ERROR_CODES)[number];
+
+function isKnownErrorCode(value: unknown): value is KnownErrorCode {
+  return typeof value === "string" && (KNOWN_ERROR_CODES as readonly string[]).includes(value);
+}
+
+export function CallbackForm({ variant, source, lang, dict, className }: CallbackFormProps) {
   const formId = useId();
   const [state, setState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -25,7 +43,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
     const data = new FormData(form);
 
     if (!data.get("consent")) {
-      setErrorMessage("Az adatkezelési tájékoztató elfogadása kötelező.");
+      setErrorMessage(dict.errors.CONSENT_REQUIRED);
       setState("error");
       return;
     }
@@ -38,6 +56,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
       message: data.get("message"),
       source,
       consent: true,
+      locale: lang,
     };
 
     try {
@@ -49,9 +68,8 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
 
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        setErrorMessage(
-          body?.error ?? "Nem sikerült elküldeni a kérésed. Kérjük, próbáld újra.",
-        );
+        const code = body?.error;
+        setErrorMessage(isKnownErrorCode(code) ? dict.errors[code] : dict.errors.GENERIC);
         setState("error");
         return;
       }
@@ -59,9 +77,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
       form.reset();
       setState("success");
     } catch {
-      setErrorMessage(
-        "Nem sikerült elküldeni a kérésed. Ellenőrizd a kapcsolatot, és próbáld újra.",
-      );
+      setErrorMessage(dict.errors.NETWORK);
       setState("error");
     }
   }
@@ -76,10 +92,8 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
         role="status"
         className={`pop-in rounded-lg border border-spring/40 bg-spring/10 p-6 text-paper ${className ?? ""}`}
       >
-        <p className="font-display text-xl">Köszönjük, hamarosan hívunk!</p>
-        <p className="mt-2 text-sm text-paper/70">
-          Megkaptuk a kérésed, egy munkanapon belül jelentkezünk telefonon.
-        </p>
+        <p className="font-display text-xl">{dict.success.title}</p>
+        <p className="mt-2 text-sm text-paper/70">{dict.success.body}</p>
       </div>
     );
   }
@@ -89,7 +103,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
       <div className={variant === "mini" ? "flex flex-col gap-3 sm:flex-row" : "grid gap-4 sm:grid-cols-2"}>
         <div className="flex flex-1 flex-col gap-1.5">
           <label htmlFor={`${formId}-name`} className={labelClasses}>
-            Név
+            {dict.labels.name}
           </label>
           <input
             id={`${formId}-name`}
@@ -97,7 +111,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
             type="text"
             autoComplete="name"
             required
-            placeholder="Teljes név"
+            placeholder={dict.placeholders.name}
             className={inputClasses}
           />
         </div>
@@ -105,14 +119,15 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
         {variant === "full" && (
           <div className="flex flex-1 flex-col gap-1.5">
             <label htmlFor={`${formId}-organization`} className={labelClasses}>
-              Cég / szervezet neve <span className="normal-case text-paper/40">(opcionális)</span>
+              {dict.labels.organization}{" "}
+              <span className="normal-case text-paper/40">{dict.labels.organizationOptional}</span>
             </label>
             <input
               id={`${formId}-organization`}
               name="organization"
               type="text"
               autoComplete="organization"
-              placeholder="Cég vagy szervezet neve"
+              placeholder={dict.placeholders.organization}
               className={inputClasses}
             />
           </div>
@@ -120,7 +135,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
 
         <div className="flex flex-1 flex-col gap-1.5">
           <label htmlFor={`${formId}-phone`} className={labelClasses}>
-            Telefonszám
+            {dict.labels.phone}
           </label>
           <input
             id={`${formId}-phone`}
@@ -128,7 +143,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
             type="tel"
             autoComplete="tel"
             required
-            placeholder="+36 30 000 0000"
+            placeholder={dict.placeholders.phone}
             className={inputClasses}
           />
         </div>
@@ -137,27 +152,29 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
           <>
             <div className="flex flex-1 flex-col gap-1.5">
               <label htmlFor={`${formId}-email`} className={labelClasses}>
-                Email <span className="normal-case text-paper/40">(opcionális)</span>
+                {dict.labels.email}{" "}
+                <span className="normal-case text-paper/40">{dict.labels.emailOptional}</span>
               </label>
               <input
                 id={`${formId}-email`}
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="nev@cegnev.hu"
+                placeholder={dict.placeholders.email}
                 className={inputClasses}
               />
             </div>
 
             <div className="flex flex-col gap-1.5 sm:col-span-2">
               <label htmlFor={`${formId}-message`} className={labelClasses}>
-                Üzenet <span className="normal-case text-paper/40">(opcionális)</span>
+                {dict.labels.message}{" "}
+                <span className="normal-case text-paper/40">{dict.labels.messageOptional}</span>
               </label>
               <textarea
                 id={`${formId}-message`}
                 name="message"
                 rows={3}
-                placeholder="Mesélj pár szóban a vállalkozásodról, és miben segíthetünk."
+                placeholder={dict.placeholders.message}
                 className={inputClasses}
               />
             </div>
@@ -174,17 +191,16 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
           className="mt-0.5 h-4 w-4 flex-shrink-0 accent-amber"
         />
         <label htmlFor={`${formId}-consent`} className="text-sm text-paper/70">
-          Elfogadom az{" "}
+          {dict.consent.prefix}
           <a
-            href="/adatvedelem"
+            href={`/${lang}/adatvedelem`}
             target="_blank"
             rel="noopener noreferrer"
             className="underline decoration-paper/30 hover:text-paper hover:decoration-spring"
           >
-            adatkezelési tájékoztatót
+            {dict.consent.linkLabel}
           </a>
-          , és hozzájárulok, hogy a MI Építettük a megadott adataimat a
-          kapcsolatfelvétel céljából kezelje.
+          {dict.consent.suffix}
         </label>
       </div>
 
@@ -193,7 +209,7 @@ export function CallbackForm({ variant, source, className }: CallbackFormProps) 
         disabled={state === "submitting"}
         className="btn-shine bg-gradient-brand mt-4 w-full whitespace-nowrap rounded-full px-6 py-3 font-sans font-semibold text-white transition-shadow duration-200 hover:shadow-lg hover:shadow-amber/30 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:w-auto"
       >
-        {state === "submitting" ? "Küldés…" : "Hívjatok vissza"}
+        {state === "submitting" ? dict.submitting : dict.submit}
       </MagneticButton>
 
       {state === "error" && (

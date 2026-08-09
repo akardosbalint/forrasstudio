@@ -11,6 +11,7 @@ export function ContactInfoForm({
   company,
   email,
   message,
+  locale,
 }: {
   leadId: string;
   name: string;
@@ -18,6 +19,7 @@ export function ContactInfoForm({
   company: string | null;
   email: string | null;
   message: string | null;
+  locale: string;
 }) {
   const [state, formAction, isPending] = useActionState<
     UpdateLeadContactState,
@@ -94,6 +96,20 @@ export function ContactInfoForm({
           defaultValue={message ?? ""}
           className={inputClasses}
         />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="locale" className={labelClasses}>
+          Nyelv
+        </label>
+        <select
+          id="locale"
+          name="locale"
+          defaultValue={locale}
+          className={`w-40 ${inputClasses}`}
+        >
+          <option value="hu">Magyar</option>
+          <option value="en">Angol</option>
+        </select>
       </div>
       <div>
         <button

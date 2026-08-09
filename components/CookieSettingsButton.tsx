@@ -2,14 +2,18 @@
 
 import { openCookieSettings } from "@/components/CookieConsent";
 
-export function CookieSettingsButton() {
+type CookieSettingsButtonProps = {
+  label: string;
+};
+
+export function CookieSettingsButton({ label }: CookieSettingsButtonProps) {
   return (
     <button
       type="button"
       onClick={openCookieSettings}
       className="underline decoration-white/20 hover:text-paper"
     >
-      Süti beállítások
+      {label}
     </button>
   );
 }

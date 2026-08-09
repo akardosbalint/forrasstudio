@@ -8,6 +8,7 @@ import {
   generateQuestionnaireToken,
   questionnaireLinkExpiry,
 } from "@/lib/questionnaire/token";
+import type { Locale } from "@/lib/i18n/config";
 
 export class QuestionnaireDispatchError extends Error {}
 
@@ -66,9 +67,10 @@ export async function triggerQuestionnaireSend(
   });
 
   const ttlDays = Number(process.env.QUESTIONNAIRE_LINK_TTL_DAYS) || 14;
-  const url = `${publicAppUrl()}/kerdoiv/${token}`;
+  const locale: Locale = lead.locale === "en" ? "en" : "hu";
+  const url = `${publicAppUrl()}/${locale}/kerdoiv/${token}`;
 
-  const email = await renderEmailTemplate("questionnaire_invite", {
+  const email = await renderEmailTemplate("questionnaire_invite", locale, {
     leadName: lead.name,
     link: url,
     expiresInDays: String(ttlDays),

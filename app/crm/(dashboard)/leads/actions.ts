@@ -18,6 +18,7 @@ const createLeadSchema = z.object({
   email: z.string().trim().email().optional().or(z.literal("")),
   message: z.string().trim().optional(),
   ownerId: z.string().uuid().optional().or(z.literal("")),
+  locale: z.enum(["hu", "en"]).optional(),
 });
 
 const updateLeadContactSchema = z.object({
@@ -27,6 +28,7 @@ const updateLeadContactSchema = z.object({
   company: z.string().trim().optional(),
   email: z.string().trim().email().optional().or(z.literal("")),
   message: z.string().trim().optional(),
+  locale: z.enum(["hu", "en"]).optional(),
 });
 
 export type CreateLeadState = { error?: string } | undefined;
@@ -44,6 +46,7 @@ export async function createLead(
     email: formData.get("email"),
     message: formData.get("message"),
     ownerId: formData.get("ownerId"),
+    locale: formData.get("locale"),
   });
 
   if (!parsed.success) {
@@ -72,6 +75,7 @@ export async function createLead(
       source: "manual",
       currentStageId: initialStage.id,
       ownerId: data.ownerId || profile.id,
+      locale: data.locale || "hu",
     },
   });
 
@@ -115,6 +119,7 @@ export async function updateLeadContact(
     company: formData.get("company"),
     email: formData.get("email"),
     message: formData.get("message"),
+    locale: formData.get("locale"),
   });
 
   if (!parsed.success) {
@@ -146,6 +151,7 @@ export async function updateLeadContact(
       email: data.email || null,
       message: data.message || null,
       ownerId: lead.ownerId ?? profile.id,
+      locale: data.locale ?? lead.locale,
     },
   });
 

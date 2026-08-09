@@ -108,8 +108,11 @@ export async function addQuestion(
   const label = String(formData.get("label") ?? "").trim();
   const type = String(formData.get("type") ?? "TEXT") as QuestionType;
   const helpText = String(formData.get("helpText") ?? "").trim();
+  const labelEn = String(formData.get("labelEn") ?? "").trim();
+  const helpTextEn = String(formData.get("helpTextEn") ?? "").trim();
   const required = formData.get("required") === "on";
   const options = parseOptions(formData.get("options"));
+  const optionsEn = parseOptions(formData.get("optionsEn"));
 
   if (!templateId || !label) {
     return { error: "A kérdés szövege kötelező." };
@@ -131,9 +134,12 @@ export async function addQuestion(
       templateId,
       label,
       helpText: helpText || null,
+      labelEn: labelEn || null,
+      helpTextEn: helpTextEn || null,
       type,
       required,
       options,
+      optionsEn: optionsEn ?? undefined,
       order: (maxOrder._max.order ?? 0) + 1,
     },
   });
