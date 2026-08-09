@@ -40,7 +40,7 @@ export default async function CrmOverviewPage({
         <h1 className="font-display text-2xl font-semibold">Áttekintés</h1>
         <Link
           href="/crm/leads/new"
-          className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper"
+          className="bg-gradient-brand rounded-lg px-4 py-2 text-sm font-medium text-white"
         >
           + Új lead
         </Link>

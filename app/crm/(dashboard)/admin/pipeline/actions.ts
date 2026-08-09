@@ -66,12 +66,11 @@ export async function updateStage(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const label = String(formData.get("label") ?? "").trim();
   const color = String(formData.get("color") ?? "#6366f1");
-  const order = Number(formData.get("order") ?? 0);
   if (!id || !label) return;
 
   await prisma.pipelineStage.update({
     where: { id },
-    data: { label, color, order },
+    data: { label, color },
   });
 
   await writeAuditLog({
@@ -79,7 +78,52 @@ export async function updateStage(formData: FormData): Promise<void> {
     entityType: "PipelineStage",
     entityId: id,
     action: "pipeline_stage.updated",
-    metadata: { label, order },
+    metadata: { label },
+  });
+
+  revalidatePath("/crm/admin/pipeline");
+}
+
+// A sorrendet kizárólag ez a függvény módosíthatja, mindig két szomszédos
+// stádium order-értékének felcserélésével — soha nem fogad el egy
+// tetszőleges, a felhasználó által beírt számot. Korábban a `order` egy
+// szabad számmező volt a szerkesztő formon, validáció nélkül: két stádiumot
+// azonos sorrend-értékre állítva a `canTransition` (lib/pipeline/
+// stateMachine.ts) `to.order > from.order` szabálya miatt egy sales rep
+// egyik irányba sem tudta többé mozgatni a leadet a két stádium között,
+// néma, hibaüzenet nélküli állapotban.
+export async function moveStage(formData: FormData): Promise<void> {
+  const { profile } = await requireRole("ADMIN");
+  const id = String(formData.get("id") ?? "");
+  const direction = String(formData.get("direction") ?? "");
+  if (!id) return;
+
+  const stages = await prisma.pipelineStage.findMany({
+    orderBy: { order: "asc" },
+  });
+  const index = stages.findIndex((stage) => stage.id === id);
+  const swapIndex = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || swapIndex < 0 || swapIndex >= stages.length) return;
+
+  const current = stages[index];
+  const swapWith = stages[swapIndex];
+
+  await prisma.$transaction([
+    prisma.pipelineStage.update({
+      where: { id: current.id },
+      data: { order: swapWith.order },
+    }),
+    prisma.pipelineStage.update({
+      where: { id: swapWith.id },
+      data: { order: current.order },
+    }),
+  ]);
+
+  await writeAuditLog({
+    userId: profile.id,
+    entityType: "PipelineStage",
+    entityId: id,
+    action: "pipeline_stage.reordered",
   });
 
   revalidatePath("/crm/admin/pipeline");

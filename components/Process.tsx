@@ -29,7 +29,7 @@ const steps: { number: string; title: string; description: string; icon: StepIco
     number: "03",
     title: "Fejlesztés",
     description:
-      "Megépítjük a rendszert — a modulok egymással összehangolva, a saját folyamataidra szabva.",
+      "Megépítjük a rendszert — AI-asszisztált fejlesztéssel, a modulok egymással összehangolva, gyorsabban és olcsóbban, mint egy hagyományos csapatnál.",
     icon: "build",
   },
   {
@@ -71,18 +71,20 @@ function StepIconGraphic({ name }: { name: StepIcon }) {
   };
 
   return (
-    <svg
-      viewBox="0 0 32 32"
-      aria-hidden="true"
-      className="h-9 w-9 text-spring"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {paths[name]}
-    </svg>
+    <span className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-spring/10 text-spring">
+      <svg
+        viewBox="0 0 32 32"
+        aria-hidden="true"
+        className="h-7 w-7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {paths[name]}
+      </svg>
+    </span>
   );
 }
 
@@ -162,7 +164,7 @@ function ProcessPinned() {
             </p>
           </Reveal>
           <Reveal delay={80}>
-            <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
               Négy lépés az egyeztetéstől az üzemeltetésig
             </h2>
           </Reveal>
@@ -211,7 +213,7 @@ function ProcessSimple() {
           </p>
         </Reveal>
         <Reveal delay={80}>
-          <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          <h2 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             Négy lépés az egyeztetéstől az üzemeltetésig
           </h2>
         </Reveal>
@@ -224,7 +226,7 @@ function ProcessSimple() {
                   {index < steps.length - 1 && (
                     <span
                       aria-hidden="true"
-                      className="absolute left-0 top-6 hidden h-px w-full translate-x-1/2 bg-gradient-to-r from-spring/60 to-transparent lg:block"
+                      className="absolute left-0 top-6 hidden h-px w-full translate-x-1/2 bg-gradient-to-r from-amber/50 via-pink/40 to-transparent lg:block"
                     />
                   )}
                   <StepIconGraphic name={step.icon} />

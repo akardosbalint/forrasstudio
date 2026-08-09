@@ -20,6 +20,15 @@ const createLeadSchema = z.object({
   ownerId: z.string().uuid().optional().or(z.literal("")),
 });
 
+const updateLeadContactSchema = z.object({
+  leadId: z.string().uuid(),
+  name: z.string().trim().min(1, "A név megadása kötelező."),
+  phone: z.string().trim().min(1, "A telefonszám megadása kötelező."),
+  company: z.string().trim().optional(),
+  email: z.string().trim().email().optional().or(z.literal("")),
+  message: z.string().trim().optional(),
+});
+
 export type CreateLeadState = { error?: string } | undefined;
 
 export async function createLead(
@@ -87,9 +96,83 @@ export async function createLead(
   redirect(`/crm/leads/${lead.id}`);
 }
 
+export type UpdateLeadContactState = { error?: string } | undefined;
+
+// A publikus visszahívás-form (hero) csak nevet + telefonszámot kér — a
+// telefonhívás alatt a repnek ki kell tudnia egészíteni a lead adatait
+// (cég, email, jegyzet), ezért ez az egyetlen hely, ahol az alap
+// kapcsolattartási mezők utólag szerkeszthetők.
+export async function updateLeadContact(
+  _prevState: UpdateLeadContactState,
+  formData: FormData,
+): Promise<UpdateLeadContactState> {
+  const { profile } = await requireRole("ADMIN", "SALES_REP");
+
+  const parsed = updateLeadContactSchema.safeParse({
+    leadId: formData.get("leadId"),
+    name: formData.get("name"),
+    phone: formData.get("phone"),
+    company: formData.get("company"),
+    email: formData.get("email"),
+    message: formData.get("message"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Érvénytelen adat." };
+  }
+
+  const data = parsed.data;
+
+  const lead = await prisma.lead.findUnique({ where: { id: data.leadId } });
+  if (!lead) return { error: "A lead nem található." };
+  if (
+    profile.role === "SALES_REP" &&
+    lead.ownerId &&
+    lead.ownerId !== profile.id
+  ) {
+    return { error: "Nincs jogosultságod ehhez a leadhez." };
+  }
+
+  // Gazdátlan lead (pl. a publikus form által létrehozott) az adatait
+  // kiegészítő repet kapja tulajdonosul — ő az, aki ténylegesen felhívta a
+  // leadet, enélkül a foglalási link a discovery call-hoz később
+  // "nincs hozzárendelt kollégánk" hibával elutasítana.
+  await prisma.lead.update({
+    where: { id: data.leadId },
+    data: {
+      name: data.name,
+      phone: data.phone,
+      company: data.company || null,
+      email: data.email || null,
+      message: data.message || null,
+      ownerId: lead.ownerId ?? profile.id,
+    },
+  });
+
+  await writeAuditLog({
+    userId: profile.id,
+    entityType: "Lead",
+    entityId: data.leadId,
+    action: "lead.contact_updated",
+    metadata: {
+      name: data.name,
+      phone: data.phone,
+      company: data.company || null,
+      email: data.email || null,
+      autoAssignedOwner: lead.ownerId === null,
+    },
+  });
+
+  revalidatePath(`/crm/leads/${data.leadId}`);
+  revalidatePath("/crm/leads");
+  return undefined;
+}
+
 export type ChangeLeadStageState =
   | { error?: string; warning?: string }
   | undefined;
+
+class StageChangeError extends Error {}
 
 export async function changeLeadStage(
   _prevState: ChangeLeadStageState,
@@ -105,78 +188,116 @@ export async function changeLeadStage(
     return { error: "Hiányzó lead vagy stádium azonosító." };
   }
 
-  const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-  if (!lead) {
-    return { error: "A lead nem található." };
-  }
-
-  // Sales rep csak a saját (vagy gazdátlan) leadjeit módosíthatja, admin bármit.
-  if (
-    profile.role === "SALES_REP" &&
-    lead.ownerId &&
-    lead.ownerId !== profile.id
-  ) {
-    return { error: "Nincs jogosultságod ehhez a leadhez." };
-  }
-
-  const [fromStage, toStage] = await Promise.all([
-    prisma.pipelineStage.findUnique({ where: { id: lead.currentStageId } }),
-    prisma.pipelineStage.findUnique({ where: { id: toStageId } }),
-  ]);
-  if (!fromStage || !toStage) {
+  const toStage = await prisma.pipelineStage.findUnique({ where: { id: toStageId } });
+  if (!toStage) {
     return { error: "A stádium nem található." };
   }
 
-  if (!canTransition(fromStage, toStage, profile.role)) {
+  let fromStageId: string;
+  let autoAssignedOwner: boolean;
+  try {
+    ({ fromStageId, autoAssignedOwner } = await prisma.$transaction(async (tx) => {
+      // A leadet és a jelenlegi stádiumát a tranzakción belül, frissen
+      // olvassuk — nem a kérés elején (esetleg azóta elavult) állapotot. Ha
+      // egy konkurrens kérés időközben már máshova mozgatta a leadet, ne
+      // egy elavult `fromStage` alapján validáljunk és írjunk felül.
+      const freshLead = await tx.lead.findUnique({ where: { id: leadId } });
+      if (!freshLead) {
+        throw new StageChangeError("A lead nem található.");
+      }
+
+      // Sales rep csak a saját (vagy gazdátlan) leadjeit módosíthatja, admin bármit.
+      if (
+        profile.role === "SALES_REP" &&
+        freshLead.ownerId &&
+        freshLead.ownerId !== profile.id
+      ) {
+        throw new StageChangeError("Nincs jogosultságod ehhez a leadhez.");
+      }
+
+      const fromStage = await tx.pipelineStage.findUnique({
+        where: { id: freshLead.currentStageId },
+      });
+      if (!fromStage) {
+        throw new StageChangeError("A stádium nem található.");
+      }
+
+      if (!canTransition(fromStage, toStage, profile.role)) {
+        throw new StageChangeError(
+          `Nem engedélyezett átmenet: "${fromStage.label}" → "${toStage.label}".`,
+        );
+      }
+
+      // A kérdőív-kiküldés triggerelő stádiumba lépés előfeltételeit itt
+      // validáljuk, mielőtt a leadet ténylegesen átmozgatnánk — így nem
+      // kerülhet olyan állapotba, ami "kiküldve"-t állít, miközben nem
+      // sikerült linket generálni.
+      if (toStage.key === SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING) {
+        if (!freshLead.email) {
+          throw new StageChangeError(
+            "A leadhez nincs email cím rögzítve — a kérdőívet nem lehet kiküldeni. Rögzítsd az email címet, majd próbáld újra.",
+          );
+        }
+        const activeTemplate = await tx.questionnaireTemplate.findFirst({
+          where: { isActive: true },
+        });
+        if (!activeTemplate) {
+          throw new StageChangeError(
+            "Nincs aktív kérdőív-sablon — hozz létre egyet az admin felületen, mielőtt kiküldöd.",
+          );
+        }
+      }
+
+      // Feltételes update: csak akkor írjuk, ha a lead a tranzakció eleje óta
+      // még mindig a frissen ellenőrzött `fromStage`-ben van — konkurrens
+      // módosítás esetén a `count` 0, és nem íródik felül egy időközben
+      // történt (esetleg épp emiatt már érvénytelen) változás. Gazdátlan
+      // lead itt is a stádiumot mozgató repet kapja tulajdonosul (lásd
+      // updateLeadContact ugyanezzel a logikával) — enélkül a foglalási
+      // link "nincs hozzárendelt kollégánk" hibával elutasítana.
+      const updated = await tx.lead.updateMany({
+        where: { id: leadId, currentStageId: fromStage.id },
+        data: {
+          currentStageId: toStageId,
+          ownerId: freshLead.ownerId ?? profile.id,
+        },
+      });
+      if (updated.count === 0) {
+        throw new StageChangeError(
+          "A lead státusza időközben megváltozott — frissítsd az oldalt, és próbáld újra.",
+        );
+      }
+
+      await tx.statusHistory.create({
+        data: {
+          leadId,
+          fromStageId: fromStage.id,
+          toStageId,
+          changedById: profile.id,
+          note: typeof note === "string" && note.trim() ? note.trim() : null,
+        },
+      });
+
+      return {
+        fromStageId: fromStage.id,
+        autoAssignedOwner: freshLead.ownerId === null,
+      };
+    }));
+  } catch (error) {
     return {
-      error: `Nem engedélyezett átmenet: "${fromStage.label}" → "${toStage.label}".`,
+      error:
+        error instanceof StageChangeError
+          ? error.message
+          : "Ismeretlen hiba történt a stádiumváltás során.",
     };
   }
-
-  // A kérdőív-kiküldés triggerelő stádiumba lépés előfeltételeit itt
-  // validáljuk, mielőtt a leadet ténylegesen átmozgatnánk — így nem
-  // kerülhet olyan állapotba, ami "kiküldve"-t állít, miközben nem sikerült
-  // linket generálni.
-  if (toStage.key === SYSTEM_STAGE_KEYS.QUESTIONNAIRE_SENDING) {
-    if (!lead.email) {
-      return {
-        error:
-          "A leadhez nincs email cím rögzítve — a kérdőívet nem lehet kiküldeni. Rögzítsd az email címet, majd próbáld újra.",
-      };
-    }
-    const activeTemplate = await prisma.questionnaireTemplate.findFirst({
-      where: { isActive: true },
-    });
-    if (!activeTemplate) {
-      return {
-        error:
-          "Nincs aktív kérdőív-sablon — hozz létre egyet az admin felületen, mielőtt kiküldöd.",
-      };
-    }
-  }
-
-  await prisma.$transaction([
-    prisma.lead.update({
-      where: { id: leadId },
-      data: { currentStageId: toStageId },
-    }),
-    prisma.statusHistory.create({
-      data: {
-        leadId,
-        fromStageId: fromStage.id,
-        toStageId,
-        changedById: profile.id,
-        note: typeof note === "string" && note.trim() ? note.trim() : null,
-      },
-    }),
-  ]);
 
   await writeAuditLog({
     userId: profile.id,
     entityType: "Lead",
     entityId: leadId,
     action: "lead.stage_changed",
-    metadata: { fromStageId: fromStage.id, toStageId },
+    metadata: { fromStageId, toStageId, autoAssignedOwner },
   });
 
   let warning: string | undefined;
@@ -185,7 +306,7 @@ export async function changeLeadStage(
       const result = await triggerQuestionnaireSend(leadId, profile.id);
       if (!result.emailSent) {
         warning =
-          "A stádium frissült, de a kérdőív-link emailben való kiküldése nem sikerült (Resend nincs beállítva vagy hibát adott — lásd audit log).";
+          "A stádium frissült, de a kérdőív-link emailben való kiküldése nem sikerült (az email küldés nincs beállítva vagy hibát adott — lásd audit log).";
       }
     } catch (error) {
       warning =
@@ -388,7 +509,7 @@ export async function resendQuestionnaireInvite(
     if (!result.emailSent) {
       return {
         warning:
-          "Új link generálva, de az email kiküldése nem sikerült (Resend nincs beállítva vagy hibát adott — lásd audit log).",
+          "Új link generálva, de az email kiküldése nem sikerült (az email küldés nincs beállítva vagy hibát adott — lásd audit log).",
       };
     }
   } catch (error) {

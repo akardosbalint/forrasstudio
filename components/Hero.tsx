@@ -7,10 +7,13 @@ import { ControlledBlueprintDiagram } from "@/components/BlueprintDiagram";
 import { Spotlight } from "@/components/Spotlight";
 
 const EYEBROW_TEXT =
-  "Webalkalmazás-fejlesztés, közösségi platformok és AI-alapú automatizáció";
+  "Weboldalak, webalkalmazások, közösségi platformok és AI-alapú automatizáció";
 
-const BODY_TEXT =
-  "A FlowCore egyedi digitális rendszereket tervez, épít és üzemeltet vállalkozásoknak és közösségeknek — az időpontfoglalástól a fizetésen és az ügyfél-CRM-en át a zárt, tagi közösségi felületekig és a hírlevél-automatizációval támogatott tartalmi oldalakig, kiegészítve AI-alapú funkciókkal (pl. intelligens indexelés, automatizált emlékeztetők). Egy kézből, egymással összehangolva.";
+const BODY_TEXT_1 =
+  "A legmodernebb AI-eszközöket emberi szakértelemmel párosítva építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért.";
+
+const BODY_TEXT_2 =
+  "Célunk, hogy elérhetővé tegyük a kompromisszum-mentes egyedi szoftverfejlesztést mindenki számára: az egyszerűbb weboldalaktól és időpontfoglalástól, a fizetésen és az ügyfél-CRM-en át a zárt közösségi felületekig és a hírlevél-automatizációig.";
 
 /** Plays automatically on load — no scroll required. The streams draw
  * in staggered, the source node converges, the headline unmasks from
@@ -27,7 +30,7 @@ const BODY_TEXT =
 export function Hero() {
   const eyebrowRef = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
-  const bodyRef = useRef<HTMLParagraphElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const pathRefs = useRef<(SVGPathElement | null)[]>([]);
   const nodeRef = useRef<SVGGElement | null>(null);
@@ -67,7 +70,7 @@ export function Hero() {
   }, []);
 
   return (
-    <section id="top" className="grid-pattern relative scroll-mt-20 overflow-hidden bg-ink text-paper">
+    <section id="top" className="mesh-dark grid-pattern relative scroll-mt-20 overflow-hidden text-paper">
       <Spotlight className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
         <div>
           <p
@@ -81,22 +84,23 @@ export function Hero() {
           <div className="mt-5 overflow-hidden">
             <h1
               ref={headlineRef}
-              className="font-display text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.2rem]"
+              className="font-display text-4xl font-bold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.85rem]"
             >
-              A vállalkozásod teljes digitális rendszere —{" "}
-              <span className="italic text-amber">
-                megtervezve, megépítve, üzemeltetve.
+              Amit el tudsz képzelni —{" "}
+              <span className="text-gradient-brand italic">
+                MI megépítjük: gyorsabban, biztonságosabban, kedvezőbb áron.
               </span>
             </h1>
           </div>
 
-          <p ref={bodyRef} className="mt-6 max-w-xl text-lg leading-relaxed text-paper/75">
-            {BODY_TEXT}
-          </p>
+          <div ref={bodyRef} className="mt-6 max-w-xl space-y-4 text-lg leading-relaxed text-paper/75">
+            <p>{BODY_TEXT_1}</p>
+            <p>{BODY_TEXT_2}</p>
+          </div>
 
           <div
             ref={formRef}
-            className="mt-10 rounded-xl border border-white/10 bg-white/5 p-5 transition-colors duration-300 hover:border-white/20 sm:p-6"
+            className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors duration-300 hover:border-spring/40 sm:p-6"
           >
             <p className="mb-4 font-sans text-sm font-medium text-paper/90">
               Kérj visszahívást — 2 mező, egy munkanapon belül jelentkezünk.

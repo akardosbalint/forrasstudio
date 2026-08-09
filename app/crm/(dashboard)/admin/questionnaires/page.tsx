@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth/rbac";
 import { prisma } from "@/lib/prisma";
 import { CreateTemplateForm } from "./CreateTemplateForm";
 import { setActiveTemplate, deleteTemplate } from "./actions";
+import { ConfirmSubmitButton } from "../../ConfirmSubmitButton";
 
 export default async function QuestionnairesPage() {
   await requireRole("ADMIN");
@@ -33,7 +34,7 @@ export default async function QuestionnairesPage() {
           </thead>
           <tbody>
             {templates.map((template) => (
-              <tr key={template.id} className="border-b border-paper-3 last:border-0">
+              <tr key={template.id} className="border-b border-paper-3 last:border-0 hover:bg-paper-2/40">
                 <td className="px-4 py-3">
                   <Link
                     href={`/crm/admin/questionnaires/${template.id}`}
@@ -69,12 +70,12 @@ export default async function QuestionnairesPage() {
                   {!template.isActive && template._count.responses === 0 && (
                     <form action={deleteTemplate}>
                       <input type="hidden" name="id" value={template.id} />
-                      <button
-                        type="submit"
+                      <ConfirmSubmitButton
+                        confirmMessage={`Biztosan törlöd a(z) "${template.name}" kérdőív-sablont? Ez nem vonható vissza.`}
                         className="text-xs font-medium text-red-600"
                       >
                         Törlés
-                      </button>
+                      </ConfirmSubmitButton>
                     </form>
                   )}
                 </td>

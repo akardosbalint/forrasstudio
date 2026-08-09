@@ -5,7 +5,7 @@ import { AmbientFlow } from "@/components/AmbientFlow";
 
 export function FinalCTA() {
   return (
-    <section id="cta" className="grid-pattern relative scroll-mt-20 overflow-hidden bg-ink text-paper">
+    <section id="cta" className="mesh-dark grid-pattern relative scroll-mt-20 overflow-hidden text-paper">
       <AmbientFlow />
       <Spotlight className="mx-auto max-w-3xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
@@ -14,15 +14,16 @@ export function FinalCTA() {
           </p>
         </Reveal>
         <Reveal delay={80}>
-          <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-            Kérj visszahívást, és beszéljük át a rendszered
+          <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            Kérj visszahívást — beszéljük át,{" "}
+            <span className="text-gradient-brand">mit építsünk neked</span>
           </h2>
         </Reveal>
         <Reveal delay={160}>
           <p className="mt-4 max-w-xl leading-relaxed text-paper/70">
             Írd meg az elérhetőségeidet, mi visszahívunk, és átbeszéljük, milyen
-            modulokra van szükséged — foglalás, fizetés, ügyfél-CRM vagy zárt közösségi
-            felület.
+            modulokra van szükséged — weboldal, foglalás, fizetés, ügyfél-CRM vagy zárt
+            közösségi felület. AI-val gyorsított fejlesztéssel, a piaci árak töredékéért.
           </p>
         </Reveal>
 

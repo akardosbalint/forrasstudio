@@ -4,6 +4,7 @@ import { getLeadDetail, listPipelineStages } from "@/lib/leads/queries";
 import { StageChangeForm } from "./StageChangeForm";
 import { CancelBookingButton } from "./CancelBookingButton";
 import { FinancialsForm } from "./FinancialsForm";
+import { ContactInfoForm } from "./ContactInfoForm";
 import { ResendQuestionnaireButton } from "./ResendQuestionnaireButton";
 import { SYSTEM_STAGE_KEYS } from "@/lib/pipeline/stages";
 
@@ -28,12 +29,21 @@ export default async function LeadDetailPage({
     <div className="flex flex-col gap-8">
       <div>
         <h1 className="font-display text-2xl font-semibold">{lead.name}</h1>
-        <p className="text-ink/60">
-          {lead.company ? `${lead.company} · ` : ""}
-          {lead.phone}
-          {lead.email ? ` · ${lead.email}` : ""}
-        </p>
       </div>
+
+      <section className="rounded-xl border border-paper-3 bg-white p-5">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          Kapcsolattartási adatok
+        </h2>
+        <ContactInfoForm
+          leadId={lead.id}
+          name={lead.name}
+          phone={lead.phone}
+          company={lead.company}
+          email={lead.email}
+          message={lead.message}
+        />
+      </section>
 
       <section className="rounded-xl border border-paper-3 bg-white p-5">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink/50">
@@ -61,15 +71,6 @@ export default async function LeadDetailPage({
           cashCollectedCents={lead.cashCollectedCents}
         />
       </section>
-
-      {lead.message && (
-        <section className="rounded-xl border border-paper-3 bg-white p-5">
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
-            Üzenet
-          </h2>
-          <p className="text-sm text-ink/80">{lead.message}</p>
-        </section>
-      )}
 
       <section className="rounded-xl border border-paper-3 bg-white p-5">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink/50">

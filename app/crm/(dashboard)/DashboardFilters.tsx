@@ -70,7 +70,7 @@ export function DashboardFilters({
             onClick={() => updateParam("period", p)}
             className={`rounded-full border px-3 py-1.5 text-sm ${
               currentPeriod === p
-                ? "border-ink bg-ink text-paper"
+                ? "bg-gradient-brand border-transparent text-white"
                 : "border-paper-3 text-ink/70"
             }`}
           >

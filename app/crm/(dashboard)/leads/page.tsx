@@ -21,7 +21,7 @@ export default async function LeadsPage({
         <h1 className="font-display text-2xl font-semibold">Leadek</h1>
         <Link
           href="/crm/leads/new"
-          className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper"
+          className="bg-gradient-brand rounded-lg px-4 py-2 text-sm font-medium text-white"
         >
           + Új lead
         </Link>
@@ -32,7 +32,7 @@ export default async function LeadsPage({
           href="/crm/leads"
           className={`rounded-full border px-3 py-1 ${
             !stage
-              ? "border-ink bg-ink text-paper"
+              ? "bg-gradient-brand border-transparent text-white"
               : "border-paper-3 text-ink/70"
           }`}
         >
@@ -44,7 +44,7 @@ export default async function LeadsPage({
             href={`/crm/leads?stage=${s.id}`}
             className={`rounded-full border px-3 py-1 ${
               stage === s.id
-                ? "border-ink bg-ink text-paper"
+                ? "bg-gradient-brand border-transparent text-white"
                 : "border-paper-3 text-ink/70"
             }`}
           >
@@ -69,7 +69,7 @@ export default async function LeadsPage({
             {leads.map((lead) => (
               <tr
                 key={lead.id}
-                className="border-b border-paper-3 last:border-0"
+                className="border-b border-paper-3 last:border-0 hover:bg-paper-2/40"
               >
                 <td className="px-4 py-3">
                   <Link

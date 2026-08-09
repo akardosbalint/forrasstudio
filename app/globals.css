@@ -5,16 +5,38 @@
 }
 
 :root {
-  --color-ink: #0a0d14;
-  --color-ink-2: #10141d;
-  --color-ink-3: #161c28;
-  --color-paper: #eef1f6;
-  --color-paper-2: #e1e6ee;
-  --color-paper-3: #d2dae5;
-  --color-amber: #9a82ee;
-  --color-amber-dark: #8467e6;
-  --color-spring: #14b8a6;
+  /* Dark surfaces — violet-black instead of blue-black, so the darkest
+     sections read as "part of the gradient family" rather than a flat,
+     unrelated near-black corporate shell. */
+  --color-ink: #0d0a1a;
+  --color-ink-2: #17122b;
+  --color-ink-3: #1e1638;
+  /* Light surfaces — brighter, closer to true white, with a livelier
+     (more saturated) violet tint on the border/tertiary step. */
+  --color-paper: #fbfaff;
+  --color-paper-2: #f1ecfd;
+  --color-paper-3: #e2d9fa;
+  /* Primary brand accent — punched-up violet (kept the `amber` token name
+     to avoid a 30-file, 79-callsite rename across the whole app,
+     including CRM admin screens this pass doesn't otherwise touch; only
+     the value changes). */
+  --color-amber: #8b5cf6;
+  --color-amber-dark: #7c3aed;
+  /* Secondary "tech" accent — brighter, more electric teal. */
+  --color-spring: #17e0b8;
+  /* Tertiary cool accent — unchanged, already on-brand. */
   --color-brook: #3b82f6;
+  /* New: playful energetic accent, paired with violet in the signature
+     brand gradient — this is the "younger, bolder" injection. */
+  --color-pink: #ff5fa8;
+  --color-pink-dark: #f43f8f;
+
+  --gradient-brand: linear-gradient(135deg, var(--color-amber) 0%, var(--color-pink) 100%);
+  --gradient-brand-soft: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-amber) 85%, transparent) 0%,
+    color-mix(in srgb, var(--color-pink) 85%, transparent) 100%
+  );
 }
 
 @theme inline {
@@ -28,6 +50,8 @@
   --color-amber-dark: var(--color-amber-dark);
   --color-spring: var(--color-spring);
   --color-brook: var(--color-brook);
+  --color-pink: var(--color-pink);
+  --color-pink-dark: var(--color-pink-dark);
 
   --font-display: var(--font-space-grotesk);
   --font-sans: var(--font-inter);
@@ -39,9 +63,61 @@ html {
 }
 
 body {
-  background: var(--color-paper);
+  background:
+    radial-gradient(900px circle at 12% -10%, color-mix(in srgb, var(--color-amber) 14%, transparent), transparent 55%),
+    radial-gradient(700px circle at 92% 8%, color-mix(in srgb, var(--color-pink) 10%, transparent), transparent 50%),
+    radial-gradient(800px circle at 100% 60%, color-mix(in srgb, var(--color-spring) 9%, transparent), transparent 50%),
+    var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/* Signature brand gradient (violet → pink) — the wordmark's "MI", primary
+   headline emphasis words, and primary CTA surfaces all pull from this one
+   definition so the gradient reads as one deliberate identity, not several
+   ad-hoc ones. */
+.text-gradient-brand {
+  background: var(--gradient-brand);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.bg-gradient-brand {
+  background: var(--gradient-brand);
+}
+
+/* Gradient-mesh dark background — replaces a flat near-black fill on the
+   hero/final-CTA sections with layered, softly-glowing colour pools over
+   the ink base. This is the "relit" dark: still bold and immersive, but no
+   longer a flat corporate near-black.
+
+   Applied as the element's own `background` (not a ::before layer) because
+   this class is combined with `.grid-pattern` on the same element, and an
+   element can only have one ::before — a second ::before-based layer here
+   would silently replace, not stack with, grid-pattern's. */
+.mesh-dark {
+  position: relative;
+  background:
+    radial-gradient(60% 55% at 14% 8%, color-mix(in srgb, var(--color-amber) 38%, transparent), transparent 70%),
+    radial-gradient(55% 50% at 90% 0%, color-mix(in srgb, var(--color-pink) 30%, transparent), transparent 70%),
+    radial-gradient(50% 60% at 100% 100%, color-mix(in srgb, var(--color-spring) 20%, transparent), transparent 70%),
+    radial-gradient(70% 60% at 0% 100%, color-mix(in srgb, var(--color-brook) 22%, transparent), transparent 70%),
+    var(--color-ink);
+}
+
+/* Reusable colored glow used on card hover states — swaps the flat
+   corporate drop-shadow for a tinted glow that reads as "tech product",
+   not "enterprise SaaS". Pass a --glow-color custom property to tint. */
+.glow-card {
+  --glow-color: var(--color-spring);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glow-card:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--glow-color) 55%, transparent),
+    0 18px 40px -12px color-mix(in srgb, var(--glow-color) 45%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -69,8 +145,8 @@ body {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(154, 130, 238, 0.16) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(154, 130, 238, 0.16) 1px, transparent 1px);
+    linear-gradient(rgba(139, 92, 246, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.18) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 40%, transparent 90%);
 }
