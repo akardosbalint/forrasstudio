@@ -23,7 +23,8 @@ const caseStudies = [
   {
     name: "ECO Portal",
     domain: "portal.ecokozosseg.hu",
-    href: "https://portal.ecokozosseg.hu",
+    href: "/esettanulmanyok/eco-portal",
+    internal: true,
     description:
       "Zárt közösségi platform: tagság, csoportok, receptek, képzések, szakértői értékelések és jelvényrendszer egy helyen.",
     pillar: "community" as Pillar,
@@ -75,7 +76,12 @@ export function CaseStudies() {
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {caseStudies.map((project, index) => (
-            <CaseStudyCard key={project.domain} href={project.href} index={index}>
+            <CaseStudyCard
+              key={project.domain}
+              href={project.href}
+              internal={project.internal}
+              index={index}
+            >
               <div className="flex items-start justify-between gap-3">
                 <h3 className="font-display text-xl font-semibold text-ink">
                   {project.name}
@@ -84,7 +90,7 @@ export function CaseStudies() {
                   aria-hidden="true"
                   className="mt-1 text-ink/30 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-spring"
                 >
-                  ↗
+                  {project.internal ? "→" : "↗"}
                 </span>
               </div>
               <span className="mt-1 font-mono text-xs text-ink/50">{project.domain}</span>
@@ -107,6 +113,15 @@ export function CaseStudies() {
                   </span>
                 ))}
               </div>
+
+              {project.internal && (
+                <span className="mt-4 inline-flex w-fit items-center gap-1.5 font-sans text-sm font-semibold text-amber-dark">
+                  Teljes esettanulmány
+                  <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-0.5">
+                    →
+                  </span>
+                </span>
+              )}
             </CaseStudyCard>
           ))}
         </div>
