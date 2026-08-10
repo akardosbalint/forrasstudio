@@ -8,7 +8,7 @@ import { Wordmark } from "@/components/Wordmark";
 const links = [
   { href: "#szolgaltatasok", label: "Szolgáltatások" },
   { href: "#referenciak", label: "Referenciák" },
-  { href: "#csapat", label: "Csapat" },
+  { href: "#bemutatkozas", label: "Bemutatkozás" },
 ];
 
 type NavProps = {

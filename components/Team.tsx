@@ -4,11 +4,11 @@ import { MagneticCard } from "@/components/MagneticCard";
 
 export function Team() {
   return (
-    <section id="csapat" className="scroll-mt-20 bg-paper-3">
+    <section id="bemutatkozas" className="scroll-mt-20 bg-paper-3">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/50">
-            <span className="text-ink/30">{"// "}</span>Csapat
+            <span className="text-ink/30">{"// "}</span>Bemutatkozás
           </p>
         </Reveal>
         <Reveal delay={80}>
