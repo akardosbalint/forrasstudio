@@ -34,7 +34,7 @@ export default async function Home({
         <TrustBar dict={dict.site.trustBar} />
         <Services dict={dict.site.services} />
         <Process dict={dict.site.process} />
-        <CaseStudies dict={dict.site.caseStudies} />
+        <CaseStudies lang={lang} dict={dict.site.caseStudies} />
         <Team dict={dict.site.team} />
         <WhyUs dict={dict.site.whyUs} />
         <FinalCTA lang={lang} dict={dict.site.finalCta} formDict={dict.site.callbackForm} />

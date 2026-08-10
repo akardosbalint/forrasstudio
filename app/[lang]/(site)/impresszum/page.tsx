@@ -53,9 +53,9 @@ function ContentHu({ lang }: { lang: Locale }) {
       <LegalSection title="Jogi nyilatkozat">
         <p>
           A weboldalon található tartalmak tájékoztató jellegűek, nem
-          minősülnek szerződéses ajánlattételnek. A referenciaként bemutatott
-          projektek adatait lásd a{" "}
-          <Link href={`/${lang}#referenciak`}>Referenciák</Link> szekcióban.
+          minősülnek szerződéses ajánlattételnek. Az esettanulmányként bemutatott
+          projektek adatait lásd az{" "}
+          <Link href={`/${lang}#referenciak`}>Esettanulmányok</Link> szekcióban.
         </p>
       </LegalSection>
     </>

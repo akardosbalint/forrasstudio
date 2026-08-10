@@ -109,6 +109,7 @@ export const site = {
   caseStudies: {
     eyebrow: "Case studies",
     title: "Systems we've built and operate",
+    readCaseStudy: "Read the case study",
     pillarLabels: {
       sales: "Web application development",
       community: "Community & membership platform",
@@ -121,6 +122,7 @@ export const site = {
         name: "ECO Portal",
         domain: "portal.ecokozosseg.hu",
         href: "https://portal.ecokozosseg.hu",
+        caseStudyHref: "/esettanulmanyok/eco-portal",
         description:
           "Closed community platform: membership, groups, recipes, training courses, expert reviews, and a badge system, all in one place.",
         pillar: "community" as const,
@@ -130,6 +132,7 @@ export const site = {
         name: "ECO Weboldal",
         domain: "ecokozosseg.hu",
         href: "https://ecokozosseg.hu",
+        caseStudyHref: undefined as string | undefined,
         description:
           "Static, fast-loading showcase site presenting the modules and partner centers of a self-awareness system.",
         pillar: "none" as const,
@@ -139,6 +142,7 @@ export const site = {
         name: "Ösvény App by eptestben.hu",
         domain: "eptestben.hu",
         href: "https://eptestben.hu",
+        caseStudyHref: undefined as string | undefined,
         description:
           "Health-coaching application with booking, payment integration, and a quiz-based user journey.",
         pillar: "sales" as const,
@@ -148,6 +152,7 @@ export const site = {
         name: "Kardos Bálint Okoskonyhája",
         domain: "akardosbalint.hu",
         href: "https://akardosbalint.hu",
+        caseStudyHref: undefined as string | undefined,
         description:
           "Statically generated content site with a blog section, newsletter automation, and a membership community.",
         pillar: "content" as const,

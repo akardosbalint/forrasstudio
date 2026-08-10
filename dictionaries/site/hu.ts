@@ -3,7 +3,7 @@ export const site = {
     ariaLabel: "Fő navigáció",
     links: [
       { href: "#szolgaltatasok", label: "Szolgáltatások" },
-      { href: "#referenciak", label: "Referenciák" },
+      { href: "#referenciak", label: "Esettanulmányok" },
       { href: "#csapat", label: "Csapat" },
     ],
     cta: "Visszahívást kérek",
@@ -108,8 +108,9 @@ export const site = {
   },
 
   caseStudies: {
-    eyebrow: "Referenciák",
+    eyebrow: "Esettanulmányok",
     title: "Rendszerek, amiket megépítettünk és üzemeltetünk",
+    readCaseStudy: "Esettanulmány elolvasása",
     pillarLabels: {
       sales: "Webalkalmazás-fejlesztés",
       community: "Közösségi & tagsági platform",
@@ -122,6 +123,7 @@ export const site = {
         name: "ECO Portal",
         domain: "portal.ecokozosseg.hu",
         href: "https://portal.ecokozosseg.hu",
+        caseStudyHref: "/esettanulmanyok/eco-portal",
         description:
           "Zárt közösségi platform: tagság, csoportok, receptek, képzések, szakértői értékelések és jelvényrendszer egy helyen.",
         pillar: "community" as const,
@@ -131,6 +133,7 @@ export const site = {
         name: "ECO Weboldal",
         domain: "ecokozosseg.hu",
         href: "https://ecokozosseg.hu",
+        caseStudyHref: undefined as string | undefined,
         description:
           "Statikus, gyors betöltésű bemutató oldal egy önismereti rendszer moduljainak és partnerközpontjainak bemutatására.",
         pillar: "none" as const,
@@ -140,6 +143,7 @@ export const site = {
         name: "Ösvény App by eptestben.hu",
         domain: "eptestben.hu",
         href: "https://eptestben.hu",
+        caseStudyHref: undefined as string | undefined,
         description:
           "Egészség-coaching alkalmazás időpontfoglalással, fizetési integrációval és kvíz-alapú felhasználói úttal.",
         pillar: "sales" as const,
@@ -149,6 +153,7 @@ export const site = {
         name: "Kardos Bálint Okoskonyhája",
         domain: "akardosbalint.hu",
         href: "https://akardosbalint.hu",
+        caseStudyHref: undefined as string | undefined,
         description:
           "Statikusan generált tartalmi oldal blog rovattal, hírlevél-automatizációval és tagsági közösséggel.",
         pillar: "content" as const,
