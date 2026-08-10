@@ -10,7 +10,19 @@ const EYEBROW_TEXT =
   "Weboldalak, webalkalmazások, közösségi platformok és AI-alapú automatizáció";
 
 const BODY_TEXT_1 =
-  "A legmodernebb AI-eszközöket emberi szakértelemmel párosítva építünk megbízható, biztonságos rendszereket — a hagyományos fejlesztői ügynökségek árának töredékéért.";
+  "Ugyanazt a magas minőséget kapod, mint egy hagyományos fejlesztőcégnél — csak gyorsabban leszállítva és a piaci árak töredékéért. A legmodernebb AI-eszközöket emberi szakértelemmel párosítva építünk megbízható, biztonságos rendszereket.";
+
+const USP_BADGES: { accent: "spring" | "amber" | "brook"; label: string }[] = [
+  { accent: "spring", label: "Ugyanaz a minőség" },
+  { accent: "amber", label: "Rövidebb határidő" },
+  { accent: "brook", label: "Töredék ár" },
+];
+
+const badgeDotClasses: Record<(typeof USP_BADGES)[number]["accent"], string> = {
+  spring: "bg-spring",
+  amber: "bg-amber",
+  brook: "bg-brook",
+};
 
 /** Plays automatically on load — no scroll required. The streams draw
  * in staggered, the source node converges, the headline unmasks from
@@ -90,6 +102,20 @@ export function Hero() {
 
           <div ref={bodyRef} className="mt-6 max-w-xl space-y-4 text-lg leading-relaxed text-paper/75">
             <p>{BODY_TEXT_1}</p>
+            <ul className="flex flex-wrap gap-2.5">
+              {USP_BADGES.map((badge) => (
+                <li
+                  key={badge.label}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 font-mono text-xs text-paper/80"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${badgeDotClasses[badge.accent]}`}
+                  />
+                  {badge.label}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 

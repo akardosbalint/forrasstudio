@@ -6,6 +6,7 @@ import { Process } from "@/components/Process";
 import { CaseStudies } from "@/components/CaseStudies";
 import { Team } from "@/components/Team";
 import { WhyUs } from "@/components/WhyUs";
+import { DesignPrinciples } from "@/components/DesignPrinciples";
 import { FinalCTA } from "@/components/FinalCTA";
 import { Footer } from "@/components/Footer";
 
@@ -21,6 +22,7 @@ export default function Home() {
         <CaseStudies />
         <Team />
         <WhyUs />
+        <DesignPrinciples />
         <FinalCTA />
       </main>
       <Footer />
