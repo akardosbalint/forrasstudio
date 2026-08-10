@@ -42,9 +42,10 @@ const caseStudies = [
   {
     name: "Ösvény App by eptestben.hu",
     domain: "eptestben.hu",
-    href: "https://eptestben.hu",
+    href: "/esettanulmanyok/osveny",
+    internal: true,
     description:
-      "Egészség-coaching alkalmazás időpontfoglalással, fizetési integrációval és kvíz-alapú felhasználói úttal.",
+      "AI-coacholt, hat pilléres életmódváltó platform: ingyenes kvíz, algoritmikusan ajánlott programhossz, fizetési integráció és determinisztikus biztonsági réteg az AI Coach előtt.",
     pillar: "sales" as Pillar,
     modules: ["Fizetési kapu integráció", "Felhasználókezelés"],
   },
