@@ -31,6 +31,17 @@ const caseStudies = [
     modules: ["Jogosultságkezelés", "Tagi felület"],
   },
   {
+    name: "Forge Gym",
+    domain: "Demo projekt",
+    href: "/esettanulmanyok/forge-gym",
+    internal: true,
+    demo: true,
+    description:
+      "Teremedző stúdió tagsági és bérletkezelő platformja: QR-kódos beléptetés, valós Stripe bankkártyás fizetés és staff beléptető felület.",
+    pillar: "sales" as Pillar,
+    modules: ["Stripe fizetési integráció", "QR-kódos beléptetés"],
+  },
+  {
     name: "ECO Weboldal",
     domain: "ecokozosseg.hu",
     href: "https://ecokozosseg.hu",
@@ -83,12 +94,19 @@ export function CaseStudies() {
               index={index}
             >
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-display text-xl font-semibold text-ink">
-                  {project.name}
-                </h3>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="font-display text-xl font-semibold text-ink">
+                    {project.name}
+                  </h3>
+                  {project.demo && (
+                    <span className="rounded-full border border-pink/50 bg-pink/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-pink">
+                      Demo
+                    </span>
+                  )}
+                </div>
                 <span
                   aria-hidden="true"
-                  className="mt-1 text-ink/30 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-spring"
+                  className="mt-1 flex-shrink-0 text-ink/30 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-spring"
                 >
                   {project.internal ? "→" : "↗"}
                 </span>

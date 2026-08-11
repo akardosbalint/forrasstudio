@@ -15,16 +15,27 @@ type CaseStudyHeroProps = {
   highlight?: string;
   subtitle: string;
   meta: MetaItem[];
+  /** Short pill (e.g. "DEMO PROJEKT") for case studies that aren't a
+   * live paying client — keeps that distinction visible from the very
+   * first screen, not buried in the body copy. */
+  badge?: string;
 };
 
-export function CaseStudyHero({ eyebrow, title, highlight, subtitle, meta }: CaseStudyHeroProps) {
+export function CaseStudyHero({ eyebrow, title, highlight, subtitle, meta, badge }: CaseStudyHeroProps) {
   return (
     <section className="mesh-dark grid-pattern relative overflow-hidden text-paper">
       <div className="relative mx-auto max-w-4xl px-5 py-20 sm:px-8 sm:py-24">
-        <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.18em] text-spring">
-          <span aria-hidden="true" className="h-px w-6 bg-spring/60" />
-          {eyebrow}
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.18em] text-spring">
+            <span aria-hidden="true" className="h-px w-6 bg-spring/60" />
+            {eyebrow}
+          </p>
+          {badge ? (
+            <span className="rounded-full border border-pink/50 bg-pink/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-pink">
+              {badge}
+            </span>
+          ) : null}
+        </div>
         <h1 className="mt-5 text-balance font-display text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl">
           {title}
           {highlight ? <span className="text-gradient-brand"> {highlight}</span> : null}
